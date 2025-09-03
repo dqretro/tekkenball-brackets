@@ -1,6 +1,6 @@
 ﻿using Microsoft.OpenApi.Models;
 
-namespace DQRetro.TournamentTracker.Extensions;
+namespace DQRetro.TournamentTracker.Api.Extensions;
 
 /// <summary>
 /// A collection of extension methods to be used on IServiceCollection to reduce clutter in Program.cs

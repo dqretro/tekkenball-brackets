@@ -1,4 +1,4 @@
-﻿namespace DQRetro.TournamentTracker.Models.Configuration;
+﻿namespace DQRetro.TournamentTracker.Api.Models.Configuration;
 
 /// <summary>
 /// Configuration object representing the "Keys" section within appsettings.Secrets.json.

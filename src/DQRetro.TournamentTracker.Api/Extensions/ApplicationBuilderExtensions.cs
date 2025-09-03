@@ -1,4 +1,4 @@
-﻿namespace DQRetro.TournamentTracker.Extensions;
+﻿namespace DQRetro.TournamentTracker.Api.Extensions;
 
 /// <summary>
 /// A collection of extension methods to be used on IApplicationBuilder to reduce clutter in Program.cs
