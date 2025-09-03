@@ -57,9 +57,9 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<KeysConfiguration>(configuration.GetRequiredSection(KeysConfiguration.SectionKey));
         
-        services.AddSingleton<IDateTimeProvider, DateTimeProvider>() // TODO: REPLACE DateTimeProvider with a more modern and more appropriate alternative!
+        // Can unit test 'TimeProvider' using Microsoft.Extensions.TimeProvider.Testing package.  Using this to avoid a custom DateTimeProvider abstraction.
+        services.AddSingleton(TimeProvider.System)
                 .AddMemoryCache()
-                .AddSingleton<ICacheService, CacheService>()
                 .AddHttpContextAccessor();
         
         return services;
