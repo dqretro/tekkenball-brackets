@@ -1,16 +1,18 @@
+using DQRetro.TournamentTracker.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// TODO: Change this to be configurable...
+const int port = 5002;
+bool isDevelopment = builder.Environment.IsDevelopment();
+
+builder.Services.AddCustomSwagger(isDevelopment, port);
+
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app.UseCustomSwagger(isDevelopment);
 
 app.UseHttpsRedirection();
 
