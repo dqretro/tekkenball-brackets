@@ -1,6 +1,8 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using DQRetro.TournamentTracker.Api.Models.Configuration;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
 
 namespace DQRetro.TournamentTracker.Api.Extensions;
@@ -10,6 +12,41 @@ namespace DQRetro.TournamentTracker.Api.Extensions;
 /// </summary>
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Configures DI to handle reverse proxies behind Apache, Nginx, etc.
+    /// This is required as reverse proxies will re-write the request's IP Address header, we want the API to see the original IP Address.
+    /// This will only be enabled in Prod, not Dev environments.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    /// <param name="isDevelopment"></param>
+    /// <returns></returns>
+    public static IServiceCollection ConfigureForwardedHeaders(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
+    {
+        if (isDevelopment)
+        {
+            return services;
+        }
+
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            // TODO: Verify if using All is necessary here, as we likely only need X-Forwarded-For.
+            options.ForwardedHeaders = ForwardedHeaders.All;
+
+            string reverseProxyIpAddress = configuration.GetRequiredSection("ForwardedHeaderOptions:ReverseProxyIpAddress").Get<string>();
+            options.KnownProxies.Clear();
+            options.KnownProxies.Add(IPAddress.Parse(reverseProxyIpAddress));
+            
+            // The same as above can be done for "KnownNetworks" if I ever decide to split this into a separate device handling the reverse proxy.
+            
+            string allowedHost = configuration.GetRequiredSection("ForwardedHeaderOptions:AllowedHost").Get<string>();
+            options.AllowedHosts.Clear();
+            options.AllowedHosts.Add(allowedHost);
+        });
+        
+        return services;
+    }
+    
     /// <summary>
     /// Configures common services used throughout the application. TODO: MORE DESCRIPTIVE DESCRIPTION!
     /// </summary>
