@@ -1,4 +1,5 @@
 using DQRetro.TournamentTracker.Extensions;
+using DQRetro.TournamentTracker.Models.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,8 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 const int port = 5002;
 bool isDevelopment = builder.Environment.IsDevelopment();
 
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+builder.Configuration.AddJsonFile("appsettings.Secrets.json", optional: false, reloadOnChange: false);
+
 builder.Services.AddCustomSwagger(isDevelopment, port);
 
+builder.Services.Configure<KeysConfiguration>(builder.Configuration.GetRequiredSection(KeysConfiguration.SectionKey));
 
 var app = builder.Build();
 
