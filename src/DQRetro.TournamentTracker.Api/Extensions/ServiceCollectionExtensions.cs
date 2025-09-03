@@ -1,4 +1,7 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using DQRetro.TournamentTracker.Api.Models.Configuration;
+using Microsoft.OpenApi.Models;
 
 namespace DQRetro.TournamentTracker.Api.Extensions;
 
@@ -7,6 +10,24 @@ namespace DQRetro.TournamentTracker.Api.Extensions;
 /// </summary>
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Configures common services used throughout the application. TODO: MORE DESCRIPTIVE DESCRIPTION!
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddCommonServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<KeysConfiguration>(configuration.GetRequiredSection(KeysConfiguration.SectionKey));
+        
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>() // TODO: REPLACE DateTimeProvider with a more modern and more appropriate alternative!
+                .AddMemoryCache()
+                .AddSingleton<ICacheService, CacheService>()
+                .AddHttpContextAccessor();
+        
+        return services;
+    }
+    
     /// <summary>
     /// Configures Swagger to run on the specified port, if running on a development environment.
     /// The API is only designed to be consumable from the UI.  Therefore, Swagger should only be enabled in Dev, not Prod. 
@@ -63,6 +84,23 @@ public static class ServiceCollectionExtensions
                              .AllowCredentials();
             });
         });
+
+        return services;
+    }
+    
+    /// <summary>
+    /// Configures Controllers with custom serialization (snake-case) and ignoring null values (reduce unnecessary bandwidth consumption).
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddControllersWithCustomSerialization(this IServiceCollection services)
+    {
+        services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                });
 
         return services;
     }
