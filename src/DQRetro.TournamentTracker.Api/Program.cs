@@ -3,21 +3,23 @@ using DQRetro.TournamentTracker.Models.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// TODO: Change this to be configurable...
+// TODO: Change the port to be configurable...
 const int port = 5002;
 bool isDevelopment = builder.Environment.IsDevelopment();
 
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
 builder.Configuration.AddJsonFile("appsettings.Secrets.json", optional: false, reloadOnChange: false);
 
-builder.Services.AddCustomSwagger(isDevelopment, port);
+builder.Services.AddCustomCors(builder.Configuration)
+                .AddCustomSwagger(isDevelopment, port);
 
 builder.Services.Configure<KeysConfiguration>(builder.Configuration.GetRequiredSection(KeysConfiguration.SectionKey));
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.UseCustomSwagger(isDevelopment);
+app.UseCors()
+   .UseCustomSwagger(isDevelopment);
 
 app.UseHttpsRedirection();
 

@@ -39,4 +39,31 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Configures CORS to allow requests between this API, and the Site which must be running on one of the values specified in appsettings.json -> Cors -> AllowedOrigins.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddCustomCors(this IServiceCollection services, IConfiguration configuration)
+    {
+        // TODO: Need to add the actual site, and any of Sky's development locations into appsettings.
+        // TODO: Need to determine how auth will work (if we even implement account/auth) (as this will require AllowCredentials, which I have preemptively added.
+        // TODO: Need to determine the security of AllowAnyMethod/AllowAnyHeader.
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policyBuilder =>
+            {
+                string[] allowedOrigins = configuration.GetRequiredSection("Cors:AllowedOrigins").Get<string[]>();
+                
+                policyBuilder.WithOrigins(allowedOrigins)
+                             .AllowAnyMethod()
+                             .AllowAnyHeader()
+                             .AllowCredentials();
+            });
+        });
+
+        return services;
+    }
 }
