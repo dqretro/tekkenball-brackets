@@ -1,0 +1,542 @@
+/* ==========================
+   Base / Theme
+   ========================== */
+:root {
+  --bg: #0f0f12;
+  --panel: #17171c;
+  --panel-2: #1e1e25;
+  --text: #e6e6e9;
+  --muted: #b6b6bf;
+  --line: #2a2a33;
+  --accent: #7c5cff; /* subtle purple */
+  --accent-2: #2dd4bf; /* teal highlight */
+  --danger: #ef4444;
+
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --shadow-1: 0 6px 20px rgba(0,0,0,.35);
+  --shadow-2: 0 8px 28px rgba(0,0,0,.45);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
+body.dark {
+  background: var(--bg);
+  color: var(--text);
+  font: 400 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+}
+
+/* Smooth scrolling and focus visibility */
+html { scroll-behavior: smooth; }
+:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Container helper */
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ==========================
+   Top Navigation (loaded via nav.html)
+   ========================== */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 14px 20px;
+  background: linear-gradient(180deg, rgba(15,15,18,.95), rgba(15,15,18,.85));
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+}
+nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: color .15s ease, background .15s ease;
+}
+nav a:hover { color: var(--text); background: rgba(124,92,255,.08); }
+nav a.active {
+  color: var(--text);
+  background: rgba(124,92,255,.18);
+  box-shadow: inset 0 0 0 1px rgba(124,92,255,.35);
+}
+
+/* ==========================
+   Headings
+   ========================== */
+h1, h2, h3 {
+  margin: 0 0 12px 0;
+  line-height: 1.25;
+}
+h1 { font-size: 28px; letter-spacing: .2px; }
+h2 { font-size: 22px; color: var(--muted); }
+h3 { font-size: 16px; color: var(--muted); }
+
+/* ==========================
+   Search
+   ========================== */
+.search-box {
+  display: flex;
+  justify-content: center;
+  padding: 18px 20px 8px;
+}
+.search-box input {
+  width: min(680px, 92vw);
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: var(--shadow-1);
+}
+.search-box input::placeholder { color: #8b8b97; }
+
+/* ==========================
+   Sections / Panels
+   ========================== */
+section {
+  margin: 16px auto;
+  width: min(1100px, 92vw);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  padding: 18px 18px 12px;
+}
+
+.summary p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+/* ==========================
+   Pools / Top Cut Cards
+   ========================== */
+.pool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.pool-card {
+  display: block;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  text-decoration: none;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  box-shadow: var(--shadow-1);
+}
+.pool-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(124,92,255,.45);
+  box-shadow: var(--shadow-2);
+}
+.pool-card:active { transform: translateY(0); }
+
+/* Optional small meta text inside cards */
+.card-meta {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ==========================
+   Bracket Pages (Double Elim)
+   ========================== */
+#bracket {
+  width: min(1200px, 96vw);
+  margin: 16px auto;
+  padding: 0;
+}
+#bracket > h1 {
+  font-size: 26px;
+  margin: 6px 0 10px;
+}
+
+/* Section title: Winners / Losers / Finals */
+.bracket-section {
+  margin: 22px 0 34px;
+}
+.bracket-section h2 {
+  text-align: center;
+  margin-bottom: 12px;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  font-size: 18px;
+}
+
+/* Horizontal rounds wrapper */
+.bracket-wrapper {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 12px 10px;
+  border-radius: var(--radius-md);
+  scroll-snap-type: x proximity;
+}
+.bracket-wrapper::-webkit-scrollbar { height: 10px; }
+.bracket-wrapper::-webkit-scrollbar-track { background: #121218; }
+.bracket-wrapper::-webkit-scrollbar-thumb {
+  background: #2b2b35; border-radius: 10px;
+}
+
+/* Each round column */
+.bracket-round {
+  min-width: 220px;
+  flex: 0 0 220px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  scroll-snap-align: start;
+}
+.bracket-round h3 {
+  text-align: center;
+  margin: 2px 0 10px;
+  color: #c8c8d2;
+}
+
+/* A single match (two players stacked) */
+.bracket-match {
+  background: #1a1a21;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin: 10px 0;
+  padding: 6px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+}
+
+/* Player rows (supports score/status) */
+.player {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  margin: 6px 0;
+  border-radius: 8px;
+  background: #23232b;
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,.05);
+}
+.player .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.player .score, .player .seed, .player .flag {
+  margin-left: auto;
+  color: var(--muted);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Winner / DQ / BYE visual helpers (optional) */
+.player.winner { background: linear-gradient(90deg, #23232b, rgba(45,212,191,.15)); border-color: rgba(45,212,191,.35); }
+.player.loser  { opacity: .75; }
+.player.dq     { background: linear-gradient(90deg, #23232b, rgba(239,68,68,.12)); border-color: rgba(239,68,68,.35); }
+.player.bye    { color: #9aa; font-style: italic; }
+
+/* Finals can be a bit wider */
+.bracket-section:has(> .bracket-wrapper) .bracket-round.finals {
+  min-width: 260px;
+  flex-basis: 260px;
+}
+
+/* Info badges (optional) */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #1b1b22;
+  color: var(--muted);
+}
+
+/* ==========================
+   Utility & Layout Bits
+   ========================== */
+hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 22px auto;
+  width: min(1100px, 92vw);
+}
+
+.muted { color: var(--muted); }
+.accent { color: var(--accent-2); }
+
+/* Panels on Overview page */
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 900px) {
+  .overview-grid { grid-template-columns: 1.2fr .8fr; }
+}
+
+/* ==========================
+   Buttons (if needed)
+   ========================== */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(124,92,255,.4);
+}
+.button.primary {
+  background: linear-gradient(180deg, rgba(124,92,255,.25), rgba(124,92,255,.18));
+  border-color: rgba(124,92,255,.45);
+}
+
+/* ==========================
+   Responsive Tweaks
+   ========================== */
+@media (max-width: 600px) {
+  h1 { font-size: 24px; }
+  .search-box { padding: 14px; }
+  .pool-card { padding: 16px; }
+  .bracket-round { min-width: 200px; flex: 0 0 200px; }
+}
+
+/* ==========================
+   Reduced Motion
+   ========================== */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* ==========================
+   Print
+   ========================== */
+@media print {
+  nav, .search-box { display: none !important; }
+  body.dark { background: #fff; color: #000; }
+  section { box-shadow: none; border-color: #ccc; }
+  .bracket-wrapper { overflow: visible; }
+}
+
+/* Overview page specific */
+.overview-column {
+  margin: 24px 0;
+}
+
+.overview-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.standings-table {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+
+.standings-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel-2);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-1);
+}
+
+.standings-table th, .standings-table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+}
+
+.standings-table th {
+  background: var(--panel);
+  color: var(--accent-2);
+  font-weight: 600;
+}
+
+.standings-table tbody tr:hover {
+  background: rgba(124, 92, 255, 0.08);
+}
+
+.standings-table td {
+  font-size: 14px;
+}
+
+/* ==========================
+   Stats Page Styles
+   ========================== */
+
+.stats-main {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.overall-stats,
+.most-used-char,
+.character-usage,
+.misc-stats {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #1f1f1f; /* dark card */
+  border-radius: 8px;
+}
+
+.most-used-char img.char-image {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  margin-top: 0rem;
+}
+
+.character-usage h3 {
+  margin-bottom: 0rem;
+}
+
+/* Character usage table */
+.char-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem; /* smaller text */
+  margin-bottom: 0.5rem;
+}
+
+.char-table th,
+.char-table td {
+  border: 1px solid #555;
+  padding: 4px 6px;
+  text-align: left;
+}
+
+.char-image-small {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.toggle-btn {
+  margin-top: 0.5rem;
+  padding: 4px 8px;
+  cursor: pointer;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+}
+
+.toggle-btn:hover {
+  background-color: #2b2b2b;
+}
+
+/* Misc stats */
+.misc-stats p {
+  margin: 0.3rem 0;
+}
+
+/* ------------------------------
+   Tournament Landing Page Styles
+------------------------------- */
+.tournament-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.tournament-card {
+  background-color: #222;
+  padding: 15px;
+  border-radius: 8px;
+  color: #fff;
+  transition: transform 0.2s, background-color 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.tournament-card:hover {
+  transform: scale(1.03);
+  background-color: #333;
+}
+
+.tournament-card h2 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  color: #6C63FF; /* Matches site color theme */
+}
+
+.tournament-card p {
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+.tournament-card a {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 12px;
+  background-color: #6C63FF;
+  color: #fff;
+  border-radius: 4px;
+  text-decoration: none;
+  text-align: center;
+  font-weight: bold;
+}
+
+.tournament-card a:hover {
+  background-color: #5750d4;
+}
+
+/* Filter Container */
+.filter-container {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.filter-container select {
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: none;
+  background-color: #333;
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.filter-container select:hover {
+  background-color: #444;
+}
+
