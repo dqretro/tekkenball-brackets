@@ -6,21 +6,46 @@
 // Load Navigation
 // --------------------------
 function loadNav() {
-  fetch("/Shared/Layout/Header/nav/nav.html")
-    .then(res => res.text())
+  // Detect base path (GitHub Pages vs. local dev)
+  const base =
+    window.location.hostname === "dqretro.github.io"
+      ? "/tekkenball-brackets"
+      : "";
+
+  // Load nav HTML
+  fetch(`${base}/shared/layout/header/nav/nav.html`)
+    .then(res => {
+      if (!res.ok) throw new Error(`Failed to fetch nav: ${res.status}`);
+      return res.text();
+    })
     .then(html => {
       document.getElementById("nav-placeholder").innerHTML = html;
+
+      // Highlight the active link
       const links = document.querySelectorAll("nav a");
-      const current = window.location.pathname;
+      const currentPath = window.location.pathname.replace(/\/$/, ""); // remove trailing slash
+
       links.forEach(link => {
-        const target = link.getAttribute("href");
-        if (current.endsWith(target) || current.includes(target)) {
+        const href = link.getAttribute("href");
+
+        // Normalize link target to absolute path
+        const fullHref =
+          href.startsWith("http") || href.startsWith("/")
+            ? href
+            : `${base}/${href}`;
+
+        // Compare against current page path
+        if (
+          currentPath.endsWith(href) ||
+          currentPath === fullHref.replace(/\/$/, "")
+        ) {
           link.classList.add("active");
         }
       });
     })
     .catch(err => console.error("Error loading nav:", err));
 }
+
 
 // --------------------------
 // Load Footer
