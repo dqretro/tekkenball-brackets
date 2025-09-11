@@ -9,7 +9,8 @@ function loadNav() {
   fetch("/Shared/Layout/Header/nav/nav.html")
     .then(res => res.text())
     .then(html => {
-      document.getElementById("nav-placeholder").innerHTML = html;
+      const navPlaceholder = document.getElementById("nav-placeholder");
+      if (navPlaceholder) navPlaceholder.innerHTML = html;
       const links = document.querySelectorAll("nav a");
       const current = window.location.pathname;
       links.forEach(link => {
@@ -36,63 +37,32 @@ function loadFooter() {
 }
 
 // --------------------------
-// Fetch Tournament Data
+// Fetch Tournaments
 // --------------------------
-async function fetchTournament(slug = "dqretro-tournament-slug") {
+async function fetchTournament(slug) {
   try {
     const res = await fetch(`/api/tournament?slug=${slug}`);
     const data = await res.json();
-    return data.data.tournament;
+    return data.data.tournament || null;
   } catch (err) {
     console.error("Failed to fetch tournament:", err);
     return null;
   }
 }
 
-// --------------------------
-// Fetch All Tournaments
-// --------------------------
 async function fetchAllTournaments() {
   try {
-    const res = await fetch('/api/tournaments');
+    const res = await fetch("/api/tournaments");
     const data = await res.json();
     return data.data.tournaments || [];
-  } catch(err) {
+  } catch (err) {
     console.error("Failed to fetch tournaments:", err);
     return [];
   }
 }
 
 // --------------------------
-// Transform Sets → Rounds
-// --------------------------
-function transformSetsToRounds(sets) {
-  const rounds = {};
-  sets.forEach(set => {
-    const roundName = `Round ${set.round}`;
-    if (!rounds[roundName]) rounds[roundName] = [];
-
-    const [slot1, slot2] = set.slots;
-    rounds[roundName].push({
-      p1: slot1 ? { 
-        name: slot1.entrant?.name,
-        score: slot1.standing?.stats?.score?.value,
-        winner: set.winnerId === slot1.entrant?.id,
-        character: slot1.entrant?.character
-      } : null,
-      p2: slot2 ? { 
-        name: slot2.entrant?.name,
-        score: slot2.standing?.stats?.score?.value,
-        winner: set.winnerId === slot2.entrant?.id,
-        character: slot2.entrant?.character
-      } : null
-    });
-  });
-  return Object.entries(rounds).map(([title, matches]) => ({ title, matches }));
-}
-
-// --------------------------
-// Bracket Rendering
+// Bracket Utilities
 // --------------------------
 const matchLabels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -111,7 +81,6 @@ function createPlayerDiv(p) {
   }
 
   div.appendChild(document.createTextNode(` ${p.name} ${p.score !== undefined ? `[${p.score}]` : ""}`));
-
   if (p.winner === true) div.style.color = "gold";
   else if (p.winner === false) div.style.color = "red";
 
@@ -172,11 +141,10 @@ function renderBracket(rounds, parentDiv) {
 // --------------------------
 // Load Standings
 // --------------------------
-async function loadStandings(limit = null, slug = "dqretro-tournament-slug") {
+async function loadStandings(limit = null, slug) {
   const tournament = await fetchTournament(slug);
   if (!tournament) return;
   const event = tournament.events[0];
-
   const tbody = document.getElementById("standings-body");
   if (!tbody) return;
 
@@ -203,7 +171,7 @@ async function loadStandings(limit = null, slug = "dqretro-tournament-slug") {
 // --------------------------
 // Render Stats
 // --------------------------
-async function renderStats(containerId = "stats-container", slug = "dqretro-tournament-slug") {
+async function renderStats(containerId = "stats-container", slug) {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = '';
@@ -247,88 +215,124 @@ async function renderStats(containerId = "stats-container", slug = "dqretro-tour
 // --------------------------
 // Load Tournaments Landing Page
 // --------------------------
+// --------------------------
+// Load Tournaments Landing Page
+// --------------------------
 async function loadTournamentsLanding() {
   const container = document.getElementById("tournamentList");
-  if (!container) return;
-
-  const tournaments = await fetchAllTournaments();
-
-  // Populate filters
   const gameFilter = document.getElementById("gameFilter");
   const statusFilter = document.getElementById("statusFilter");
-  if (gameFilter && gameFilter.options.length === 1) {
-    const games = [...new Set(tournaments.map(t => t.game))];
-    games.forEach(game => {
-      const opt = document.createElement("option");
-      opt.value = game;
-      opt.textContent = game;
-      gameFilter.appendChild(opt);
-    });
-  }
+  const relatedEvents = document.getElementById("relatedEvents");
+  if (!container || !gameFilter || !statusFilter) return;
+
+  // Fetch tournaments from API
+  let tournaments = await fetchAllTournaments();
+
+  // TEMPORARY: Add manual tournaments until API is ready
+  tournaments.push(
+    {
+      name: "VSFighting XIII",
+      game: "Tekken 8",
+      status: "completed", // lowercase
+      startAt: "2025-08-16",
+      slug: "vsfighting-xiii",
+      logoUrl: "../images/games/boxart/boxart_Tekken8.png"
+    },
+    {
+      name: "VSFighting XI",
+      game: "Tekken 3",
+      status: "completed",
+      startAt: "2023-08-19",
+      slug: "vsfighting-xi",
+      logoUrl: "../images/games/boxart/boxart_Tekken3.png"
+    }
+  );
+
+  // --------------------------
+  // Populate Game Filter
+  // --------------------------
+  const games = ["all", ...new Set(tournaments.map(t => t.game))];
+  games.forEach(game => {
+    const opt = document.createElement("option");
+    opt.value = game === "all" ? "all" : game.toLowerCase().replace(/\s/g,'');
+    opt.textContent = game === "all" ? "All Games" : game;
+    gameFilter.appendChild(opt);
+  });
 
   let selectedCharacter = null;
 
+  // --------------------------
+  // Render Tournament List
+  // --------------------------
   function renderList() {
     const selectedGame = gameFilter.value;
     const selectedStatus = statusFilter.value;
 
     container.innerHTML = '';
+    if (relatedEvents) relatedEvents.innerHTML = '';
 
     tournaments
-      .filter(t => (selectedGame === "all" || t.game === selectedGame) &&
-                   (selectedStatus === "all" || t.status === selectedStatus) &&
-                   (!selectedCharacter || t.participants?.some(p => p.character === selectedCharacter)))
-      .sort((a,b)=>new Date(b.startAt) - new Date(a.startAt))
-      .forEach(tournament => {
+      .filter(t => 
+        (selectedGame === "all" || t.game.toLowerCase().replace(/\s/g,'') === selectedGame) &&
+        (selectedStatus === "all" || t.status.toLowerCase() === selectedStatus) &&
+        (!selectedCharacter || t.participants?.some(p => p.character === selectedCharacter))
+      )
+      .sort((a,b) => new Date(b.startAt) - new Date(a.startAt))
+      .forEach(t => {
+        // Tournament Card
         const card = document.createElement("div");
         card.className = "tournament-card";
-        card.style.position = "relative";
 
-        // Thumbnail
         const thumbnail = document.createElement("img");
         thumbnail.className = "tournament-thumbnail";
-        thumbnail.src = tournament.logoUrl || `../images/games/${tournament.game.replace(/\s/g,'')}.png`;
-        thumbnail.alt = tournament.game;
+        thumbnail.src = t.logoUrl || `../images/games/${t.game.replace(/\s/g,'')}.png`;
+        thumbnail.alt = t.game;
         card.appendChild(thumbnail);
 
-        // Status badge
         const badge = document.createElement("span");
         badge.className = "tournament-badge";
-        badge.textContent = tournament.status.charAt(0).toUpperCase() + tournament.status.slice(1);
-        badge.setAttribute("data-status", tournament.status.toLowerCase());
+        badge.textContent = t.status.charAt(0).toUpperCase() + t.status.slice(1);
+        badge.setAttribute("data-status", t.status.toLowerCase());
         card.appendChild(badge);
 
-        // Title
         const title = document.createElement("h2");
-        title.textContent = tournament.name;
+        title.textContent = t.name;
         card.appendChild(title);
 
-        // Date
         const date = document.createElement("p");
-        const start = new Date(tournament.startAt);
+        const start = new Date(t.startAt);
         date.textContent = `Date: ${start.toLocaleDateString()}`;
         card.appendChild(date);
 
-        // Game
         const game = document.createElement("p");
-        game.textContent = `Game: ${tournament.game}`;
+        game.textContent = `Game: ${t.game}`;
         card.appendChild(game);
 
-        // Bracket link
         const link = document.createElement("a");
-        link.href = `brackets.html?slug=${tournament.slug}`;
+        link.href = `brackets.html?slug=${t.slug}`;
         link.textContent = "View Bracket";
         card.appendChild(link);
 
         container.appendChild(card);
+
+        // Related Events Section
+        if (relatedEvents) {
+          const relatedLink = document.createElement("a");
+          relatedLink.href = `brackets.html?slug=${t.slug}`;
+          relatedLink.innerHTML = `<h2>${t.name}</h2>`;
+          relatedEvents.appendChild(relatedLink);
+        }
       });
   }
 
+  // Initial render
   renderList();
 
+  // Event listeners
   gameFilter.addEventListener("change", renderList);
   statusFilter.addEventListener("change", renderList);
 
+  // Optional character filter
   window.setCharacterFilter = (charName) => {
     selectedCharacter = charName;
     renderList();
@@ -336,7 +340,7 @@ async function loadTournamentsLanding() {
 }
 
 // --------------------------
-// Init
+// Initialize everything on DOM ready
 // --------------------------
 document.addEventListener("DOMContentLoaded", () => {
   loadNav();
