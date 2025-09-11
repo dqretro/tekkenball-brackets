@@ -117,6 +117,29 @@ section {
   padding: 18px 18px 12px;
 }
 
+.show-more-section {
+  margin: 16px auto;
+  width: min(1100px, 92vw);
+  text-align: center;
+}
+
+.show-more-section button {
+  padding: 12px 20px;
+  width: 100%; /* stretches across same width as sections */
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--accent, #007bff);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.show-more-section button:hover {
+  background: var(--accent-hover, #0056b3);
+}
+
+
 .summary p {
   margin: 8px 0 0;
   color: var(--muted);

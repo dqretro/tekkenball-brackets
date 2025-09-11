@@ -8,34 +8,40 @@
 </head>
 <body class="dark">
 
-  <!-- Navigation -->
-  <div id="nav-placeholder"></div>
+<!-- Navigation -->
+<nav>
+  <!-- Main Logo -->
+  <a href="../index.html" class="nav-logo">
+    <img src="../images/dqretro/logos/DQ Retro Logo Purpley blue.png" alt="DQRetro Logo" height="50">
+  </a>
 
-  <div class="container">
-    <h1>Tekken Ball Tournaments</h1>
+  <!-- Tournament Logo -->
+  <a href="../pages/tournaments.html" class="nav-logo">
+    <img src="../images/dqretro/logos/tournament_logo.png" alt="Tournament Logo" height="50">
+  </a>
+</nav>
 
-    <!-- Filters -->
-    <div class="filter-container">
-      <select id="gameFilter">
-        <option value="all">All Games</option>
-      </select>
-      <select id="statusFilter">
-        <option value="all">All Events</option>
-        <option value="ongoing">Ongoing</option>
-        <option value="completed">Completed</option>
-      </select>
-    </div>
+<div class="container">
+  <h1>Tekken Ball Tournaments</h1>
 
-    <!-- Tournament List -->
-    <div id="tournamentList" class="tournament-grid">
-      <!-- Populated via script.js -->
-    </div>
+  <!-- Filters -->
+  <div class="filter-container">
+    <select id="gameFilter"></select>
+    <select id="statusFilter">
+      <option value="all">All Events</option>
+      <option value="ongoing">Ongoing</option>
+      <option value="completed">Completed</option>
+    </select>
   </div>
 
-  <script src="../script.js"></script>
-  <script>
-    loadNav();
-    loadTournamentsLanding(); // this function will live inside your unified script.js
-  </script>
+  <!-- Tournament List -->
+  <div id="tournamentList" class="tournament-grid">
+    <!-- Populated via script.js -->
+  </div>
+</div>
+
+<!-- Load JS -->
+<script src="../script.js"></script>
+
 </body>
 </html>
