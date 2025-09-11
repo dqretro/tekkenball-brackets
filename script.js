@@ -11,7 +11,7 @@ const BASE = window.location.hostname === "dqretro.github.io" ? "/tekkenball-bra
 function withBase(path) {
   if (!path) return path;
   if (/^https?:\/\//i.test(path)) return path; // external links untouched
-  return `${BASE}${path.startsWith("/") ? path : `/${path}`}`;
+  return `${BASE}${path.startsWith("/") ? path.slice(1) : path}`;
 }
 
 // Remove trailing slash for neat comparisons
@@ -23,7 +23,7 @@ function trimTrailingSlash(p) {
 // Load Navigation
 // --------------------------
 function loadNav() {
-  fetch(withBase("/shared/layout/header/nav/nav.html"))
+  fetch(withBase("shared/layout/header/nav/nav.html"))
     .then(res => {
       if (!res.ok) throw new Error(`Failed to fetch nav: ${res.status}`);
       return res.text();
@@ -56,7 +56,7 @@ function loadNav() {
 // Load Footer
 // --------------------------
 function loadFooter() {
-  fetch(withBase("/shared/layout/footer/footer.html"))
+  fetch(withBase("shared/layout/footer/footer.html"))
     .then(res => (res.ok ? res.text() : ""))
     .then(html => {
       const footer = document.getElementById("footer-placeholder");
@@ -70,7 +70,7 @@ function loadFooter() {
 // --------------------------
 async function fetchTournament(slug) {
   try {
-    const res = await fetch(withBase(`/api/tournament?slug=${encodeURIComponent(slug)}`));
+    const res = await fetch(withBase(`api/tournament?slug=${encodeURIComponent(slug)}`));
     const data = await res.json();
     return data.data?.tournament || null;
   } catch (err) {
@@ -81,7 +81,7 @@ async function fetchTournament(slug) {
 
 async function fetchAllTournaments() {
   try {
-    const res = await fetch(withBase("/api/tournaments"));
+    const res = await fetch(withBase("api/tournaments"));
     const data = await res.json();
     return data.data?.tournaments || [];
   } catch (err) {
@@ -127,7 +127,7 @@ function createPlayerDiv(p) {
 
   if (p.character) {
     const img = document.createElement("img");
-    img.src = withBase(`/images/characters/characters_select/Select_${p.character}.png`);
+    img.src = withBase(`images/characters/characters_select/Select_${p.character}.png`);
     img.alt = p.character;
     img.width = 40;
     img.height = 40;
@@ -256,7 +256,7 @@ async function renderStats(containerId = "stats-container", slug) {
     div.className = "stat-card";
 
     const img = document.createElement("img");
-    img.src = withBase(`/images/characters/characters_select/Select_${char}.png`);
+    img.src = withBase(`images/characters/characters_select/Select_${char}.png`);
     img.alt = char;
     img.width = 60;
     img.height = 60;
@@ -283,11 +283,11 @@ async function loadTournamentsLanding() {
 
   let tournaments = await fetchAllTournaments();
 
-  // Manual fallback
+  // Manual fallback tournaments
   tournaments.push(
-    { name: "VSFighting XIII", game: "Tekken 8", status: "completed", startAt: "2025-08-16", slug: "vsfighting-xiii", logoUrl: "../images/games/boxart/boxart_Tekken8.png" },
-    { name: "VSFighting XI", game: "Tekken 3", status: "completed", startAt: "2023-08-19", slug: "vsfighting-xi", logoUrl: "../images/games/boxart/boxart_Tekken3.png" },
-    { name: "example", game: "Tekken Tag Tournament 2", status: "ongoing", startAt: "2025-01-01", slug: "example", logoUrl: "../images/games/boxart/boxart_TekkenTag2.png" }
+    { name: "VSFighting XIII", game: "Tekken 8", status: "completed", startAt: "2025-08-16", slug: "vsfighting-xiii", logoUrl: "images/games/boxart/boxart_Tekken8.png" },
+    { name: "VSFighting XI", game: "Tekken 3", status: "completed", startAt: "2023-08-19", slug: "vsfighting-xi", logoUrl: "images/games/boxart/boxart_Tekken3.png" },
+    { name: "Example", game: "Tekken Tag Tournament 2", status: "ongoing", startAt: "2025-01-01", slug: "example", logoUrl: "images/games/boxart/boxart_TekkenTag2.png" }
   );
 
   // Populate filters
@@ -331,7 +331,7 @@ async function loadTournamentsLanding() {
 
         const thumbnail = document.createElement("img");
         thumbnail.className = "tournament-thumbnail";
-        thumbnail.src = t.logoUrl || withBase(`/images/games/${String(t.game).replace(/\s/g, "")}.png`);
+        thumbnail.src = withBase(t.logoUrl || `images/games/${String(t.game).replace(/\s/g, "")}.png`);
         thumbnail.alt = t.game || "Game";
         card.appendChild(thumbnail);
 
@@ -355,7 +355,7 @@ async function loadTournamentsLanding() {
         card.appendChild(game);
 
         const link = document.createElement("a");
-        link.href = withBase(`/pages/events.html?slug=${encodeURIComponent(t.slug)}`);
+        link.href = withBase(`pages/events.html?slug=${encodeURIComponent(t.slug)}`);
         link.textContent = "View Events";
         card.appendChild(link);
 
@@ -363,7 +363,7 @@ async function loadTournamentsLanding() {
 
         if (relatedEvents) {
           const relatedLink = document.createElement("a");
-          relatedLink.href = withBase(`/pages/brackets.html?slug=${encodeURIComponent(t.slug)}`);
+          relatedLink.href = withBase(`pages/brackets.html?slug=${encodeURIComponent(t.slug)}`);
           relatedLink.innerHTML = `<h2>${t.name}</h2>`;
           relatedEvents.appendChild(relatedLink);
         }
