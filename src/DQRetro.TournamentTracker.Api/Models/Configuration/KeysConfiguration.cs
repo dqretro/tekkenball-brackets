@@ -14,4 +14,9 @@ public sealed class KeysConfiguration
     /// The APIKey used when calling StartGG's GraphQL API.
     /// </summary>
     public string StartGgApiKey { get; set; }
+    
+    /// <summary>
+    /// The SQL Server Connection String.
+    /// </summary>
+    public string SqlConnectionString { get; set; }
 }
