@@ -2,208 +2,111 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Tekken Ball Tournament Tracker</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #1b1b1b;
-      color: #f5f5f5;
-      padding: 20px;
-    }
-    h1 { text-align: center; }
-    .tournament-list, .bracket-editor {
-      margin: 20px auto;
-      max-width: 1000px;
-      background: #2a2a2a;
-      padding: 20px;
-      border-radius: 12px;
-    }
-    input, button D{
-      padding: 6px;
-      margin: 4px;
-      border-radius: 6px;
-      border: none;
-    }
-    button { cursor: pointer; background: #4caf50; color: white; }
-    button.delete { background: #e53935; }
-    .bracket-wrapper { display: flex; flex-direction: column; gap: 40px; }
-    .bracket { display: flex; justify-content: flex-start; align-items: flex-start; overflow-x: auto; padding: 20px 0; }
-    .round { display: flex; flex-direction: column; align-items: center; margin: 0 20px; }
-    .round-title { text-align: center; margin-bottom: 10px; font-weight: bold; }
-    .match { background: #3b3b3b; padding: 10px; border-radius: 8px; margin: 20px 0; position: relative; width: 180px; }
-    .match input { display: block; width: 100%; margin: 2px 0; background: #555; color: white; }
-    h3 { text-align: center; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DQRetro | Home</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <h1>Tekken Ball Tournament Tracker</h1>
+<body class="dark">
 
-  <div class="tournament-list">
-    <h2>Add Tournament</h2>
-    <input type="text" id="tournamentName" placeholder="Tournament Name">
-    <button id="addTournamentBtn">Add</button>
 
-    <h2>All Tournaments</h2>
-    <ul id="tournaments"></ul>
-  </div>
 
-  <div class="bracket-editor" id="bracketEditor" style="display:none;">
-    <h2 id="editorTitle"></h2>
-    <div class="bracket-wrapper">
-      <div>
-        <h3>Winners Bracket</h3>
-        <div class="bracket" id="winnersBracket"></div>
-      </div>
-      <div>
-        <h3>Losers Bracket</h3>
-        <div class="bracket" id="losersBracket"></div>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container" style="text-align:center; padding:60px 20px;">
+      <img src="images/dqretro/logos/DQ Retro Logo Purpley blue.png" alt="DQRetro Logo" height="120">
+      <h1 style="margin-top:20px;">Welcome to DQRetro</h1>
+      <p style="font-size:1.2rem; color: var(--muted); max-width:600px; margin:10px auto;">
+        The ultimate hub for Tekken Ball Tournaments, player stats and real-time brackets fetched directly from Start.GG
+      </p>
+      <div style="margin-top:20px;">
+        <a href="pages/tournaments.html" class="button primary">View Tournaments</a>
+        <a href="pages/standings.html" class="button">Player Standings</a>
       </div>
     </div>
-    <button id="saveBracketBtn">Save Bracket</button>
-  </div>
+  </section>
 
+  <!-- About / Info Section -->
+  <section>
+    <div class="container">
+      <h2>About DQRetro</h2>
+      <p>
+        DQRetro is your go-to platform for tracking Tekken Ball Tournaments around the world. 
+        We provide live brackets, detailed player stats, character usage and historical tournament data.
+		Whether you're a casual player or a competitive pro, stay updated with the latest tournaments and leaderboards.
+      </p>
+    </div>
+  </section>
+
+  <!-- Top Players & Most Used Characters -->
+  <section>
+    <div class="container overview-grid">
+      <!-- Top Players Table -->
+      <div class="overview-column">
+        <h2>Top Players</h2>
+        <div class="standings-table">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Player</th>
+                <th>Wins</th>
+                <th>Losses</th>
+                <th>Set Win %</th>
+              </tr>
+            </thead>
+            <tbody id="topPlayersBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Most Used Characters -->
+      <div class="overview-column">
+        <h2>Most Used Characters</h2>
+        <div id="mostUsedChars" style="display:flex; flex-wrap:wrap; gap:12px;">
+          <!-- Clickable character cards dynamically rendered -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Upcoming / Recent Tournaments -->
+  <section>
+    <div class="container">
+      <h2>Recent & Ongoing Tournaments</h2>
+      <div class="filter-container">
+        <select id="gameFilter">
+          <option value="all">All Games</option>
+        </select>
+        <select id="statusFilter">
+          <option value="all">All Statuses</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+      <div id="tournamentList" class="tournament-grid">
+        <!-- Tournament cards rendered dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
+
+  <script src="script.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      let tournaments = JSON.parse(localStorage.getItem('tournaments') || '[]');
-      let editingIndex = null;
-      let viewingIndex = null;
+    // Load shared nav and footer
+    loadNav();
+    loadFooter();
 
-      const tournamentNameInput = document.getElementById('tournamentName');
-      const addTournamentBtn = document.getElementById('addTournamentBtn');
+    // Load tournaments dynamically on homepage
+    if(document.getElementById("tournamentList")){
+      loadTournamentsLanding(); // /api/tournaments
+    }
 
-      addTournamentBtn.addEventListener('click', function() {
-        const name = tournamentNameInput.value.trim();
-        if (!name) return;
-
-        const newTournament = {
-          name: name,
-          winners: [{ title: 'Winners Round 1', matches: [{ p1:'Player 1', p2:'Player 2', s1:'', s2:'' }] }],
-          losers: [{ title: 'Losers Round 1', matches: [{ p1:'Player 1', p2:'Player 2', s1:'', s2:'' }] }]
-        };
-
-        tournaments.push(newTournament);
-        localStorage.setItem('tournaments', JSON.stringify(tournaments));
-        tournamentNameInput.value = '';
-        renderTournaments();
-      });
-
-      function renderTournaments() {
-        const list = document.getElementById('tournaments');
-        list.innerHTML = '';
-        tournaments.forEach((t, i) => {
-          const li = document.createElement('li');
-          li.textContent = t.name;
-
-          const editBtn = document.createElement('button');
-          editBtn.textContent = 'Edit Bracket';
-          editBtn.addEventListener('click', () => editTournament(i));
-
-          const viewBtn = document.createElement('button');
-          viewBtn.textContent = 'View Bracket';
-          viewBtn.addEventListener('click', () => viewTournament(i));
-
-          const delBtn = document.createElement('button');
-          delBtn.textContent = 'Delete';
-          delBtn.className = 'delete';
-          delBtn.addEventListener('click', () => deleteTournament(i));
-
-          li.appendChild(editBtn);
-          li.appendChild(viewBtn);
-          li.appendChild(delBtn);
-          list.appendChild(li);
-        });
-      }
-
-      function deleteTournament(i) {
-        tournaments.splice(i, 1);
-        localStorage.setItem('tournaments', JSON.stringify(tournaments));
-        renderTournaments();
-        document.getElementById('bracketEditor').style.display = 'none';
-      }
-
-      function editTournament(i) {
-        editingIndex = i;
-        viewingIndex = null;
-        document.getElementById('editorTitle').textContent = tournaments[i].name;
-        document.getElementById('bracketEditor').style.display = 'block';
-        renderBrackets(true);
-      }
-
-      function viewTournament(i) {
-        viewingIndex = i;
-        editingIndex = null;
-        document.getElementById('editorTitle').textContent = tournaments[i].name;
-        document.getElementById('bracketEditor').style.display = 'block';
-        renderBrackets(false);
-      }
-
-      function renderBrackets(isEditable=true) {
-        renderBracket('winners', 'winnersBracket', isEditable);
-        renderBracket('losers', 'losersBracket', isEditable);
-      }
-
-      function renderBracket(type, elementId, isEditable) {
-        const bracketDiv = document.getElementById(elementId);
-        if (!bracketDiv) return;
-        bracketDiv.innerHTML = '';
-        const index = editingIndex !== null ? editingIndex : viewingIndex;
-        if (index === null || !tournaments[index]) return;
-        const rounds = tournaments[index][type] || [];
-
-        rounds.forEach((round, roundIdx) => {
-          const roundDiv = document.createElement('div');
-          roundDiv.className = 'round';
-
-          const titleInput = document.createElement('input');
-          titleInput.type = 'text';
-          titleInput.placeholder = 'Round Title';
-          titleInput.value = round.title || '';
-          titleInput.readOnly = !isEditable;
-          if(isEditable) titleInput.addEventListener('input', e => round.title = e.target.value);
-          titleInput.className = 'round-title';
-          roundDiv.appendChild(titleInput);
-
-          round.matches = round.matches || [];
-          round.matches.forEach((m) => {
-            const matchDiv = document.createElement('div');
-            matchDiv.className = 'match';
-            ['p1','s1','p2','s2'].forEach(key => {
-              const inp = document.createElement('input');
-              inp.type = 'text';
-              inp.value = m[key] || '';
-              inp.placeholder = key.includes('p') ? 'Player' : 'Score';
-              inp.readOnly = !isEditable;
-              if(isEditable) inp.addEventListener('input', e => m[key] = e.target.value);
-              matchDiv.appendChild(inp);
-            });
-            roundDiv.appendChild(matchDiv);
-          });
-
-          if(isEditable){
-            const addMatchBtn = document.createElement('button');
-            addMatchBtn.textContent = 'Add Match';
-            addMatchBtn.addEventListener('click', () => { round.matches.push({p1:'Player 1', p2:'Player 2', s1:'0', s2:'0'}); renderBrackets(true); });
-            roundDiv.appendChild(addMatchBtn);
-
-            const delRoundBtn = document.createElement('button');
-            delRoundBtn.textContent = 'Delete Round';
-            delRoundBtn.addEventListener('click', () => { tournaments[index][type].splice(roundIdx,1); renderBrackets(true); });
-            roundDiv.appendChild(delRoundBtn);
-          }
-
-          bracketDiv.appendChild(roundDiv);
-        });
-
-        if(isEditable){
-          const addRoundBtn = document.createElement('button');
-          addRoundBtn.textContent = 'Add Round';
-          addRoundBtn.addEventListener('click', () => { tournaments[index][type].push({title:'New Round', matches:[{p1:'Player 1', p2:'Player 2', s1:'0', s2:'0'}]}); renderBrackets(true); });
-          bracketDiv.appendChild(addRoundBtn);
-        }
-      }
-
-      renderTournaments();
-    });
+    // Load Top Players and Most Used Characters
+    loadHomepageStats();
   </script>
 </body>
 </html>
