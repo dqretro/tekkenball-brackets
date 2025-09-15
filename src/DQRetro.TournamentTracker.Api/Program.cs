@@ -4,8 +4,16 @@ using DQRetro.TournamentTracker.Api.Models.Configuration;
 
 namespace DQRetro.TournamentTracker.Api;
 
+/// <summary>
+/// Class for application's entrypoint.
+/// </summary>
 public class Program
 {
+    /// <summary>
+    /// Method for the application's entrypoint.
+    /// Handles DI and Running the API.
+    /// </summary>
+    /// <param name="args">CLI args passed into the executable/dotnet CLI.</param>
     public static async Task Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);

@@ -85,7 +85,7 @@ public static class ServiceCollectionExtensions
         {
             options.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "My API",
+                Title = "DQRetro Tournament Tracker API",
                 Version = "v1"
             });
             
