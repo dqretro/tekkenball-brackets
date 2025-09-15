@@ -30,9 +30,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Change Directory to Site
-        run: cd ./src/DQRetro.TournamentTracker.Ui;
+        uses: actions/checkout@v5
+      - name: Move Files
+        run: mkdir ./docs; mv ./src/DQRetro.TournamentTracker.Ui/* ./docs;
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: 'Test1'
@@ -40,7 +40,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "."
+          path: "./docs"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
