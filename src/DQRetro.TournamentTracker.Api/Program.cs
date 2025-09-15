@@ -38,7 +38,7 @@ public class Program
 
         app.UseForwardedHeaders();
         app.UseCors();
-        app.UseHttpsRedirection();
+        // app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
