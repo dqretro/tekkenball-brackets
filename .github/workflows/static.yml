@@ -33,10 +33,12 @@ jobs:
         uses: actions/checkout@v5
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: 'Test1'
+        run: ls -la ./src; ls -la ./src/DQRetro.TournamentTracker.Ui;
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./src/DQRetro.TournamentTracker.Ui/*"
+          path: "./src/DQRetro.TournamentTracker.Ui"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
