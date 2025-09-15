@@ -352,3 +352,4 @@ MigrationBackup/
 .idea
 .DS_Store
 appsettings.Secrets.json
+src/DQRetro.TournamentTracker.Api/appsettings.Secrets.json
