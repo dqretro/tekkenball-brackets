@@ -1,0 +1,42 @@
+name: Build & Publish API
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build & Publish API
+    runs-on: "ubuntu-latest"
+    
+    env:
+      API_CSPROJ_PATH: src/DQRetro.TournamentTracker.Api/DQRetro.TournamentTracker.Api.csproj
+      API_OUTPUT_FOLDER: ./DQRetro.TournamentTracker.Api
+      DOTNET_CONFIGURATION: Release
+    
+    steps:
+      - name: "Src: Checkout"
+        uses: actions/checkout@v5
+      
+      - name: ".NET: Install SDK"
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "9.0.x"
+      
+      - name: ".NET: Restore"
+        run: dotnet restore $API_CSPROJ_PATH
+      
+      - name: ".NET: Build"
+        run: dotnet build $API_CSPROJ_PATH --configuration $DOTNET_CONFIGURATION --no-restore
+      
+      - name: ".NET Publish"
+        run: dotnet publish $API_CSPROJ_PATH --configuration $DOTNET_CONFIGURATION --no-restore --no-build --output $API_OUTPUT_FOLDER
+
+      - name: "Publish: API Artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: DQRetro.TournamentTracker.Api
+          path: $API_OUTPUT_FOLDER
+          compression-level: 9 # Refers to ZLib compression levels (between 0(none) and 9(heavily compressed))
+          if-no-files-found: error
