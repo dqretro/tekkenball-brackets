@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DQRetro.TournamentTracker.Api.Controllers;
 
+/// <summary>
+/// API Controller for handling Health-related resources.
+/// </summary>
 [ApiController]
 [Route("[controller]")]
 [Authorize(Roles = "Health")] // TODO: "Health" role doesn't currently exist. Just scaffolding the API at this stage.
