@@ -21,7 +21,7 @@ function trimTrailingSlash(p) {
 // Load Navigation
 // --------------------------
 function loadNav() {
-  fetch(withBase("../shared/layout/header/nav/nav.html"))
+  fetch(withBase("/shared/layout/header/nav/nav.html"))
     .then(res => {
       if (!res.ok) throw new Error(`Failed to fetch nav: ${res.status}`);
       return res.text();
@@ -54,7 +54,7 @@ function loadNav() {
 // Load Footer
 // --------------------------
 function loadFooter() {
-  fetch(withBase("../shared/layout/footer/footer.html"))
+  fetch(withBase("/shared/layout/footer/footer.html"))
     .then(res => (res.ok ? res.text() : ""))
     .then(html => {
       const footer = document.getElementById("footer-placeholder");
@@ -142,7 +142,7 @@ function createPlayerDiv(p) {
 
   if (p.character) {
     const img = document.createElement("img");
-    img.src = withBase(`../images/characters/characters_select/Select_${p.character}.png`);
+    img.src = withBase(`/images/characters/characters_select/Select_${p.character}.png`);
     img.alt = p.character;
     img.width = 40;
     img.height = 40;
@@ -273,7 +273,7 @@ async function renderStats(containerId = "stats-container", slug) {
     if(count === maxCount) div.classList.add("top-pick");
 
     const img = document.createElement("img");
-    img.src = withBase(`../images/characters/characters_select/Select_${char}.png`);
+    img.src = withBase(`/images/characters/characters_select/Select_${char}.png`);
     img.alt = char;
     img.width = 60;
     img.height = 60;
@@ -342,9 +342,9 @@ async function loadTournamentsLanding() {
 
   // Optional fallback
   tournaments.push(
-    { name: "VSFighting XIII", game: "Tekken 8", status: "completed", startAt: "2025-08-16", slug: "vsfighting-xiii", logoUrl: "../images/games/boxart/boxart_Tekken8.png" },
-    { name: "VSFighting XI", game: "Tekken 3", status: "completed", startAt: "2023-08-19", slug: "vsfighting-xi", logoUrl: "../images/games/boxart/boxart_Tekken3.png" },
-    { name: "Example", game: "Tekken Tag Tournament 2", status: "ongoing", startAt: "2025-01-01", slug: "example", logoUrl: "../images/games/boxart/boxart_TekkenTag2.png" }
+    { name: "VSFighting XIII", game: "Tekken 8", status: "completed", startAt: "2025-08-16", slug: "vsfighting-xiii", logoUrl: "/images/games/boxart/boxart_Tekken8.png" },
+    { name: "VSFighting XI", game: "Tekken 3", status: "completed", startAt: "2023-08-19", slug: "vsfighting-xi", logoUrl: "/images/games/boxart/boxart_Tekken3.png" },
+    { name: "Example", game: "Tekken Tag Tournament 2", status: "ongoing", startAt: "2025-01-01", slug: "example", logoUrl: "/images/games/boxart/boxart_TekkenTag2.png" }
   );
 
   // Populate filters
@@ -387,7 +387,7 @@ async function loadTournamentsLanding() {
 
         const thumbnail = document.createElement("img");
         thumbnail.className = "tournament-thumbnail";
-        thumbnail.src = withBase(t.logoUrl || `../images/games/${String(t.game).replace(/\s/g, "")}.png`);
+        thumbnail.src = withBase(t.logoUrl || `/images/games/${String(t.game).replace(/\s/g, "")}.png`);
         thumbnail.alt = t.game || "Game";
         card.appendChild(thumbnail);
 
@@ -411,7 +411,7 @@ async function loadTournamentsLanding() {
         card.appendChild(game);
 
         const link = document.createElement("a");
-        link.href = withBase(`../pages/events.html?slug=${encodeURIComponent(t.slug)}`);
+        link.href = withBase(`/pages/events.html?slug=${encodeURIComponent(t.slug)}`);
         link.textContent = "View Events";
         link.className = "button primary";
         card.appendChild(link);
