@@ -563,3 +563,35 @@ hr {
   background-color: #444;
 }
 
+
+footer {
+  background-color: #111; /* dark footer */
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
+
+footer .footer-logo img {
+  display: block;
+  margin: 0 auto 10px;
+}
+
+footer p {
+  margin: 5px 0 15px;
+  font-size: 14px;
+}
+
+footer .social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+footer .social-icons a img {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+footer .social-icons a img:hover {
+  transform: scale(1.2);
+  opacity: 0.8;
+}
