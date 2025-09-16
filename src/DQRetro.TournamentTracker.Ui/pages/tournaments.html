@@ -40,8 +40,22 @@
   </div>
 </div>
 
+<!-- Footer -->
+<div id="footer-placeholder"></div>
+
 <!-- Load JS -->
 <script src="../script.js"></script>
+
+  <script>
+    // Load shared nav and footer
+    loadNav();
+    loadFooter();
+
+    // Load tournaments dynamically on homepage
+    if(document.getElementById("tournamentList")){
+      loadTournamentsLanding(); // /api/tournaments
+    }
+  </script>
 
 </body>
 </html>
