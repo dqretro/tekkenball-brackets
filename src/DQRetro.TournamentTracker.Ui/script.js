@@ -10,7 +10,7 @@ const BASE = window.location.hostname === "dqretro.github.io" ? "/tekkenball-bra
 function withBase(path) {
   if (!path) return path;
   if (/^https?:\/\//i.test(path)) return path; // external links untouched
-  return `${BASE}${path.startsWith("/") ? path.slice(1) : path}`;
+  return `${BASE}${path.startsWith("/") ? path : "/" + path}`;
 }
 
 function trimTrailingSlash(p) {
@@ -85,7 +85,7 @@ function loadFooter() {
 // --------------------------
 async function fetchTournament(slug) {
   try {
-    const res = await fetch(withBase(`api/tournament?slug=${encodeURIComponent(slug)}`));
+    const res = await fetch(withBase(`/api/tournament?slug=${encodeURIComponent(slug)}`));
     const data = await res.json();
     return data.data?.tournament || null;
   } catch (err) {
@@ -96,7 +96,7 @@ async function fetchTournament(slug) {
 
 async function fetchAllTournaments() {
   try {
-    const res = await fetch(withBase("api/tournaments"));
+    const res = await fetch(withBase("/api/tournaments"));
     const data = await res.json();
     return data.data?.tournaments || [];
   } catch (err) {
@@ -265,7 +265,7 @@ async function renderStats(containerId = "stats-container", slug) {
   const totalPlayers = (event.entrants?.nodes || []).length || 1;
   const sortedStats = Object.entries(stats).sort((a, b) => b[1] - a[1]);
 
-  const maxCount = sortedStats[0]?.[1] || 1; // for highlighting top pick
+  const maxCount = sortedStats[0]?.[1] || 1;
   sortedStats.forEach(([char, count]) => {
     const percent = ((count / totalPlayers) * 100).toFixed(1);
     const div = document.createElement("div");
@@ -282,7 +282,6 @@ async function renderStats(containerId = "stats-container", slug) {
     label.className = "stat-label";
     label.textContent = `${char}: ${count} (${percent}%)`;
 
-    // Optional progress bar
     const bar = document.createElement("div");
     bar.className = "stat-bar";
     bar.style.width = `${percent}%`;
@@ -316,13 +315,9 @@ async function loadEventStats(slug) {
     if (el) el.textContent = text;
   });
 
-  // Character Usage
   if (document.getElementById("stats-container")) renderStats("stats-container", slug);
-
-  // Top Players Table
   if (document.getElementById("standings-body")) loadStandings(null, slug);
 
-  // Bracket Summary
   if (document.getElementById("bracket-summary")) {
     const rounds = transformSetsToRounds(event.sets);
     renderBracket(rounds, document.getElementById("bracket-summary"));
@@ -448,18 +443,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // --------------------------
-// Render Event Stats (Character usage + pie chart)
-// --------------------------
-async function renderEventStats(slug) {
-  loadNav();
-  loadFooter();
-
-  await renderStats("stats-container", slug);
-  await renderPieChart(slug);
-}
-
-// --------------------------
-// Render Pie Chart
+// Render Pie Chart (Character Usage)
 // --------------------------
 async function renderPieChart(slug) {
   const container = document.getElementById("pie-container");
@@ -501,28 +485,12 @@ async function renderPieChart(slug) {
     circle.setAttribute("stroke", colors[idx % colors.length]);
     circle.setAttribute("stroke-width","32");
     circle.setAttribute("stroke-dasharray", `${slice} ${100-slice}`);
-    circle.setAttribute("stroke-dashoffset", 100-start);
+    circle.setAttribute("stroke-dashoffset", -start);
+    circle.style.transform="rotate(-90deg)";
+    circle.style.transformOrigin="50% 50%";
+
     svg.appendChild(circle);
   });
 
   container.appendChild(svg);
-
-  // Optional legend
-  Object.entries(stats).forEach(([char, count], idx) => {
-    const percent = ((count/total)*100).toFixed(1);
-    const div = document.createElement("div");
-    div.style.display="flex";
-    div.style.alignItems="center";
-    div.style.marginTop="5px";
-
-    const colorBox = document.createElement("div");
-    colorBox.style.width="12px";
-    colorBox.style.height="12px";
-    colorBox.style.backgroundColor = colors[idx % colors.length];
-    colorBox.style.marginRight="6px";
-
-    div.appendChild(colorBox);
-    div.appendChild(document.createTextNode(`${char}: ${percent}%`));
-    container.appendChild(div);
-  });
 }
