@@ -7,14 +7,12 @@
 // ---------------------------------------
 const BASE = window.location.hostname === "dqretro.github.io" ? "/tekkenball-brackets" : "";
 
-// Prefix any internal path with BASE
 function withBase(path) {
   if (!path) return path;
   if (/^https?:\/\//i.test(path)) return path; // external links untouched
-  return `${BASE}${path.startsWith("/") ? path.slice(1) : path}`;
+  return `${BASE}${path.startsWith("/") ? path : "/" + path}`;
 }
 
-// Remove trailing slash for neat comparisons
 function trimTrailingSlash(p) {
   return p ? p.replace(/\/$/, "") : "";
 }
@@ -23,7 +21,7 @@ function trimTrailingSlash(p) {
 // Load Navigation
 // --------------------------
 function loadNav() {
-  fetch(withBase("shared/layout/header/nav/nav.html"))
+  fetch(withBase("/shared/layout/header/nav/nav.html"))
     .then(res => {
       if (!res.ok) throw new Error(`Failed to fetch nav: ${res.status}`);
       return res.text();
@@ -56,21 +54,38 @@ function loadNav() {
 // Load Footer
 // --------------------------
 function loadFooter() {
-  fetch(withBase("shared/layout/footer/footer.html"))
+  fetch(withBase("/shared/layout/footer/footer.html"))
     .then(res => (res.ok ? res.text() : ""))
     .then(html => {
       const footer = document.getElementById("footer-placeholder");
-      if (footer && html) footer.innerHTML = html;
+      if (!footer || !html) return;
+
+      footer.innerHTML = html;
+
+      // Fix relative links
+      footer.querySelectorAll("a[href]").forEach(a => {
+        const href = a.getAttribute("href");
+        if (href && !href.startsWith("http") && !href.startsWith("#")) {
+          a.setAttribute("href", withBase(href));
+        }
+      });
+
+      footer.querySelectorAll("img[src]").forEach(img => {
+        const src = img.getAttribute("src");
+        if (src && !src.startsWith("http") && !src.startsWith("data:")) {
+          img.setAttribute("src", withBase(src));
+        }
+      });
     })
     .catch(err => console.warn("Footer not loaded:", err));
 }
 
 // --------------------------
-// Fetch Tournaments
+// Fetch Tournament(s)
 // --------------------------
 async function fetchTournament(slug) {
   try {
-    const res = await fetch(withBase(`api/tournament?slug=${encodeURIComponent(slug)}`));
+    const res = await fetch(withBase(`/api/tournament?slug=${encodeURIComponent(slug)}`));
     const data = await res.json();
     return data.data?.tournament || null;
   } catch (err) {
@@ -81,7 +96,7 @@ async function fetchTournament(slug) {
 
 async function fetchAllTournaments() {
   try {
-    const res = await fetch(withBase("api/tournaments"));
+    const res = await fetch(withBase("/api/tournaments"));
     const data = await res.json();
     return data.data?.tournaments || [];
   } catch (err) {
@@ -127,7 +142,7 @@ function createPlayerDiv(p) {
 
   if (p.character) {
     const img = document.createElement("img");
-    img.src = withBase(`images/characters/characters_select/Select_${p.character}.png`);
+    img.src = withBase(`/images/characters/characters_select/Select_${p.character}.png`);
     img.alt = p.character;
     img.width = 40;
     img.height = 40;
@@ -220,13 +235,13 @@ async function loadStandings(limit = null, slug) {
   tbody.innerHTML = "";
   standings.forEach((p, i) => {
     const row = document.createElement("tr");
-    row.innerHTML = `<td>${i + 1}</td><td>${p.name}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.score}</td><td>${p.lostTo}</td>`;
+    row.innerHTML = `<td>${i+1}</td><td>${p.name}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.score}</td><td>${p.character}</td>`;
     tbody.appendChild(row);
   });
 }
 
 // --------------------------
-// Render Stats
+// Render Stats (Character Usage)
 // --------------------------
 async function renderStats(containerId = "stats-container", slug) {
   const container = document.getElementById(containerId);
@@ -250,13 +265,15 @@ async function renderStats(containerId = "stats-container", slug) {
   const totalPlayers = (event.entrants?.nodes || []).length || 1;
   const sortedStats = Object.entries(stats).sort((a, b) => b[1] - a[1]);
 
+  const maxCount = sortedStats[0]?.[1] || 1;
   sortedStats.forEach(([char, count]) => {
     const percent = ((count / totalPlayers) * 100).toFixed(1);
     const div = document.createElement("div");
     div.className = "stat-card";
+    if(count === maxCount) div.classList.add("top-pick");
 
     const img = document.createElement("img");
-    img.src = withBase(`images/characters/characters_select/Select_${char}.png`);
+    img.src = withBase(`/images/characters/characters_select/Select_${char}.png`);
     img.alt = char;
     img.width = 60;
     img.height = 60;
@@ -265,10 +282,46 @@ async function renderStats(containerId = "stats-container", slug) {
     label.className = "stat-label";
     label.textContent = `${char}: ${count} (${percent}%)`;
 
+    const bar = document.createElement("div");
+    bar.className = "stat-bar";
+    bar.style.width = `${percent}%`;
+
     div.appendChild(img);
     div.appendChild(label);
+    div.appendChild(bar);
     container.appendChild(div);
   });
+}
+
+// --------------------------
+// Load Event Stats
+// --------------------------
+async function loadEventStats(slug) {
+  const tournament = await fetchTournament(slug);
+  if (!tournament) return;
+  const event = (tournament.events || [])[0];
+  if (!event) return;
+
+  // Event Info
+  const infoMap = {
+    "event-name": tournament.name,
+    "event-date": `Date: ${event.startAt ? new Date(event.startAt).toLocaleDateString() : "TBA"}`,
+    "event-game": `Game: ${tournament.game ?? "Unknown"}`,
+    "event-entrants": `Entrants: ${event.entrants?.nodes?.length ?? 0}`
+  };
+
+  Object.entries(infoMap).forEach(([id, text]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  });
+
+  if (document.getElementById("stats-container")) renderStats("stats-container", slug);
+  if (document.getElementById("standings-body")) loadStandings(null, slug);
+
+  if (document.getElementById("bracket-summary")) {
+    const rounds = transformSetsToRounds(event.sets);
+    renderBracket(rounds, document.getElementById("bracket-summary"));
+  }
 }
 
 // --------------------------
@@ -278,16 +331,15 @@ async function loadTournamentsLanding() {
   const container = document.getElementById("tournamentList");
   const gameFilter = document.getElementById("gameFilter");
   const statusFilter = document.getElementById("statusFilter");
-  const relatedEvents = document.getElementById("relatedEvents");
   if (!container || !gameFilter || !statusFilter) return;
 
   let tournaments = await fetchAllTournaments();
 
-  // Manual fallback tournaments
+  // Optional fallback
   tournaments.push(
-    { name: "VSFighting XIII", game: "Tekken 8", status: "completed", startAt: "2025-08-16", slug: "vsfighting-xiii", logoUrl: "../images/games/boxart/boxart_Tekken8.png" },
-    { name: "VSFighting XI", game: "Tekken 3", status: "completed", startAt: "2023-08-19", slug: "vsfighting-xi", logoUrl: "../images/games/boxart/boxart_Tekken3.png" },
-    { name: "Example", game: "Tekken Tag Tournament 2", status: "ongoing", startAt: "2025-01-01", slug: "example", logoUrl: "../images/games/boxart/boxart_TekkenTag2.png" }
+    { name: "VSFighting XIII", game: "Tekken 8", status: "completed", startAt: "2025-08-16", slug: "vsfighting-xiii", logoUrl: "/images/games/boxart/boxart_Tekken8.png" },
+    { name: "VSFighting XI", game: "Tekken 3", status: "completed", startAt: "2023-08-19", slug: "vsfighting-xi", logoUrl: "/images/games/boxart/boxart_Tekken3.png" },
+    { name: "Example", game: "Tekken Tag Tournament 2", status: "ongoing", startAt: "2025-01-01", slug: "example", logoUrl: "/images/games/boxart/boxart_TekkenTag2.png" }
   );
 
   // Populate filters
@@ -316,7 +368,6 @@ async function loadTournamentsLanding() {
     const selectedStatus = statusFilter.value;
 
     container.innerHTML = "";
-    if (relatedEvents) relatedEvents.innerHTML = "";
 
     tournaments
       .filter(t =>
@@ -331,7 +382,7 @@ async function loadTournamentsLanding() {
 
         const thumbnail = document.createElement("img");
         thumbnail.className = "tournament-thumbnail";
-        thumbnail.src = withBase(t.logoUrl || `images/games/${String(t.game).replace(/\s/g, "")}.png`);
+        thumbnail.src = withBase(t.logoUrl || `/images/games/${String(t.game).replace(/\s/g, "")}.png`);
         thumbnail.alt = t.game || "Game";
         card.appendChild(thumbnail);
 
@@ -355,18 +406,12 @@ async function loadTournamentsLanding() {
         card.appendChild(game);
 
         const link = document.createElement("a");
-        link.href = withBase(`pages/events.html?slug=${encodeURIComponent(t.slug)}`);
+        link.href = withBase(`/pages/events.html?slug=${encodeURIComponent(t.slug)}`);
         link.textContent = "View Events";
+        link.className = "button primary";
         card.appendChild(link);
 
         container.appendChild(card);
-
-        if (relatedEvents) {
-          const relatedLink = document.createElement("a");
-          relatedLink.href = withBase(`pages/brackets.html?slug=${encodeURIComponent(t.slug)}`);
-          relatedLink.innerHTML = `<h2>${t.name}</h2>`;
-          relatedEvents.appendChild(relatedLink);
-        }
       });
   }
 
@@ -384,19 +429,68 @@ document.addEventListener("DOMContentLoaded", () => {
   loadFooter();
 
   const urlParams = new URLSearchParams(window.location.search);
-  const pool = urlParams.get("pool");
-  const topcut = urlParams.get("topcut");
+  const slug = urlParams.get("slug");
 
   if (document.getElementById("tournamentList")) {
-    if (pool && typeof loadPool === "function") loadPool(Number(pool));
-    else if (topcut && typeof loadTopcut === "function") loadTopcut(Number(topcut));
-    else loadTournamentsLanding();
+    loadTournamentsLanding();
   }
 
-  if (document.getElementById("standings-body")) {
-    const limit = document.getElementById("overview-bracket-btn") ? 8 : null;
-    loadStandings(limit);
+  if (document.getElementById("stats-container") || 
+      document.getElementById("standings-body") || 
+      document.getElementById("bracket-summary")) {
+    if (slug) loadEventStats(slug);
   }
-
-  if (document.getElementById("stats-container")) renderStats();
 });
+
+// --------------------------
+// Render Pie Chart (Character Usage)
+// --------------------------
+async function renderPieChart(slug) {
+  const container = document.getElementById("pie-container");
+  if(!container) return;
+  container.innerHTML = "";
+
+  const tournament = await fetchTournament(slug);
+  if(!tournament) return;
+  const event = (tournament.events || [])[0];
+  if(!event) return;
+
+  const stats = (event.entrants?.nodes || []).reduce((acc, e) => {
+    const chars = Array.isArray(e.character) ? e.character : [e.character];
+    chars.forEach(c => { if(c) acc[c] = (acc[c] || 0) + 1; });
+    return acc;
+  }, {});
+
+  const total = Object.values(stats).reduce((a,b)=>a+b,0);
+  if(total === 0) return;
+
+  const colors = ["#4caf50","#2196f3","#ff9800","#9c27b0","#f44336","#00bcd4","#e91e63","#ffc107"];
+  let cumulative = 0;
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNS,"svg");
+  svg.setAttribute("viewBox","0 0 32 32");
+  svg.style.width = "100%";
+  svg.style.height = "100%";
+
+  Object.entries(stats).forEach(([char, count], idx) => {
+    const start = cumulative;
+    const slice = (count / total) * 100;
+    cumulative += slice;
+
+    const circle = document.createElementNS(svgNS,"circle");
+    circle.setAttribute("r","16");
+    circle.setAttribute("cx","16");
+    circle.setAttribute("cy","16");
+    circle.setAttribute("fill","transparent");
+    circle.setAttribute("stroke", colors[idx % colors.length]);
+    circle.setAttribute("stroke-width","32");
+    circle.setAttribute("stroke-dasharray", `${slice} ${100-slice}`);
+    circle.setAttribute("stroke-dashoffset", -start);
+    circle.style.transform="rotate(-90deg)";
+    circle.style.transformOrigin="50% 50%";
+
+    svg.appendChild(circle);
+  });
+
+  container.appendChild(svg);
+}
