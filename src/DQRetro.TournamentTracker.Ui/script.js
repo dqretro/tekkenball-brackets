@@ -273,7 +273,7 @@ async function renderStats(containerId = "stats-container", slug) {
     if(count === maxCount) div.classList.add("top-pick");
 
     const img = document.createElement("img");
-    img.src = withBase(`/images/characters/characters_select/Select_${char}.png`);
+    img.src = withBase(`/images/characters/characters_select/select_${char}.png`);
     img.alt = char;
     img.width = 60;
     img.height = 60;
@@ -337,9 +337,9 @@ async function loadTournamentsLanding() {
 
   // Optional fallback
   tournaments.push(
-    { name: "VSFighting XIII", game: "Tekken 8", status: "completed", startAt: "2025-08-16", slug: "vsfighting-xiii", logoUrl: "/images/games/boxart/boxart_Tekken8.png" },
-    { name: "VSFighting XI", game: "Tekken 3", status: "completed", startAt: "2023-08-19", slug: "vsfighting-xi", logoUrl: "/images/games/boxart/boxart_Tekken3.png" },
-    { name: "Example", game: "Tekken Tag Tournament 2", status: "ongoing", startAt: "2025-01-01", slug: "example", logoUrl: "/images/games/boxart/boxart_TekkenTag2.png" }
+    { name: "VSFighting XIII", game: "Tekken 8", status: "completed", startAt: "2025-08-16", slug: "vsfighting-xiii", logoUrl: "/images/games/boxart/boxart_tekken8.png" },
+    { name: "VSFighting XI", game: "Tekken 3", status: "completed", startAt: "2023-08-19", slug: "vsfighting-xi", logoUrl: "/images/games/boxart/boxart_tekken3.png" },
+    { name: "Example", game: "Tekken Tag Tournament 2", status: "ongoing", startAt: "2025-01-01", slug: "example", logoUrl: "/images/games/boxart/boxart_tekkentag2.png" }
   );
 
   // Populate filters
