@@ -21,6 +21,7 @@ jobs:
       API_CSPROJ_PATH: src/DQRetro.TournamentTracker.Api/DQRetro.TournamentTracker.Api.csproj
       API_OUTPUT_FOLDER: ./DQRetro.TournamentTracker.Api
       DOTNET_CONFIGURATION: Release
+      IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
     
     steps:
       - name: "Src: Checkout"
@@ -41,6 +42,7 @@ jobs:
         run: dotnet publish ${{ env.API_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --output ${{ env.API_OUTPUT_FOLDER }}
 
       - name: "Publish: API Artifact"
+        if: ${{ env.IS_MAIN == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: DQRetro.TournamentTracker.Api
