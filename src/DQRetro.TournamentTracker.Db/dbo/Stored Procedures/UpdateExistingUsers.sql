@@ -25,7 +25,7 @@ BEGIN
       JOIN @UserPlayerTvp upt
         ON up.[UserId] = upt.[UserId]
       LEFT JOIN dbo.SponsorPrefix sp
-        ON upt.[SponsorPrefixName] = sp.[Name]
+        ON upt.[SponsorPrefixName] = sp.[Name];
 END
 
 GO
