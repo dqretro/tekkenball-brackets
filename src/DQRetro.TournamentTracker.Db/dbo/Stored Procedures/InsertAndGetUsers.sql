@@ -25,7 +25,6 @@ BEGIN
         SELECT TOP 1 1
           FROM dbo.UserPlayer up
          WHERE up.[UserId] = upt.[UserId]
-           AND up.[PlayerId] = upt.[PlayerId] -- TODO: THE MAIN ID ON START.GG IS ON USERID, NOT PLAYERID. REMOVE PLAYERID HERE, AND ENSURE IT'S NOT ON ANY OTHER PROCS, OR INDEXES
      );
 	
     -- Return the new user details (in reality, the only new column is 'Id' on the UserPlayer table):
