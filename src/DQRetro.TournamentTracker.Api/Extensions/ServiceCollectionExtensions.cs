@@ -141,13 +141,20 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// Adds the database migrations background service to execute any outstanding migrations.
+    /// Only runs if we are not in development mode.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="isDevelopment"></param>
+    /// <returns></returns>
     public static IServiceCollection AddDatabaseMigrations(this IServiceCollection services, bool isDevelopment)
     {
         if (!isDevelopment)
         {
             services.AddHostedService<DbMigrationBackgroundService>();
         }
-        
+
         return services;
     }
 }
