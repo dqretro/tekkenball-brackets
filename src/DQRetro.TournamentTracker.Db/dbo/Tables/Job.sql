@@ -5,3 +5,25 @@
     CONSTRAINT [PK_Job] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[Job] TO [TournamentTracker]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[Job] TO [TournamentTracker]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[Job] TO [TournamentTracker]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[Job] TO [TournamentTracker]
+    AS [dbo];

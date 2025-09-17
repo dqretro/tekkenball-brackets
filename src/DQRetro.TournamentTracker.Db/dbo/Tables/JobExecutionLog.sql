@@ -7,3 +7,25 @@
     CONSTRAINT [PK_JobExecutionLog] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[JobExecutionLog] TO [TournamentTracker]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[JobExecutionLog] TO [TournamentTracker]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[JobExecutionLog] TO [TournamentTracker]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[JobExecutionLog] TO [TournamentTracker]
+    AS [dbo];
