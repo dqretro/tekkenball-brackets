@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DQRetro.TournamentTracker.Api.Models.Configuration;
+using DQRetro.TournamentTracker.Api.Services.DbMigration;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
 
@@ -36,17 +37,17 @@ public static class ServiceCollectionExtensions
             string reverseProxyIpAddress = configuration.GetRequiredSection("ForwardedHeaderOptions:ReverseProxyIpAddress").Get<string>();
             options.KnownProxies.Clear();
             options.KnownProxies.Add(IPAddress.Parse(reverseProxyIpAddress));
-            
+
             // The same as above can be done for "KnownNetworks" if I ever decide to split this into a separate device handling the reverse proxy.
-            
+
             string allowedHost = configuration.GetRequiredSection("ForwardedHeaderOptions:AllowedHost").Get<string>();
             options.AllowedHosts.Clear();
             options.AllowedHosts.Add(allowedHost);
         });
-        
+
         return services;
     }
-    
+
     /// <summary>
     /// Configures common services used throughout the application. TODO: MORE DESCRIPTIVE DESCRIPTION!
     /// </summary>
@@ -56,16 +57,16 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCommonServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<KeysConfiguration>(configuration.GetRequiredSection(KeysConfiguration.SectionKey));
-        
+
         // Can unit test 'TimeProvider' using Microsoft.Extensions.TimeProvider.Testing package.  Using this to avoid a custom DateTimeProvider abstraction.
         services.AddSingleton(TimeProvider.System);
-        
+
         return services;
     }
-    
+
     /// <summary>
     /// Configures Swagger to run on the specified port, if running on a development environment.
-    /// The API is only designed to be consumable from the UI.  Therefore, Swagger should only be enabled in Dev, not Prod. 
+    /// The API is only designed to be consumable from the UI.  Therefore, Swagger should only be enabled in Dev, not Prod.
     /// </summary>
     /// <param name="services"></param>
     /// <param name="isDevelopment"></param>
@@ -77,7 +78,7 @@ public static class ServiceCollectionExtensions
         {
             return services;
         }
-        
+
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
@@ -86,7 +87,7 @@ public static class ServiceCollectionExtensions
                 Title = "DQRetro Tournament Tracker API",
                 Version = "v1"
             });
-            
+
             options.AddServer(new OpenApiServer
             {
                 Url = $"http://localhost:{port}"
@@ -112,7 +113,7 @@ public static class ServiceCollectionExtensions
             options.AddDefaultPolicy(policyBuilder =>
             {
                 string[] allowedOrigins = configuration.GetRequiredSection("Cors:AllowedOrigins").Get<string[]>();
-                
+
                 policyBuilder.WithOrigins(allowedOrigins)
                              .AllowAnyMethod()
                              .AllowAnyHeader()
@@ -122,7 +123,7 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     /// <summary>
     /// Configures Controllers with custom serialization (snake-case) and ignoring null values (reduce unnecessary bandwidth consumption).
     /// </summary>
@@ -137,6 +138,16 @@ public static class ServiceCollectionExtensions
                     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 });
 
+        return services;
+    }
+
+    public static IServiceCollection AddDatabaseMigrations(this IServiceCollection services, bool isDevelopment)
+    {
+        if (!isDevelopment)
+        {
+            services.AddHostedService<DbMigrationBackgroundService>();
+        }
+        
         return services;
     }
 }

@@ -118,6 +118,7 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
+    <Folder Include="Migrations\" />
     <Folder Include="Properties" />
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
@@ -247,5 +248,9 @@
     <Build Include="dbo\User Defined Types\UserPlayerUpsertTvp.sql" />
     <Build Include="dbo\User Defined Types\ExcludedTournamentEventTvp.sql" />
     <Build Include="Security\Permissions.sql" />
+    <Build Include="Migrations\Script0001 - Initial Table and SP Creation.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
   </ItemGroup>
 </Project>
