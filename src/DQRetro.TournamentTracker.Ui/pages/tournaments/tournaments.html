@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DQRetro Tournaments</title>
+  <link rel="stylesheet" href="../../styles.css">
+</head>
+<body class="dark">
+
+<div id="nav-placeholder"></div>
+
+<div class="container">
+  <h1>Tekken Ball Tournaments</h1>
+
+  <!-- Filters -->
+  <div class="filter-container">
+    <select id="gameFilter"></select>
+    <select id="statusFilter">
+      <option value="all">All Events</option>
+      <option value="ongoing">Ongoing</option>
+      <option value="completed">Completed</option>
+    </select>
+  </div>
+
+  <!-- Tournament List -->
+  <div id="tournamentList" class="tournament-grid">
+    <!-- Populated via script.js -->
+  </div>
+</div>
+
+<!-- Footer -->
+<div id="footer-placeholder"></div>
+
+<!-- Load JS -->
+<script src="../../script.js"></script>
+
+  <script>
+    // Load shared nav and footer
+    loadNav();
+    loadFooter();
+
+    // Load tournaments dynamically on homepage
+    if(document.getElementById("tournamentList")){
+      loadTournamentsLanding(); // /api/tournaments
+    }
+  </script>
+
+</body>
+</html>

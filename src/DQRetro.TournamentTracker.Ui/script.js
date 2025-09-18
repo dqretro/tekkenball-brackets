@@ -18,37 +18,50 @@ function trimTrailingSlash(p) {
 }
 
 // --------------------------
-// Load Navigation
+// Load nav
 // --------------------------
-function loadNav() {
-  fetch(withBase("/shared/layout/header/nav/nav.html"))
+function loadNav(placeholderId, filePath) {
+  fetch(withBase(filePath))
     .then(res => {
       if (!res.ok) throw new Error(`Failed to fetch nav: ${res.status}`);
       return res.text();
     })
     .then(html => {
-      const holder = document.getElementById("nav-placeholder");
+      const holder = document.getElementById(placeholderId);
       if (!holder) return;
       holder.innerHTML = html;
-
-      const links = holder.querySelectorAll("nav a[href]");
-      const current = trimTrailingSlash(window.location.pathname);
-
-      let chosen = null;
-      links.forEach(link => {
-        const href = link.getAttribute("href");
-        const targetAbs = trimTrailingSlash(href.startsWith("/") ? href : withBase(href));
-        if (current === targetAbs) {
-          chosen = link;
-        } else if (!chosen && current.endsWith(trimTrailingSlash(href))) {
-          chosen = link;
-        }
-      });
-
-      if (chosen) links.forEach(a => a.classList.toggle("active", a === chosen));
+      activateNavLinks(holder);
     })
-    .catch(err => console.error("Error loading nav:", err));
+    .catch(err => console.error(`Error loading nav ${filePath}:`, err));
 }
+
+// --------------------------
+// Load Nav (Highlight active links)
+// --------------------------
+function activateNavLinks(holder) {
+  const links = holder.querySelectorAll("nav a[href]");
+  const current = trimTrailingSlash(window.location.pathname);
+
+  let chosen = null;
+  links.forEach(link => {
+    const href = link.getAttribute("href");
+    const targetAbs = trimTrailingSlash(href.startsWith("/") ? href : withBase(href));
+    if (current === targetAbs) {
+      chosen = link;
+    } else if (!chosen && current.endsWith(trimTrailingSlash(href))) {
+      chosen = link;
+    }
+  });
+
+  if (chosen) links.forEach(a => a.classList.toggle("active", a === chosen));
+}
+
+// --------------------------
+// Example usage on page
+// --------------------------
+loadNav("nav-placeholder", "/shared/layout/header/nav/nav.html");     // main nav
+loadNav("nav-t-placeholder", "/shared/layout/header/nav/nav_t.html"); // sub nav_t
+
 
 // --------------------------
 // Load Footer
@@ -142,7 +155,7 @@ function createPlayerDiv(p) {
 
   if (p.character) {
     const img = document.createElement("img");
-    img.src = withBase(`/images/characters/characters_select/Select_${p.character}.png`);
+    img.src = withBase(`/images/characters/characters_select/select_${p.character}.png`);
     img.alt = p.character;
     img.width = 40;
     img.height = 40;
@@ -406,7 +419,7 @@ async function loadTournamentsLanding() {
         card.appendChild(game);
 
         const link = document.createElement("a");
-        link.href = withBase(`/pages/events.html?slug=${encodeURIComponent(t.slug)}`);
+        link.href = withBase(`/pages/tournaments/events.html?slug=${encodeURIComponent(t.slug)}`);
         link.textContent = "View Events";
         link.className = "button primary";
         card.appendChild(link);
