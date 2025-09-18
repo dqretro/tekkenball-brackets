@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overview</title>
+  <link rel="stylesheet" href="../../styles.css">
+</head>
+<body class="dark">
+
+  <!-- Navigation -->
+  <div id="nav-t-placeholder"></div>
+
+  <div class="container">
+
+    <h1>Overview</h1>
+
+  <!-- Search -->
+  <div class="search-box">
+    <input type="text" id="search" placeholder="Search by player name...">
+  </div>
+
+    <!-- Brackets Column -->
+    <section class="overview-column">
+      <h2>Brackets</h2>
+      <div class="overview-links">
+        <a href="brackets.html" class="pool-card" id="overview-bracket-btn">Bracket (Pools + Overview)</a>
+        <a href="brackets.html?topcut=12" class="pool-card" id="overview-top-btn">Topcut Bracket</a>
+      </div>
+    </section>
+
+    <!-- Standings Column -->
+    <section class="overview-column">
+      <h2>Standings</h2>
+      <div class="standings-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Placed</th>
+              <th>Player</th>
+              <th>Wins</th>
+              <th>Losses</th>
+              <th>Set Win %</th>
+              <th>Lost To</th>
+            </tr>
+          </thead>
+          <tbody id="standings-body">
+            <!-- Populated by script.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="../../script.js"></script>
+</body>
+</html>

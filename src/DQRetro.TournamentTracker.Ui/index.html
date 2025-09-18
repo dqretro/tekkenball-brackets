@@ -10,17 +10,17 @@
 
   <!-- Hero Section -->
   <section class="hero">
-    <div class="container" style="text-align:center; padding:60px 20px;">
-      <img src="images/dqretro/logos/dqretro_logo_purpleyblue.png" alt="DQRetro Logo" height="120">
-      <h1 style="margin-top:20px;">Welcome to DQRetro</h1>
+    <div class="container">
+      <img src="images/dqretro/logos/dqretro_logo_purpleyblue.png" alt="DQRetro Logo" height="100">
+      <h1>Welcome to DQRetro</h1>
       <p style="font-size:1.2rem; color: var(--muted); max-width:600px; margin:10px auto;">
         The ultimate hub for Tekken Ball Tournaments, player stats and real-time brackets fetched directly from Start.GG
       </p>
-      <div style="margin-top:20px;">
-        <a href="pages/tournaments.html" class="button primary">View Tournaments</a>
-        <a href="pages/standings.html" class="button">Player Standings</a>
-        <a href="pages/players.html" class="button">Player Profiles</a>
-        <a href="pages/gallery.html" class="button">Gallery Archive</a>
+      <div class="hero-buttons">
+        <a href="pages/tournaments/tournaments.html" class="button primary">View Tournaments</a>
+        <a href="pages/showcase/standings.html" class="button">Player Standings</a>
+        <a href="pages/showcase/players.html" class="button">Player Profiles</a>
+        <a href="pages/gallery/gallery.html" class="button">Video Gallery</a>
       </div>
     </div>
   </section>
@@ -32,7 +32,7 @@
       <p>
         DQRetro is your go-to platform for tracking Tekken Ball Tournaments around the world. 
         We provide live brackets, detailed player stats, character usage and historical tournament data.
-		Whether you're a casual player or a competitive pro, stay updated with the latest tournaments and leaderboards.
+        Whether you're a casual player or a competitive pro, stay updated with the latest tournaments and leaderboards.
       </p>
     </div>
   </section>
@@ -40,7 +40,6 @@
   <!-- Top Players & Most Used Characters -->
   <section>
     <div class="container overview-grid">
-      <!-- Top Players Table -->
       <div class="overview-column">
         <h2>Top Players Overall:</h2>
         <div class="standings-table">
@@ -61,10 +60,9 @@
         </div>
       </div>
 
-      <!-- Most Used Characters -->
       <div class="overview-column">
         <h2>Most Used Characters Overall:</h2>
-        <div id="mostUsedChars" style="display:flex; flex-wrap:wrap; gap:12px;">
+        <div id="mostUsedChars" style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center;">
           <!-- Clickable character cards dynamically rendered -->
         </div>
       </div>
@@ -96,16 +94,11 @@
 
   <script src="script.js"></script>
   <script>
-    // Load shared nav and footer
     loadNav();
     loadFooter();
-
-    // Load tournaments dynamically on homepage
-    if(document.getElementById("tournamentList")){
-      loadTournamentsLanding(); // /api/tournaments
+    if (document.getElementById("tournamentList")) {
+      loadTournamentsLanding();
     }
-
-    // Load Top Players and Most Used Characters
     loadHomepageStats();
   </script>
 </body>
