@@ -1,8 +1,6 @@
 using System.Runtime;
 using DQRetro.TournamentTracker.Api.Extensions;
 using DQRetro.TournamentTracker.Api.Persistence.Database;
-using DQRetro.TournamentTracker.Api.Persistence.StartGg;
-using DQRetro.TournamentTracker.Api.Services.StartGg;
 
 namespace DQRetro.TournamentTracker.Api;
 
