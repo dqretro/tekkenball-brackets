@@ -388,6 +388,58 @@ GRANT UPDATE
     AS [dbo];
 GO
 
+--      VideoChannel:
+CREATE TABLE [dbo].[VideoChannel] ([Id]                  SMALLINT      IDENTITY (1, 1) NOT NULL,
+                                   [YouTubeChannelId]    VARCHAR(32)                   NOT NULL,
+                                   [Name]                NVARCHAR(64)                  NOT NULL,
+                                   CONSTRAINT [PK_VideoChannel] PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[VideoChannel] TO [TournamentTracker]
+    AS [dbo];
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[VideoChannel] TO [TournamentTracker]
+    AS [dbo];
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[VideoChannel] TO [TournamentTracker]
+    AS [dbo];
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[VideoChannel] TO [TournamentTracker]
+    AS [dbo];
+GO
+
+--      EventVideo:
+CREATE TABLE [dbo].[EventVideo] ([Id]                  SMALLINT      IDENTITY (1, 1) NOT NULL,
+                                 [VideoChannelId]      SMALLINT                      NOT NULL,
+                                 [EventId]             SMALLINT                          NULL,
+                                 [YouTubeVideoId]      VARCHAR(16)                   NOT NULL,
+                                 [YouTubeVideoUrl]     VARCHAR(256)                  NOT NULL,
+                                 [YouTubeThumbnailUrl] VARCHAR(256)                  NOT NULL,
+                                 [ReleaseDate]         DATETIME                      NOT NULL,
+                                 CONSTRAINT [PK_EventVideo] PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[EventVideo] TO [TournamentTracker]
+    AS [dbo];
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[EventVideo] TO [TournamentTracker]
+    AS [dbo];
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[EventVideo] TO [TournamentTracker]
+    AS [dbo];
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[EventVideo] TO [TournamentTracker]
+    AS [dbo];
+GO
+
 -- End of creating required tables.
 
 
