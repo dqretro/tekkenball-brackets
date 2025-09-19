@@ -1294,7 +1294,7 @@ SELECT @TekkenTag2VideoGameId, [Id], NULL
                   'Wang Jinrei');
 
 UPDATE vgcm
-   SET [StartGgCharacterId]
+   SET vgcm.[StartGgCharacterId] = map.[StartGgCharacterId]
   FROM [dbo].[VideoGameCharacterMap] vgcm
   JOIN [dbo].[Character] c
     ON vgcm.[CharacterId] = c.[Id]
