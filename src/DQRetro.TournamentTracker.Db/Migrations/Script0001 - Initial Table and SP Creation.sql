@@ -11,20 +11,16 @@ CREATE TABLE [dbo].[Character] ([Id]              SMALLINT      IDENTITY (1, 1) 
 );
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[Character] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Character] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[Character] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Character] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[Character] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Character] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[Character] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Character] TO [TournamentTracker];
 GO
 
 --      Event:
@@ -50,20 +46,16 @@ CREATE UNIQUE NONCLUSTERED INDEX [ix_Event_StartGgTournamentId_Inc_UpdatedAt_Id]
     INCLUDE([UpdatedAt], [Id]);
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[Event] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Event] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[Event] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Event] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[Event] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Event] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[Event] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Event] TO [TournamentTracker];
 GO
 
 --      ExcludedTournamentEvent:
@@ -82,20 +74,16 @@ CREATE NONCLUSTERED INDEX [ix_ExcludedTournamentEvent_StartGgEventId]
     ON [dbo].[ExcludedTournamentEvent]([StartGgEventId] ASC);
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[ExcludedTournamentEvent] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[ExcludedTournamentEvent] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[ExcludedTournamentEvent] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[ExcludedTournamentEvent] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[ExcludedTournamentEvent] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[ExcludedTournamentEvent] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[ExcludedTournamentEvent] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[ExcludedTournamentEvent] TO [TournamentTracker];
 GO
 
 --      Job:
@@ -106,20 +94,16 @@ CREATE TABLE [dbo].[Job] ([Id]        TINYINT      IDENTITY (1, 1) NOT NULL,
 );
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[Job] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Job] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[Job] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Job] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[Job] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Job] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[Job] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Job] TO [TournamentTracker];
 GO
 
 --      JobExecutionLog:
@@ -132,20 +116,16 @@ CREATE TABLE [dbo].[JobExecutionLog] ([Id]           INT            IDENTITY (1,
 );
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[JobExecutionLog] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[JobExecutionLog] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[JobExecutionLog] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[JobExecutionLog] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[JobExecutionLog] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[JobExecutionLog] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[JobExecutionLog] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[JobExecutionLog] TO [TournamentTracker];
 GO
 
 --      SponsorPrefix:
@@ -159,20 +139,16 @@ CREATE UNIQUE NONCLUSTERED INDEX [ix_SponsorPrefix_Id_Inc_Name]
     INCLUDE([Name]);
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[SponsorPrefix] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[SponsorPrefix] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[SponsorPrefix] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[SponsorPrefix] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[SponsorPrefix] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[SponsorPrefix] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[SponsorPrefix] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[SponsorPrefix] TO [TournamentTracker];
 GO
 
 --      StartGgRequestLog:
@@ -186,20 +162,16 @@ CREATE TABLE [dbo].[StartGgRequestLog] ([Id]                  INT            IDE
 );
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[StartGgRequestLog] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[StartGgRequestLog] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[StartGgRequestLog] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[StartGgRequestLog] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[StartGgRequestLog] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[StartGgRequestLog] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[StartGgRequestLog] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[StartGgRequestLog] TO [TournamentTracker];
 GO
 
 --      Tournament:
@@ -230,20 +202,16 @@ CREATE UNIQUE NONCLUSTERED INDEX [ix_Tournament_StartGgTournamentId_Inc_UpdatedA
     INCLUDE([UpdatedAt], [Id]);
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[Tournament] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Tournament] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[Tournament] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Tournament] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[Tournament] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Tournament] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[Tournament] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Tournament] TO [TournamentTracker];
 GO
 
 --      UserPlayer:
@@ -264,20 +232,16 @@ CREATE TABLE [dbo].[UserPlayer] ([Id]              SMALLINT      IDENTITY (1, 1)
 );
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[UserPlayer] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[UserPlayer] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[UserPlayer] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[UserPlayer] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[UserPlayer] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[UserPlayer] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[UserPlayer] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[UserPlayer] TO [TournamentTracker];
 GO
 
 --      Venue:
@@ -294,20 +258,16 @@ CREATE TABLE [dbo].[Venue] ([Id]           SMALLINT       IDENTITY (1, 1) NOT NU
 );
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[Venue] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Venue] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[Venue] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Venue] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[Venue] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Venue] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[Venue] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[Venue] TO [TournamentTracker];
 GO
 
 --      VideoGame:
@@ -322,20 +282,16 @@ CREATE TABLE [dbo].[VideoGame] ([Id]                       TINYINT       IDENTIT
 );
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[VideoGame] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoGame] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[VideoGame] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoGame] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[VideoGame] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoGame] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[VideoGame] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoGame] TO [TournamentTracker];
 GO
 
 --      VideoGameCharacterMap:
@@ -347,20 +303,16 @@ CREATE TABLE [dbo].[VideoGameCharacterMap] ([Id]                 SMALLINT IDENTI
 );
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[VideoGameCharacterMap] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoGameCharacterMap] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[VideoGameCharacterMap] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoGameCharacterMap] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[VideoGameCharacterMap] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoGameCharacterMap] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[VideoGameCharacterMap] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoGameCharacterMap] TO [TournamentTracker];
 GO
 
 --      VideoGameTournamentPartition:
@@ -372,20 +324,16 @@ CREATE TABLE [dbo].[VideoGameTournamentPartition] ([Id]          SMALLINT      I
 );
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[VideoGameTournamentPartition] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoGameTournamentPartition] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[VideoGameTournamentPartition] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoGameTournamentPartition] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[VideoGameTournamentPartition] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoGameTournamentPartition] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[VideoGameTournamentPartition] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoGameTournamentPartition] TO [TournamentTracker];
 GO
 
 --      VideoChannel:
@@ -396,20 +344,16 @@ CREATE TABLE [dbo].[VideoChannel] ([Id]                  SMALLINT      IDENTITY 
 );
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[VideoChannel] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoChannel] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[VideoChannel] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoChannel] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[VideoChannel] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoChannel] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[VideoChannel] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[VideoChannel] TO [TournamentTracker];
 GO
 
 --      EventVideo:
@@ -425,20 +369,16 @@ CREATE TABLE [dbo].[EventVideo] ([Id]                  SMALLINT      IDENTITY (1
 );
 GO
 GRANT DELETE
-    ON OBJECT::[dbo].[EventVideo] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[EventVideo] TO [TournamentTracker];
 GO
 GRANT INSERT
-    ON OBJECT::[dbo].[EventVideo] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[EventVideo] TO [TournamentTracker];
 GO
 GRANT SELECT
-    ON OBJECT::[dbo].[EventVideo] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[EventVideo] TO [TournamentTracker];
 GO
 GRANT UPDATE
-    ON OBJECT::[dbo].[EventVideo] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[EventVideo] TO [TournamentTracker];
 GO
 
 -- End of creating required tables.
@@ -499,8 +439,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[DeleteOldRequestLogs] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[DeleteOldRequestLogs] TO [TournamentTracker];
 GO
 
 --      GetEventsToUpdate:
@@ -537,8 +476,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[GetEventsToUpdate] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[GetEventsToUpdate] TO [TournamentTracker];
 GO
 
 --      GetHealth:
@@ -603,8 +541,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[GetHealth] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[GetHealth] TO [TournamentTracker];
 GO
 
 --      GetHealthStoredProceduresDuration:
@@ -650,8 +587,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[GetHealthStoredProceduresDuration] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[GetHealthStoredProceduresDuration] TO [TournamentTracker];
 GO
 
 --      GetMaxUserId:
@@ -665,8 +601,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[GetMaxUserId] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[GetMaxUserId] TO [TournamentTracker];
 GO
 
 --      GetTournamentBySlug:
@@ -714,8 +649,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[GetTournamentBySlug] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[GetTournamentBySlug] TO [TournamentTracker];
 GO
 
 --      GetTournamentsToUpdate:
@@ -754,8 +688,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[GetTournamentsToUpdate] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[GetTournamentsToUpdate] TO [TournamentTracker];
 GO
 
 --      GetUserPlayersToUpdate:
@@ -789,8 +722,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[GetUserPlayersToUpdate] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[GetUserPlayersToUpdate] TO [TournamentTracker];
 GO
 
 --      GetVideoGamesToUpdate:
@@ -808,8 +740,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[GetVideoGamesToUpdate] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[GetVideoGamesToUpdate] TO [TournamentTracker];
 GO
 
 --      GetVideoGameTournamentPartitions:
@@ -826,8 +757,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[GetVideoGameTournamentPartitions] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[GetVideoGameTournamentPartitions] TO [TournamentTracker];
 GO
 
 --      InsertAndGetUsers:
@@ -882,8 +812,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[InsertAndGetUsers] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[InsertAndGetUsers] TO [TournamentTracker];
 GO
 
 --      InsertExcludedTournamentEvents:
@@ -902,8 +831,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[InsertExcludedTournamentEvents] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[InsertExcludedTournamentEvents] TO [TournamentTracker];
 GO
 
 --      InsertNewUserSponsorPrefixes:
@@ -925,8 +853,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[InsertNewUserSponsorPrefixes] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[InsertNewUserSponsorPrefixes] TO [TournamentTracker];
 GO
 
 --      InsertStartGgRequestLogEntry:
@@ -944,8 +871,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[InsertStartGgRequestLogEntry] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[InsertStartGgRequestLogEntry] TO [TournamentTracker];
 GO
 
 --      InsertVideoGameTournamentPartitionIfRequired:
@@ -999,8 +925,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[InsertVideoGameTournamentPartitionIfRequired] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[InsertVideoGameTournamentPartitionIfRequired] TO [TournamentTracker];
 GO
 
 --      UpdateExistingUsers:
@@ -1035,8 +960,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[UpdateExistingUsers] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[UpdateExistingUsers] TO [TournamentTracker];
 GO
 
 --      CheckIfEventVideoExists:
@@ -1052,8 +976,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[CheckIfEventVideoExists] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[CheckIfEventVideoExists] TO [TournamentTracker];
 GO
 
 --      InsertEventVideo:
@@ -1096,8 +1019,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[InsertEventVideo] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[InsertEventVideo] TO [TournamentTracker];
 GO
 
 --      GetEventVideos:
@@ -1122,8 +1044,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[GetEventVideos] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[GetEventVideos] TO [TournamentTracker];
 GO
 
 --      GetYouTubeChannelIds:
@@ -1137,8 +1058,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[GetYouTubeChannelIds] TO [TournamentTracker]
-    AS [dbo];
+    ON OBJECT::[dbo].[GetYouTubeChannelIds] TO [TournamentTracker];
 GO
 
 -- End of creating required stored procedures.
