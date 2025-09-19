@@ -2,7 +2,13 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DQRetro.TournamentTracker.Api.Models.Configuration;
+using DQRetro.TournamentTracker.Api.Persistence.Database;
+using DQRetro.TournamentTracker.Api.Persistence.Database.Interfaces;
+using DQRetro.TournamentTracker.Api.Persistence.YouTube;
+using DQRetro.TournamentTracker.Api.Persistence.YouTube.Interfaces;
 using DQRetro.TournamentTracker.Api.Services.DbMigration;
+using DQRetro.TournamentTracker.Api.Services.Video;
+using DQRetro.TournamentTracker.Api.Services.Video.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
 
@@ -60,6 +66,16 @@ public static class ServiceCollectionExtensions
 
         // Can unit test 'TimeProvider' using Microsoft.Extensions.TimeProvider.Testing package.  Using this to avoid a custom DateTimeProvider abstraction.
         services.AddSingleton(TimeProvider.System);
+
+        return services;
+    }
+
+    public static IServiceCollection AddVideoServices(this IServiceCollection services)
+    {
+        services.AddScoped<IYouTubeRepository, YouTubeExplodeRepository>()
+                .AddScoped<IVideoSqlRepository, VideoSqlRepository>()
+                .AddScoped<IVideoService, VideoService>()
+                .AddHostedService<VideoFinderHostedService>();
 
         return services;
     }
@@ -150,11 +166,10 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddDatabaseMigrations(this IServiceCollection services, bool isDevelopment)
     {
-        // if (!isDevelopment)
-        // {
-        //     services.AddHostedService<DbMigrationBackgroundService>();
-        // }
-        services.AddHostedService<DbMigrationBackgroundService>();
+        if (!isDevelopment)
+        {
+            services.AddHostedService<DbMigrationBackgroundService>();
+        }
 
         return services;
     }

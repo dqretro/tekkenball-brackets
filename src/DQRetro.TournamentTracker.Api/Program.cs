@@ -38,6 +38,7 @@ public class Program
         // TODO: ADD RATE LIMITING!
 
         builder.Services.AddCommonServices(builder.Configuration)
+                        .AddVideoServices()
                         .AddDatabaseMigrations(isDevelopment)
                         .ConfigureForwardedHeaders(builder.Configuration, isDevelopment)
                         .AddCustomCors(builder.Configuration)
