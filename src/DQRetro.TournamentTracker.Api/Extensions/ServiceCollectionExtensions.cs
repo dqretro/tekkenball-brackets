@@ -150,10 +150,11 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddDatabaseMigrations(this IServiceCollection services, bool isDevelopment)
     {
-        if (!isDevelopment)
-        {
-            services.AddHostedService<DbMigrationBackgroundService>();
-        }
+        // if (!isDevelopment)
+        // {
+        //     services.AddHostedService<DbMigrationBackgroundService>();
+        // }
+        services.AddHostedService<DbMigrationBackgroundService>();
 
         return services;
     }

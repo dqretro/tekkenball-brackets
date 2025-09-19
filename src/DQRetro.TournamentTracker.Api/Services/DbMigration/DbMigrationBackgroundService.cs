@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using DbUp;
 using DbUp.Engine;
+using DQRetro.TournamentTracker.Api.Models.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace DQRetro.TournamentTracker.Api.Services.DbMigration;
 
@@ -16,11 +18,11 @@ public sealed class DbMigrationBackgroundService : BackgroundService
     /// <summary>
     /// Ctor.
     /// </summary>
-    /// <param name="connectionString">Database connection string used for executing migrations.</param>
+    /// <param name="keyOptions">Options used to retrieve the Database connection string for executing migrations</param>
     /// <param name="logger">Logger instance to output whether migrations were successful.</param>
-    public DbMigrationBackgroundService(string connectionString, ILogger<DbMigrationBackgroundService> logger)
+    public DbMigrationBackgroundService(IOptions<KeysConfiguration> keyOptions, ILogger<DbMigrationBackgroundService> logger)
     {
-        _connectionString = connectionString;
+        _connectionString = keyOptions.Value!.SqlConnectionString!;
         _logger = logger;
     }
 
