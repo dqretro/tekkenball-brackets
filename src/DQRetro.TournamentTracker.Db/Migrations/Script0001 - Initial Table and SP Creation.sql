@@ -1321,4 +1321,8 @@ UPDATE vgcm
         ON c.[Name] = map.[Name]
  WHERE vgcm.VideoGameId = @Tekken8VideoGameId;
 
+--      VideoChannel Data:
+INSERT INTO [dbo].[VideoChannel] ([YouTubeChannelId], [Name])
+                          VALUES ('UCU15sGvE9lNad8VQMFYEWmQ', N'DQRetro');
+
 -- End of inserting starter data.
