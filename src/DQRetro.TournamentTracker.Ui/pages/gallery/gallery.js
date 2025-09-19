@@ -1,5 +1,5 @@
-let API_KEY = "";
-let CHANNEL_ID = "";
+let API_KEY = "__API_KEY__";
+let CHANNEL_ID = "__CHANNEL_ID__";
 let videos = [];
 
 // Show loading indicator
@@ -14,29 +14,6 @@ function showGalleryMessage(msg) {
   const container = document.getElementById("gallery-grid");
   if (!container) return;
   container.innerHTML = `<p class="gallery-message">${msg}</p>`;
-}
-
-// Load config.json for API key & channel ID
-async function loadConfig() {
-  try {
-    showLoading(); // show loading while config loads
-    const res = await fetch("config.json"); // ensure path is correct
-    if (!res.ok) throw new Error(`Failed to fetch config.json: ${res.status}`);
-    
-    const data = await res.json();
-    API_KEY = data.YOUTUBE_API_KEY;
-    CHANNEL_ID = data.CHANNEL_ID;
-
-    if (!API_KEY || !CHANNEL_ID) {
-      showGalleryMessage("API key or Channel ID missing in config.json");
-      return;
-    }
-
-    await fetchVideos();
-  } catch (err) {
-    console.error("Failed to load config:", err);
-    showGalleryMessage("Failed to load configuration.");
-  }
 }
 
 // Fetch videos from YouTube API
@@ -132,5 +109,5 @@ function loadGallery(year = "all") {
 document.addEventListener("DOMContentLoaded", () => {
   loadNav();
   loadFooter();
-  loadConfig();
+  fetchVideos();
 });
