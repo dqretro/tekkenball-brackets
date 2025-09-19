@@ -139,7 +139,6 @@ section {
   background: var(--accent-hover, #0056b3);
 }
 
-
 .summary p {
   margin: 8px 0 0;
   color: var(--muted);
@@ -420,7 +419,6 @@ hr {
 /* ==========================
    Stats Page Styles
    ========================== */
-
 .stats-main {
   max-width: 1000px;
   margin: 2rem auto;
@@ -563,7 +561,6 @@ hr {
   background-color: #444;
 }
 
-
 footer {
   background-color: #111; /* dark footer */
   color: #fff;
@@ -636,5 +633,64 @@ footer .social-icons a img:hover {
 .stat-bar {
   height: 100%;
   border-radius: 5px;
+}
+
+/* ==========================
+   Final Mobile Centering Tweaks
+   ========================== */
+@media (max-width: 600px) {
+  h1 { font-size: 22px; text-align: center; }
+  h2, h3 { text-align: center; }
+
+  .container { padding: 12px; }
+
+  section {
+    width: 94vw;
+    margin: 12px auto;
+    padding: 14px;
+  }
+
+  .pool-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .pool-card {
+    padding: 14px;
+    text-align: center;
+  }
+
+  .tournament-grid { grid-template-columns: 1fr; }
+  .tournament-card { text-align: center; align-items: center; }
+
+  nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .standings-table { margin: 0 auto; font-size: 13px; }
+
+  .stats-grid { justify-content: center; }
+
+  .most-used-char img.char-image {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+/* Hero Section Centering */
+.hero .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;    /* centers horizontally */
+  justify-content: center; /* centers vertically if you set height */
+  text-align: center;      /* ensures text is centered */
+  min-height: 60vh;        /* optional: gives hero section some vertical height */
+  gap: 12px;               /* optional: space between elements */
+}
+
+.hero img {
+  max-width: 90%;
+  height: auto;           /* makes logo responsive */
 }
 

@@ -1,39 +1,47 @@
-let API_KEY = "";
-let CHANNEL_ID = "";
+let API_KEY = "__API_KEY__";
+let CHANNEL_ID = "__CHANNEL_ID__";
 let videos = [];
 
-// Load config.json for API key & channel ID
-async function loadConfig() {
-  try {
-    const res = await fetch("../config.json");
-    const data = await res.json();
-    API_KEY = data.YOUTUBE_API_KEY;
-    CHANNEL_ID = data.CHANNEL_ID;
-    await fetchVideos();
-  } catch (err) {
-    console.error("Failed to load config:", err);
-  }
+// Show loading indicator
+function showLoading(msg = "Loading videos...") {
+  const container = document.getElementById("gallery-grid");
+  if (!container) return;
+  container.innerHTML = `<p class="gallery-message">${msg}</p>`;
+}
+
+// Show a message in the gallery grid
+function showGalleryMessage(msg) {
+  const container = document.getElementById("gallery-grid");
+  if (!container) return;
+  container.innerHTML = `<p class="gallery-message">${msg}</p>`;
 }
 
 // Fetch videos from YouTube API
 async function fetchVideos(pageToken = "") {
   try {
+    showLoading(); // show loading while fetching videos
+
     const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=50&pageToken=${pageToken}`;
     const res = await fetch(url);
+    if (!res.ok) throw new Error(`YouTube API error: ${res.status}`);
+    
     const data = await res.json();
 
-    if (data.items) {
-      data.items.forEach(item => {
-        if (item.id.kind === "youtube#video") {
-          const pubYear = new Date(item.snippet.publishedAt).getFullYear();
-          videos.push({
-            youtubeId: item.id.videoId,
-            title: item.snippet.title,
-            year: pubYear
-          });
-        }
-      });
+    if (!data.items || data.items.length === 0) {
+      if (videos.length === 0) showGalleryMessage("No videos found for this channel.");
+      return;
     }
+
+    data.items.forEach(item => {
+      if (item.id.kind === "youtube#video") {
+        const pubYear = new Date(item.snippet.publishedAt).getFullYear();
+        videos.push({
+          youtubeId: item.id.videoId,
+          title: item.snippet.title,
+          year: pubYear
+        });
+      }
+    });
 
     // Handle pagination
     if (data.nextPageToken) {
@@ -44,12 +52,15 @@ async function fetchVideos(pageToken = "") {
     }
   } catch (err) {
     console.error("Failed to fetch videos:", err);
+    showGalleryMessage("Failed to fetch videos from YouTube.");
   }
 }
 
 // Populate year dropdown
 function populateYearFilter() {
   const yearFilter = document.getElementById("yearFilter");
+  if (!yearFilter) return;
+
   const years = [...new Set(videos.map(v => v.year))].sort((a, b) => b - a);
 
   years.forEach(y => {
@@ -70,6 +81,11 @@ function loadGallery(year = "all") {
   container.innerHTML = "";
 
   const filtered = videos.filter(v => year === "all" || v.year === parseInt(year));
+
+  if (filtered.length === 0) {
+    showGalleryMessage("No videos available for the selected year.");
+    return;
+  }
 
   filtered.forEach(video => {
     const div = document.createElement("div");
@@ -93,5 +109,5 @@ function loadGallery(year = "all") {
 document.addEventListener("DOMContentLoaded", () => {
   loadNav();
   loadFooter();
-  loadConfig();
+  fetchVideos();
 });
