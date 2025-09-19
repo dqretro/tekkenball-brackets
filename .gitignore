@@ -355,12 +355,3 @@ MigrationBackup/
 Thumbs.db
 appsettings.Secrets.json
 src/DQRetro.TournamentTracker.Api/appsettings.Secrets.json
-
-images/dqretro/logos/Thumbs.db
-images/games/characters/tekken8/characters_renders/Thumbs.db
-images/games/characters/tekken8/characters_select/Thumbs.db
-src/DQRetro.TournamentTracker.Ui/images/socials/icons/icon-template.psd
-src/DQRetro.TournamentTracker.Ui/images/dqretro/logos/tournament_logo.psd
-src/DQRetro.TournamentTracker.Ui/images/games/boxart-template.psd
-src/DQRetro.TournamentTracker.Ui/config.json
-src/DQRetro.TournamentTracker.Ui/pages/gallery/config.json
