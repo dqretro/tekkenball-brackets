@@ -1,0 +1,26 @@
+# This file will need to be edited depending on the user running the api, and any file paths.
+# I've deliberatlely not populated these to be the same as the deployment server...
+# To enable this service on start-up, you can copy update this file and place it in /etc/systemd/system (requires root privileges).
+# Then run the following (all as root, or with sudo):
+# 	systemctl daemon-reload
+#	systemctl start dqretro-tournamenttracker-api.service
+# Then check that the service is up:
+#	systemctl status dqretro-tournamenttracker-api.service
+# If it is successfully running, then enable it to auto-start:
+#	systemctl enable dqretro-tournamenttracker-api.service
+# The following properties will need to be changed:
+#	 - user
+#	 - /path/to/working/directory/for/DQRetro.TournamentTracker.Api
+[Unit]
+Description=DQRetro Tournament Tracker API
+After=network.target
+
+[Service]
+Type=simple
+User=user
+WorkingDirectory=/path/to/working/directory/for/DQRetro.TournamentTracker.Api
+ExecStart='/path/to/working/directory/for/DQRetro.TournamentTracker.Api/DQRetro.TournamentTracker.Api'
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
