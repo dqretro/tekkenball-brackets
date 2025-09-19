@@ -984,5 +984,289 @@ GO
 GRANT EXECUTE
     ON OBJECT::[dbo].[UpdateExistingUsers] TO [TournamentTracker]
     AS [dbo];
-
+GO
 -- End of creating required stored procedures.
+
+
+-- Start of inserting starter data:
+
+--      VideoGame, VideoGameCharacterMap, Character and VideoGameTournamentPartition Data:
+DECLARE @LastUpdatedUtc        DATETIME = GETUTCDATE()
+      , @Tekken8VideoGameId    TINYINT
+      , @Tekken3VideoGameId    TINYINT
+      , @TekkenTag2VideoGameId TINYINT;
+
+INSERT INTO [dbo].[VideoGame] ([StartGgVideoGameId], [StartGgLastUpdatedUtc], [Name], [DisplayName], [ReleaseDate], [RequiresDatePartitioning])
+                       VALUES (49783, @LastUpdatedUtc, 'TEKKEN 8', 'TEKKEN 8', '2024-01-26 00:00:00.000', 1)
+                            , (5216 , @LastUpdatedUtc, 'Tekken 3', 'Tekken 3', '1997-03-20 00:00:00.000', 0)
+                            , (4985 , @LastUpdatedUtc, 'Tekken Tag Tournament 2', 'Tekken Tag Tournament 2', '2011-09-14 00:00:00.000', 0);
+
+INSERT INTO [dbo].[VideoGameTournamentPartition] ([VideoGameId], [RangeStart], [RangeEnd])
+                                          VALUES (1, '2024-01-01 00:00:00.000', '2024-05-31 23:59:59.999')
+                                               , (1, '2024-06-01 00:00:00.000', '2024-12-31 23:59:59.999')
+                                               , (1, '2025-01-01 00:00:00.000', '2025-05-31 23:59:59.999')
+                                               , (1, '2025-06-01 00:00:00.000', '2025-12-31 23:59:59.999');
+
+SELECT @Tekken8VideoGameId    = (SELECT TOP 1 [Id] FROM [dbo].[VideoGame] WHERE [StartGgVideoGameId] = 49783)
+     , @Tekken3VideoGameId    = (SELECT TOP 1 [Id] FROM [dbo].[VideoGame] WHERE [StartGgVideoGameId] = 5216)
+     , @TekkenTag2VideoGameId = (SELECT TOP 1 [Id] FROM [dbo].[VideoGame] WHERE [StartGgVideoGameId] = 4985);
+
+INSERT INTO [dbo].[Character] ([Name], [AlternativeName])
+                       VALUES ('Alisa Bosconovitch', NULL)
+                            , ('Anna Williams', NULL)
+                            , ('Asuka Kazama', NULL)
+                            , ('Azucena Oritz', NULL)
+                            , ('Bryan Fury', NULL)
+                            , ('Claudio Serafino', NULL)
+                            , ('Clive Rosfield', NULL)
+                            , ('Devil Jin', NULL)
+                            , ('Eddy Gordo', NULL)
+                            , ('Emilie de Rochefort', 'Lili')
+                            , ('Fahkumram', NULL)
+                            , ('Feng Wei', NULL)
+                            , ('Heihachi Mishima', NULL)
+                            , ('Hwoarang', NULL)
+                            , ('Jack-8', 'Jack')
+                            , ('Jin Kazama', NULL)
+                            , ('Jun Kazama', NULL)
+                            , ('Kazuya Mishima', NULL)
+                            , ('King', NULL)
+                            , ('Kuma', NULL)
+                            , ('Lars Alexandersson', NULL)
+                            , ('Lee Chaolan', NULL)
+                            , ('Leo Kliesen', NULL)
+                            , ('Leroy Smith', NULL)
+                            , ('Lidia Sobieska', NULL)
+                            , ('Ling Xiaoyu', 'Xiaoyu')
+                            , ('Marshall Law', 'Law')
+                            , ('Nina Williams', NULL)
+                            , ('Panda', NULL)
+                            , ('Paul Phoenix', NULL)
+                            , ('Raven', NULL)
+                            , ('Reina Mishima', NULL)
+                            , ('Sergei Dragunov', 'Dragunov')
+                            , ('Shaheen', NULL)
+                            , ('Steve Fox', NULL)
+                            , ('Victor Chevalier', NULL)
+                            , ('Yoshimitsu', NULL)
+                            , ('Zafina', NULL)
+                            , ('Dr. Bosconovitch', NULL)
+                            , ('Gon', NULL)
+                            , ('Lei Wulong', NULL)
+                            , ('Julia Chang', 'Jaycee')
+                            , ('Mokujin', NULL)
+                            , ('Tiger Jackson', NULL)
+                            , ('Ogre', NULL)
+                            , ('True Ogre', NULL)
+                            , ('GunJack', 'Jack')
+                            , ('Forest Law', 'Law')
+                            , ('Alex', NULL)
+                            , ('Ancient Ogre', NULL)
+                            , ('Angel', NULL)
+                            , ('Armor King', 'King')
+                            , ('Baek Doo San', NULL)
+                            , ('Bob Richards', 'Bob')
+                            , ('Bruce Irvin', NULL)
+                            , ('Christie Monteiro', NULL)
+                            , ('Combot', NULL)
+                            , ('Ganryu', NULL)
+                            , ('Jack-6', 'Jack')
+                            , ('Jinpachi Mishima', NULL)
+                            , ('Kunimitsu', NULL)
+                            , ('Craig Marduk', NULL)
+                            , ('Michelle Chang', NULL)
+                            , ('Miguel Caballero Rojo', NULL)
+                            , ('Miharu Hirano', NULL)
+                            , ('Prototype Jack', 'Jack')
+                            , ('Roger Jr.', NULL)
+                            , ('Sebastian', NULL)
+                            , ('Slim Bob', 'Bob')
+                            , ('Unknown', NULL)
+                            , ('Violet', NULL)
+                            , ('Wang Jinrei', NULL);
+
+INSERT INTO [dbo].[VideoGameCharacterMap] ([VideoGameId], [CharacterId], [StartGgCharacterId])
+SELECT @Tekken8VideoGameId, [Id], NULL
+  FROM [dbo].[Character]
+ WHERE [Name] IN ('Alisa Bosconovitch',
+                  'Anna Williams',
+                  'Asuka Kazama',
+                  'Azucena Oritz',
+                  'Bryan Fury',
+                  'Claudio Serafino',
+                  'Clive Rosfield',
+                  'Devil Jin',
+                  'Eddy Gordo',
+                  'Emilie de Rochefort',
+                  'Fahkumram',
+                  'Feng Wei',
+                  'Heihachi Mishima',
+                  'Hwoarang',
+                  'Jack-8',
+                  'Jin Kazama',
+                  'Jun Kazama',
+                  'Kazuya Mishima',
+                  'King',
+                  'Kuma',
+                  'Lars Alexandersson',
+                  'Lee Chaolan',
+                  'Leo Kliesen',
+                  'Leroy Smith',
+                  'Lidia Sobieska',
+                  'Ling Xiaoyu',
+                  'Marshall Law',
+                  'Nina Williams',
+                  'Panda',
+                  'Paul Phoenix',
+                  'Raven',
+                  'Reina Mishima',
+                  'Sergei Dragunov',
+                  'Shaheen',
+                  'Steve Fox',
+                  'Victor Chevalier',
+                  'Yoshimitsu',
+                  'Zafina');
+
+INSERT INTO [dbo].[VideoGameCharacterMap] ([VideoGameId], [CharacterId], [StartGgCharacterId])
+SELECT @Tekken3VideoGameId, [Id], NULL
+  FROM [dbo].[Character]
+ WHERE [Name] IN ('Anna Williams',
+                  'Bryan Fury',
+                  'Eddy Gordo',
+                  'Heihachi Mishima',
+                  'Hwoarang',
+                  'Jin Kazama',
+                  'King',
+                  'Kuma',
+                  'Ling Xiaoyu',
+                  'Nina Williams',
+                  'Panda',
+                  'Paul Phoenix',
+                  'Yoshimitsu',
+                  'Dr. Bosconovitch',
+                  'Gon',
+                  'Lei Wulong',
+                  'Julia Chang',
+                  'Mokujin',
+                  'Tiger Jackson',
+                  'Ogre',
+                  'True Ogre',
+                  'GunJack',
+                  'Forest Law');
+
+INSERT INTO [dbo].[VideoGameCharacterMap] ([VideoGameId], [CharacterId], [StartGgCharacterId])
+SELECT @TekkenTag2VideoGameId, [Id], NULL
+  FROM [dbo].[Character]
+ WHERE [Name] IN ('Alisa Bosconovitch',
+                  'Anna Williams',
+                  'Asuka Kazama',
+                  'Bryan Fury',
+                  'Devil Jin',
+                  'Eddy Gordo',
+                  'Emilie de Rochefort',
+                  'Feng Wei',
+                  'Heihachi Mishima',
+                  'Hwoarang',
+                  'Jin Kazama',
+                  'Jun Kazama',
+                  'Kazuya Mishima',
+                  'King',
+                  'Kuma',
+                  'Lars Alexandersson',
+                  'Lee Chaolan',
+                  'Leo Kliesen',
+                  'Ling Xiaoyu',
+                  'Marshall Law',
+                  'Nina Williams',
+                  'Panda',
+                  'Paul Phoenix',
+                  'Raven',
+                  'Sergei Dragunov',
+                  'Steve Fox',
+                  'Yoshimitsu',
+                  'Zafina',
+                  'Dr. Bosconovitch',
+                  'Lei Wulong',
+                  'Julia Chang',
+                  'Mokujin',
+                  'Tiger Jackson',
+                  'True Ogre',
+                  'Forest Law',
+                  'Alex',
+                  'Ancient Ogre',
+                  'Angel',
+                  'Armor King',
+                  'Baek Doo San',
+                  'Bob Richards',
+                  'Bruce Irvin',
+                  'Christie Monteiro',
+                  'Combot',
+                  'Ganryu',
+                  'Jack-6',
+                  'Jinpachi Mishima',
+                  'Kunimitsu',
+                  'Craig Marduk',
+                  'Michelle Chang',
+                  'Miguel Caballero Rojo',
+                  'Miharu Hirano',
+                  'Prototype Jack',
+                  'Roger Jr.',
+                  'Sebastian',
+                  'Slim Bob',
+                  'Unknown',
+                  'Violet',
+                  'Wang Jinrei');
+
+UPDATE vgcm
+   SET [StartGgCharacterId]
+  FROM [dbo].[VideoGameCharacterMap] vgcm
+  JOIN [dbo].[Character] c
+    ON vgcm.[CharacterId] = c.[Id]
+  JOIN (
+    SELECT [Name]
+         , [StartGgCharacterId]
+      FROM (VALUES
+              ('Alisa Bosconovitch', 2406)
+            , ('Anna Williams', 2620)
+            , ('Asuka Kazama', 2407)
+            , ('Azucena Oritz', 2408)
+            , ('Bryan Fury', 2409)
+            , ('Claudio Serafino', 2410)
+            , ('Clive Rosfield', 2612)
+            , ('Devil Jin', 2411)
+            , ('Eddy Gordo', 2446)
+            , ('Emilie de Rochefort', 2424)
+            , ('Fahkumram', 2700)
+            , ('Feng Wei', 2412)
+            , ('Heihachi Mishima', 2598)
+            , ('Hwoarang', 2413)
+            , ('Jack-8', 2414)
+            , ('Jin Kazama', 2415)
+            , ('Jun Kazama', 2416)
+            , ('Kazuya Mishima', 2417)
+            , ('King', 2418)
+            , ('Kuma', 2419)
+            , ('Lars Alexandersson', 2420)
+            , ('Lee Chaolan', 2421)
+            , ('Leo Kliesen', 2422)
+            , ('Leroy Smith', 2423)
+            , ('Lidia Sobieska', 2538)
+            , ('Ling Xiaoyu', 2425)
+            , ('Marshall Law', 2426)
+            , ('Nina Williams', 2427)
+            , ('Panda', 2428)
+            , ('Paul Phoenix', 2429)
+            , ('Raven', 2431)
+            , ('Reina Mishima', 2432)
+            , ('Sergei Dragunov', 2433)
+            , ('Shaheen', 2434)
+            , ('Steve Fox', 2435)
+            , ('Victor Chevalier', 2436)
+            , ('Yoshimitsu', 2437)
+            , ('Zafina', 2438)
+      ) AS Map ([Name], [StartGgCharacterId])
+  ) map
+        ON c.[Name] = map.[Name]
+ WHERE vgcm.VideoGameId = @Tekken8VideoGameId;
+
+-- End of inserting starter data.
