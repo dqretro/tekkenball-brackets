@@ -89,7 +89,7 @@ function loadFooter() {
 }
 
 // --------------------------
-// Initialize
+// Nav Initialize
 // --------------------------
 document.addEventListener("DOMContentLoaded", () => {
   // Load main nav and sub nav
@@ -270,36 +270,104 @@ function renderBracket(rounds, parentDiv) {
 }
 
 // --------------------------
+// Temporary Event Standings Data
+// --------------------------
+const tempStandings = [
+  { name: "PND | Stykie", wins: 6, losses: 0, score: 100, lostTo: null, character: "Yoshimitsu" },
+  { name: "NGI | Sabrewoif", wins: 4, losses: 2, score: 80, lostTo: { name: "PND | Strykie", character: "Yoshimitsu" }, character: "Clive" },
+  { name: "HarryCM01", wins: 4, losses: 2, score: 60, lostTo: { name: "NGI | Sabrewoif", character: "Clive" }, character: "Anna" },
+  { name: "MILKGUY | Orion", wins: 4, losses: 2, score: 40, lostTo: { name: "NGI | Sabrewoif", character: "Clive" }, character: "Law" },
+  { name: "DQ | ProtonicCobra", wins: 5, losses: 2, score: 20, lostTo: { name: "MILKGUY | Orion", character: "jin" }, character: "Jack8" },
+  { name: "RIF | Geowesome", wins: 4, losses: 2, score: 0, lostTo: { name: "NGI | Sabrewoif", character: "Clive" }, character: "Clive" },
+  { name: "SFO | Zephhyr", wins: 5, losses: 2, score: 20, lostTo: { name: "DQ | ProtonicCobra", character: "Jack8" }, character: "DevilJin" },
+  { name: "Cringe Lord", wins: 3, losses: 2, score: 0, lostTo: { name: "RIF | Geowesome", character: "Clive" }, character: "Clive" }
+];
+
+// --------------------------
 // Load Standings
 // --------------------------
 async function loadStandings(limit = null, slug) {
-  const tournament = await fetchTournament(slug);
-  if (!tournament) return;
-  const event = (tournament.events || [])[0];
-  if (!event) return;
+  let standings = [];
+
+  if (slug) {
+    try {
+      const tournament = await fetchTournament(slug);
+      if (tournament) {
+        const event = (tournament.events || [])[0];
+        if (event) {
+          standings = (event.entrants?.nodes || []).map(e => {
+            const wins = e.standing?.stats?.wins?.value ?? 0;
+            const losses = e.standing?.stats?.losses?.value ?? 0;
+            return {
+              name: e.name,
+              wins,
+              losses,
+              score: e.standing?.stats?.score?.value ?? 0,
+              setWinPct: wins + losses > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : "0.0",
+              lostTo: e.standing?.stats?.lostTo?.value
+                ? { name: e.standing?.stats?.lostTo?.value, character: "" }
+                : null,
+              character: e.character || ""
+            };
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("Tournament API failed, using temp data", err);
+    }
+  }
+
+  // Fallback to temp data if no API data
+  if (!standings.length) {
+    standings = tempStandings.map(p => ({
+      ...p,
+      setWinPct: p.wins + p.losses > 0 ? ((p.wins / (p.wins + p.losses)) * 100).toFixed(1) : "0.0"
+    }));
+  }
+
+  // Sort by score descending
+  standings.sort((a, b) => b.score - a.score);
+  if (limit) standings = standings.slice(0, limit);
 
   const tbody = document.getElementById("standings-body");
   if (!tbody) return;
 
-  let standings = (event.entrants?.nodes || []).map(e => ({
-    name: e.name,
-    wins: e.standing?.stats?.wins?.value ?? 0,
-    losses: e.standing?.stats?.losses?.value ?? 0,
-    score: e.standing?.stats?.score?.value ?? 0,
-    lostTo: e.standing?.stats?.lostTo?.value ?? "",
-    character: e.character || ""
-  }));
-
-  standings.sort((a, b) => b.score - a.score);
-  if (limit) standings = standings.slice(0, limit);
-
   tbody.innerHTML = "";
   standings.forEach((p, i) => {
+    const charImg = p.character
+      ? `<img src="${withBase(`/images/games/tk8/characters/characters_select/select_${p.character}.png`)}" 
+               alt="${p.character}" width="30" height="30" style="vertical-align:middle; margin-right:6px;">`
+      : "";
+
+    const lostToCell = p.lostTo
+      ? `${p.lostTo.character ? 
+          `<img src="${withBase(`/images/games/tk8/characters/characters_select/select_${p.lostTo.character}.png`)}" 
+               alt="${p.lostTo.character}" width="25" height="25" style="vertical-align:middle; margin-right:6px;">`
+        : ""}${p.lostTo.name}`
+      : "-";
+
     const row = document.createElement("tr");
-    row.innerHTML = `<td>${i+1}</td><td>${p.name}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.score}</td><td>${p.character}</td>`;
+    row.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${charImg}${p.name}</td>
+      <td>${p.wins}</td>
+      <td>${p.losses}</td>
+      <td>${p.setWinPct}%</td>
+      <td>${lostToCell}</td>
+    `;
     tbody.appendChild(row);
   });
 }
+
+// --------------------------
+// Auto-load on DOM ready
+// --------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const slug = urlParams.get("slug");
+
+  loadStandings(null, slug);
+});
 
 // --------------------------
 // Render Stats (Character Usage)
@@ -325,8 +393,8 @@ async function renderStats(containerId = "stats-container", slug) {
 
   const totalPlayers = (event.entrants?.nodes || []).length || 1;
   const sortedStats = Object.entries(stats).sort((a, b) => b[1] - a[1]);
-
   const maxCount = sortedStats[0]?.[1] || 1;
+
   sortedStats.forEach(([char, count]) => {
     const percent = ((count / totalPlayers) * 100).toFixed(1);
     const div = document.createElement("div");
@@ -398,9 +466,9 @@ async function loadTournamentsLanding() {
 
   // Optional fallback
   tournaments.push(
-    { name: "VSFighting XIII", game: "Tekken 8", status: "completed", startAt: "2025-08-16", slug: "vsfighting-xiii", logoUrl: "/images/games/boxart/boxart_tekken8.png" },
-    { name: "VSFighting XI", game: "Tekken 3", status: "completed", startAt: "2023-08-19", slug: "vsfighting-xi", logoUrl: "/images/games/boxart/boxart_tekken3.png" },
-    { name: "Example", game: "Tekken Tag Tournament 2", status: "ongoing", startAt: "2025-01-01", slug: "example", logoUrl: "/images/games/boxart/boxart_tekkentag2.png" }
+    { name: "VSFighting XIII", game: "Tekken 8", status: "completed", startAt: "2025-08-16", slug: "vsfighting-xiii", logoUrl: "/images/games/tk8/boxart/boxart_tekken8.png" },
+    { name: "VSFighting XI", game: "Tekken 3", status: "completed", startAt: "2023-08-19", slug: "vsfighting-xi", logoUrl: "/images/games/tk3/boxart/boxart_tekken3.png" },
+    { name: "Example", game: "Tekken Tag Tournament 2", status: "ongoing", startAt: "2025-01-01", slug: "example", logoUrl: "/images/games/ttt2/boxart/boxart_tekkentag2.png" }
   );
 
   // Populate filters
