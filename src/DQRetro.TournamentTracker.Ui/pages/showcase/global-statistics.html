@@ -3,29 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Stats</title>
+  <title>Statistics</title>
   <link rel="stylesheet" href="../../styles.css">
   <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
 </head>
 <body class="dark">
 
-  <div id="nav-t-placeholder"></div>
+<!-- Navigation -->
+<div id="nav-placeholder"></div>
 
   <div class="container">
-    <h1>Event Stats</h1>
+    <h1>Player Statistics</h1>
 
     <section class="overview-column">
-      <h2>Character Usage</h2>
-      <div id="stats-container" class="stats-grid"></div>
+  <h2>Most Used Characters:</h2>
+  <div class="standings-table">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Character</th>
+          <th>Count</th>
+          <th>Usage %</th>
+        </tr>
+      </thead>
+      <tbody id="char-usage-body"></tbody>
+    </table>
     </section>
 
-    <section>
-      <h2>Character Usage Pie Chart</h2>
-      <div id="pie-container"></div>
-    </section>
+
   </div>
 
   <div id="footer-placeholder"></div>
+  
+  <script src="global.js"></script>
   <script src="../../script.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {

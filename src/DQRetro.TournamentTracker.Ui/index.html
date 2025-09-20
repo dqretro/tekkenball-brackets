@@ -18,9 +18,9 @@
       </p>
       <div class="hero-buttons">
         <a href="pages/tournaments/tournaments.html" class="button primary">View Tournaments</a>
-        <a href="pages/showcase/standings.html" class="button">Player Standings</a>
-        <a href="pages/showcase/players.html" class="button">Player Profiles</a>
-        <a href="pages/gallery/gallery.html" class="button">Video Gallery</a>
+        <a href="pages/showcase/global-leaderboard.html" class="button">Global Leaderboard</a>
+        <a href="pages/showcase/global-statistics.html" class="button">Player Statistics</a>
+        <a href="pages/gallery/gallery-media.html" class="button">Media Gallery</a>
       </div>
     </div>
   </section>
@@ -37,37 +37,63 @@
     </div>
   </section>
 
-  <!-- Top Players & Most Used Characters -->
-  <section>
-    <div class="container overview-grid">
-      <div class="overview-column">
-        <h2>Top Players Overall:</h2>
-        <div class="standings-table">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Player</th>
-                <th>Wins</th>
-                <th>Losses</th>
-                <th>Set Win %</th>
-              </tr>
-            </thead>
-            <tbody id="topPlayersBody">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
-        </div>
-      </div>
+<!-- Top Players & Most Used Characters -->
+<section>
+  <div class="container overview-grid">
+    
+    <!-- Left Column: Top Players -->
+    <div class="overview-column">
+      <h2>Top Players Overall:</h2>
+      <div class="standings-table">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Player</th>
+              <th>Wins</th>
+              <th>Losses</th>
+              <th>Set Win %</th>
+              <th>Region</th>
+            </tr>
+          </thead>
+          <tbody id="global-standings-body"></tbody>
+        </table>
 
-      <div class="overview-column">
-        <h2>Most Used Characters Overall:</h2>
-        <div id="mostUsedChars" style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center;">
-          <!-- Clickable character cards dynamically rendered -->
-        </div>
+        <a href="pages/showcase/global-leaderboard.html" class="button primary" 
+           style="margin-top:10px; display:inline-block;">
+          Show More Players
+        </a>
       </div>
     </div>
-  </section>
+
+     <!-- Right Column: Most Used Characters -->
+  <div class="overview-column">
+  <h2>Most Used Characters:</h2>
+  <div class="standings-table">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Character</th>
+          <th>Count</th>
+          <th>Usage %</th>
+        </tr>
+      </thead>
+      <tbody id="char-usage-body"></tbody>
+    </table>
+
+    <a href="pages/showcase/global-statistics.html" class="button primary" 
+       style="margin-top:10px; display:inline-block;">
+      Show More Characters
+    </a>
+  </div>
+</div>
+
+
+  </div>
+</section>
+
+
 
   <!-- Upcoming / Recent Tournaments -->
   <section>
@@ -92,6 +118,7 @@
   <!-- Footer -->
   <div id="footer-placeholder"></div>
 
+  <script src="pages/showcase/global.js"></script>
   <script src="script.js"></script>
   <script>
     loadNav();

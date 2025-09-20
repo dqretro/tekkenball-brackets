@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+</head>
+<body class="dark">
+
+<!-- Navigation -->
+<div id="nav-placeholder"></div>
+
+<div class="container">
+
+  <h1>Global Leaderboard</h1>
+
+  <section class="overview-column">
+
+<div class="filter-container">
+  <select id="yearFilter"></select>
+  <select id="characterFilter"></select>
+  <select id="regionFilter"></select>
+</div>
+
+
+    <div class="standings-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Placed</th>
+            <th>Player</th>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Set Win %</th>
+            <th>Region</th>
+          </tr>
+        </thead>
+        <tbody id="global-standings-body">
+          <!-- Populated by global-leaderboard.js -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<!-- Footer -->
+<div id="footer-placeholder"></div>
+
+<script src="../../script.js"></script>
+<script src="global.js"></script>
+</body>
+</html>
