@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Matches</title>
+  <title>Event Matches</title>
   <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
 </head>
 <body class="dark">
 
@@ -58,6 +59,22 @@
 
   </div>
 
-  <script src="../../script.js"></script>
+<!-- Footer -->
+<div id="footer-placeholder"></div>
+
+<!-- Load JS -->
+<script src="../../script.js"></script>
+
+  <script>
+    // Load shared nav and footer
+    loadNav();
+    loadFooter();
+
+    // Load tournaments dynamically on homepage
+    if(document.getElementById("tournamentList")){
+      loadTournamentsLanding(); // /api/tournaments
+    }
+  </script>
+
 </body>
 </html>
