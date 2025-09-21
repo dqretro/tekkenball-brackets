@@ -8,7 +8,8 @@
 #        appsettings.Secrets.json
 # 2 - The appsettings.Secrets.json contians all substituted variables, so will overwrite the extracted artifact's appsettings.Secrets.json file.
 # 3 - 7-zip is installed, though this can be switched to other extraction tools based on preferences...
-# The dqretro-tournamenttracker-api service has already been set-up as per the instructions in /deploy/dqretro-tournamenttracker-api.service in this repository.
+# 4 - The dqretro-tournamenttracker-api service has already been set-up as per the instructions in /deploy/dqretro-tournamenttracker-api.service in this repository.
+# 5 - When this script is executed, the built artifact from the build pipeline should have already been copied to "~/DQRetro.TournamentTracker/Deploy".
 
 echo "Switching directory to ~/DQRetro.TournamentTracker/Deploy...";
 cd ~/DQRetro.TournamentTracker/Deploy;
