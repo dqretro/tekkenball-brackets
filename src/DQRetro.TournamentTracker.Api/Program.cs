@@ -1,3 +1,4 @@
+using System.Net;
 using System.Runtime;
 using DQRetro.TournamentTracker.Api.Extensions;
 using DQRetro.TournamentTracker.Api.Persistence.Database;
@@ -45,14 +46,14 @@ public class Program
 
         WebApplication app = builder.Build();
 
+        // TODO: REMOVE THIS!
         // Use the following for testing X-Forwarded-For (comes before the ForwardedHeaders middleware):
-        // app.Use(async (context, next) =>
-        // {
-        //     // Spoof RemoteIpAddress
-        //     context.Connection.RemoteIpAddress = IPAddress.Parse("10.0.0.2");
-        //
-        //     await next();
-        // });
+        app.Use(async (context, next) =>
+        {
+            context.Connection.RemoteIpAddress = IPAddress.Parse("10.0.0.2");
+
+            await next();
+        });
 
         app.UseForwardedHeaders();
         app.UseCors();
