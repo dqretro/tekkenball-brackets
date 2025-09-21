@@ -10,6 +10,7 @@
 # 3 - 7-zip is installed, though this can be switched to other extraction tools based on preferences...
 # 4 - The dqretro-tournamenttracker-api service has already been set-up as per the instructions in /deploy/dqretro-tournamenttracker-api.service in this repository.
 # 5 - When this script is executed, the built artifact from the build pipeline should have already been copied to "~/DQRetro.TournamentTracker/Deploy".
+# 6 - The final "rm -r ./*" in theory isn't required, but I've added this to reduce disk space usage in the event of a failure.
 
 echo "Switching directory to ~/DQRetro.TournamentTracker/Deploy...";
 cd ~/DQRetro.TournamentTracker/Deploy;
