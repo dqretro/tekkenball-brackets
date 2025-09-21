@@ -44,7 +44,6 @@ function loadCharacterUsage(data = charTempData, limit = null, containerId = "ch
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  // Sort by count descending
   const stats = [...data].sort((a, b) => b.count - a.count);
   const displayed = limit ? stats.slice(0, limit) : stats;
 
@@ -81,14 +80,12 @@ function loadGlobalLeaderboard(filters = {}, limit = null, tbodyId = "global-sta
 
   let standings = [...globalTempData];
 
-  // Apply filters
   standings = standings.filter(p =>
     (year === "all" || p.year.toString() === year.toString()) &&
     (character === "all" || p.character.toLowerCase() === character.toLowerCase()) &&
     (region === "all" || p.region.toLowerCase() === region.toLowerCase())
   );
 
-  // Sort by win%
   standings.sort((a, b) => {
     const aPct = a.wins / ((a.wins + a.losses) || 1);
     const bPct = b.wins / ((b.wins + b.losses) || 1);
@@ -125,24 +122,104 @@ function loadGlobalLeaderboard(filters = {}, limit = null, tbodyId = "global-sta
 }
 
 // --------------------------
-// Populate Filters
+// Populate Filters (optional)
 // --------------------------
 function populateFilters(yearId, charId, regionId, onChange) {
   const yearFilter = document.getElementById(yearId);
   const charFilter = document.getElementById(charId);
   const regionFilter = document.getElementById(regionId);
-  if (!yearFilter || !charFilter || !regionFilter) return;
 
-  const years = ["all", ...new Set(globalTempData.map(p => p.year).sort((a, b) => b - a))];
-  yearFilter.innerHTML = years.map(y => `<option value="${y}">${y==="all"?"All Time":y}</option>`).join("");
+  if (yearFilter) {
+    const years = ["all", ...new Set(globalTempData.map(p => p.year).sort((a, b) => b - a))];
+    yearFilter.innerHTML = years
+      .map(y => `<option value="${y}">${y === "all" ? "All Time" : y}</option>`)
+      .join("");
+    yearFilter.addEventListener("change", onChange);
+  }
 
-  const chars = ["all", ...new Set(charTempData.map(c => c.character))];
-  charFilter.innerHTML = chars.map(c => `<option value="${c}">${c==="all"?"All Characters":c}</option>`).join("");
+  if (charFilter) {
+    const chars = ["all", ...new Set(charTempData.map(c => c.character))];
+    charFilter.innerHTML = chars
+      .map(c => `<option value="${c}">${c === "all" ? "All Characters" : c}</option>`)
+      .join("");
+    charFilter.addEventListener("change", onChange);
+  }
 
-  const regions = ["all", ...new Set(globalTempData.map(p => p.region))];
-  regionFilter.innerHTML = regions.map(r => `<option value="${r}">${r==="all"?"All Regions":r.toUpperCase()}</option>`).join("");
+  if (regionFilter) {
+    const regions = ["all", ...new Set(globalTempData.map(p => p.region))];
+    regionFilter.innerHTML = regions
+      .map(r => `<option value="${r}">${r === "all" ? "All Regions" : r.toUpperCase()}</option>`)
+      .join("");
+    regionFilter.addEventListener("change", onChange);
+  }
+}
 
-  [yearFilter, charFilter, regionFilter].forEach(sel => sel.addEventListener("change", onChange));
+// --------------------------
+// Update Filter Summary
+// --------------------------
+function updateFilterSummary() {
+  const year = document.getElementById("yearFilter")?.value || "all";
+  const character = document.getElementById("characterFilter")?.value || "all";
+  const region = document.getElementById("regionFilter")?.value || "all";
+
+  const parts = [];
+  if (year !== "all") parts.push(year);
+  if (character !== "all") parts.push(character);
+  if (region !== "all") parts.push(region.toUpperCase());
+
+  const summaryEl = document.getElementById("filter-summary");
+  if (summaryEl) {
+    summaryEl.textContent = parts.length
+      ? `Tekken Ball Tournaments — Showing ${parts.join(", ")}`
+      : `Tekken Ball Tournaments — Showing all data`;
+  }
+}
+
+// --------------------------
+// Filter Data (safe for optional region)
+// --------------------------
+function filterData() {
+  const yearFilter = document.getElementById("yearFilter");
+  const charFilter = document.getElementById("characterFilter");
+  const regionFilter = document.getElementById("regionFilter");
+
+  return globalTempData.filter(item => {
+    const yearMatch = yearFilter ? (yearFilter.value === "all" || item.year == yearFilter.value) : true;
+    const charMatch = charFilter ? (charFilter.value === "all" || item.character == charFilter.value) : true;
+    const regionMatch = regionFilter ? (regionFilter.value === "all" || item.region == regionFilter.value) : true;
+    return yearMatch && charMatch && regionMatch;
+  });
+}
+
+// --------------------------
+// Reset Filters
+// --------------------------
+function setupResetButton() {
+  const resetBtn = document.getElementById("reset-filters");
+  if (!resetBtn) return;
+
+  resetBtn.addEventListener("click", () => {
+    ["yearFilter", "characterFilter", "regionFilter"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = "all";
+    });
+
+    updateFilterSummary();
+
+    loadGlobalLeaderboard({
+      year: "all",
+      character: "all",
+      region: "all"
+    });
+
+    const filteredData = charTempData.map(c => {
+      const count = globalTempData
+        .filter(p => p.character.toLowerCase() === c.character.toLowerCase())
+        .reduce((sum, p) => sum + p.wins + p.losses, 0);
+      return { ...c, count };
+    });
+    loadCharacterUsage(filteredData);
+  });
 }
 
 // --------------------------
@@ -156,10 +233,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Leaderboard ---
   if (tbodyLeaderboard) {
-    // Only limit on index page
     const limit = isIndex ? 5 : null;
 
     const updateLeaderboard = () => {
+      updateFilterSummary();
       loadGlobalLeaderboard({
         year: document.getElementById("yearFilter")?.value || "all",
         character: document.getElementById("characterFilter")?.value || "all",
@@ -204,4 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateStats();
   }
+
+  // --- Setup Reset Button ---
+  setupResetButton();
 });
