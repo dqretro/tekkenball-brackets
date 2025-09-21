@@ -6,11 +6,11 @@ namespace DQRetro.TournamentTracker.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public sealed class VideoController : ControllerBase
+public sealed class VideosController : ControllerBase
 {
     private readonly IVideoService _videoService;
 
-    public VideoController(IVideoService videoService)
+    public VideosController(IVideoService videoService)
     {
         _videoService = videoService;
     }
