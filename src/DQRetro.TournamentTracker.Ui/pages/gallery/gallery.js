@@ -1,68 +1,80 @@
-let API_KEY = "__API_KEY__";
-let CHANNEL_ID = "__CHANNEL_ID__";
 let videos = [];
 
-// Show loading indicator
+// --------------------------
+// Loading / Messages
+// --------------------------
 function showLoading(msg = "Loading videos...") {
   const container = document.getElementById("gallery-grid");
   if (!container) return;
   container.innerHTML = `<p class="gallery-message">${msg}</p>`;
 }
 
-// Show a message in the gallery grid
 function showGalleryMessage(msg) {
   const container = document.getElementById("gallery-grid");
   if (!container) return;
   container.innerHTML = `<p class="gallery-message">${msg}</p>`;
 }
 
-// Fetch videos from YouTube API
-async function fetchVideos(pageToken = "") {
+// --------------------------
+// Fetch videos from Harry's database
+// --------------------------
+async function fetchVideosFromDB() {
   try {
-    showLoading(); // show loading while fetching videos
+    showLoading();
 
-    const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=50&pageToken=${pageToken}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`YouTube API error: ${res.status}`);
-    
-    const data = await res.json();
+    const proxyUrl = "https://corsproxy.io/?";
+    const targetUrl = "https://therollingbuffoons.zapto.org/tournamenttracker/video";
+    const res = await fetch(proxyUrl + encodeURIComponent(targetUrl));
 
-    if (!data.items || data.items.length === 0) {
-      if (videos.length === 0) showGalleryMessage("No videos found for this channel.");
+    console.log("Fetch response status:", res.status, res.statusText);
+
+    const text = await res.text();
+    console.log("Raw response text:", text);
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      console.error("Failed to parse JSON:", err);
+      showGalleryMessage("Failed to parse JSON from the database.");
       return;
     }
 
-    data.items.forEach(item => {
-      if (item.id.kind === "youtube#video") {
-        const pubYear = new Date(item.snippet.publishedAt).getFullYear();
-        videos.push({
-          youtubeId: item.id.videoId,
-          title: item.snippet.title,
-          year: pubYear
-        });
-      }
-    });
-
-    // Handle pagination
-    if (data.nextPageToken) {
-      await fetchVideos(data.nextPageToken);
-    } else {
-      populateYearFilter();
-      loadGallery();
+    if (!Array.isArray(data) || data.length === 0) {
+      showGalleryMessage("No videos found in the database.");
+      return;
     }
+
+    // Map the correct keys
+    videos = data.map(item => ({
+      youtubeId: item.you_tube_video_id || "",
+      title: item.title || "Untitled",
+      year: item.release_date ? new Date(item.release_date).getFullYear() : "Unknown",
+      thumbnail: item.you_tube_thumbnail_url || "",
+      url: item.you_tube_video_url || ""
+    })).filter(v => v.youtubeId);
+
+    console.log("Videos loaded:", videos);
+
+    populateYearFilter();
+    loadGallery();
   } catch (err) {
     console.error("Failed to fetch videos:", err);
-    showGalleryMessage("Failed to fetch videos from YouTube.");
+    showGalleryMessage("Failed to fetch videos from the database.");
   }
 }
 
-// Populate year dropdown
+
+// --------------------------
+// Populate Year Dropdown
+// --------------------------
 function populateYearFilter() {
   const yearFilter = document.getElementById("yearFilter");
   if (!yearFilter) return;
 
   const years = [...new Set(videos.map(v => v.year))].sort((a, b) => b - a);
 
+  yearFilter.innerHTML = "<option value='all'>All Years</option>";
   years.forEach(y => {
     const option = document.createElement("option");
     option.value = y;
@@ -73,7 +85,9 @@ function populateYearFilter() {
   yearFilter.addEventListener("change", () => loadGallery(yearFilter.value));
 }
 
-// Load gallery
+// --------------------------
+// Load Gallery
+// --------------------------
 function loadGallery(year = "all") {
   const container = document.getElementById("gallery-grid");
   if (!container) return;
@@ -105,9 +119,11 @@ function loadGallery(year = "all") {
   });
 }
 
+// --------------------------
 // Initialize
+// --------------------------
 document.addEventListener("DOMContentLoaded", () => {
   loadNav();
   loadFooter();
-  fetchVideos();
+  fetchVideosFromDB();
 });
