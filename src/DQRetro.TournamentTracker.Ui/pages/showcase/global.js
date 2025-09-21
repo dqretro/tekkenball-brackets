@@ -12,7 +12,7 @@ function withBase(path) {
 // Temporary Character Usage Data
 // --------------------------
 const charTempData = [
-  { character: "Yoshimitsu", count: 259 },
+  { character: "Yoshimitsu", count: 85 },
   { character: "Random", count: 0 },
   { character: "Random", count: 0 },
   { character: "Random", count: 0 },
@@ -23,55 +23,59 @@ const charTempData = [
 ];
 
 // --------------------------
-// Load Character Usage Table
-// --------------------------
-function loadCharacterUsage(limit = 5, containerId = "char-usage-body") {
-  let stats = [...charTempData];
-  stats.sort((a, b) => b.count - a.count);
-  if (limit) stats = stats.slice(0, limit);
-
-  const container = document.getElementById(containerId);
-  if (!container) return;
-
-  container.innerHTML = "";
-  stats.forEach((c, i) => {
-    const totalCount = charTempData.reduce((t, v) => t + v.count, 0) || 1;
-    const percent = ((c.count / totalCount) * 100).toFixed(1);
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${i + 1}</td>
-      <td>
-        <img src="${withBase(`/images/games/tk8/characters/characters_select/select_${c.character}.png`)}" 
-             alt="${c.character}" width="30" height="30" style="vertical-align:middle; margin-right:6px;">
-        ${c.character}
-      </td>
-      <td>${c.count}</td>
-      <td>${percent}%</td>
-    `;
-    container.appendChild(row);
-  });
-}
-
-// --------------------------
 // Temporary Global Leaderboard Data
 // --------------------------
 const globalTempData = [
   { name: "PND | Strykie", character: "Yoshimitsu", wins: 85, losses: 2, year: 2025, region: "eu" },
-  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2025, region: "Random" },
-  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2025, region: "Random" },
-  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2025, region: "Random" },
-  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2025, region: "Random" },
-  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2024, region: "Random" },
-  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2024, region: "Random" },
-  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2024, region: "Random" },
-  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2024, region: "Random" }
+  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2025, region: "random" },
+  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2025, region: "random" },
+  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2025, region: "random" },
+  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2025, region: "random" },
+  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2024, region: "random" },
+  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2024, region: "random" },
+  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2024, region: "random" },
+  { name: "Random", character: "Random", wins: 0, losses: 0, year: 2024, region: "random" }
 ];
 
 // --------------------------
-// Load Global Leaderboard Table
+// Character Usage Table
 // --------------------------
-function loadGlobalLeaderboard(filters = {}, tbodyId = "global-standings-body") {
-  const { year = "all", character = "all", region = "all", limit = null } = filters;
+function loadCharacterUsage(data = charTempData, limit = null, containerId = "char-usage-body") {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  // Sort by count descending
+  const stats = [...data].sort((a, b) => b.count - a.count);
+  const displayed = limit ? stats.slice(0, limit) : stats;
+
+  const totalCount = stats.reduce((t, c) => t + c.count, 0) || 1;
+  container.innerHTML = "";
+
+  displayed.forEach((c, i) => {
+    const percent = ((c.count / totalCount) * 100).toFixed(1);
+    const safeChar = c.character.toLowerCase();
+    const row = `
+      <tr>
+        <td>${i + 1}</td>
+        <td>
+          <img src="${withBase(`/images/games/tk8/characters/characters_select/select_${safeChar}.png`)}"
+               alt="${c.character}" width="30" height="30"
+               style="vertical-align:middle; margin-right:6px;">
+          ${c.character}
+        </td>
+        <td>${c.count}</td>
+        <td>${percent}%</td>
+      </tr>
+    `;
+    container.insertAdjacentHTML("beforeend", row);
+  });
+}
+
+// --------------------------
+// Global Leaderboard Table
+// --------------------------
+function loadGlobalLeaderboard(filters = {}, limit = null, tbodyId = "global-standings-body") {
+  const { year = "all", character = "all", region = "all" } = filters;
   const tbody = document.getElementById(tbodyId);
   if (!tbody) return;
 
@@ -84,7 +88,7 @@ function loadGlobalLeaderboard(filters = {}, tbodyId = "global-standings-body") 
     (region === "all" || p.region.toLowerCase() === region.toLowerCase())
   );
 
-  // Sort by win% descending
+  // Sort by win%
   standings.sort((a, b) => {
     const aPct = a.wins / ((a.wins + a.losses) || 1);
     const bPct = b.wins / ((b.wins + b.losses) || 1);
@@ -95,62 +99,50 @@ function loadGlobalLeaderboard(filters = {}, tbodyId = "global-standings-body") 
 
   tbody.innerHTML = "";
   standings.forEach((p, i) => {
-    const safeChar = p.character ? p.character.toLowerCase() : "";
-    const charImg = safeChar
-      ? `<img src="${withBase(`/images/games/tk8/characters/characters_select/select_${p.character}.png`)}" 
-               alt="${p.character}" width="30" height="30" style="vertical-align:middle; margin-right:6px;">`
-      : "";
+    const safeChar = p.character.toLowerCase();
+    const safeRegion = p.region.toLowerCase();
+    const setWinPct = ((p.wins / ((p.wins + p.losses) || 1)) * 100).toFixed(1) + "%";
 
-  const regionImg = p.region
-    ? `<img src="${withBase(`/images/games/tk7/regions/${p.region.toLowerCase()}.png`)}" 
-            alt="${p.region}" width="35" height="24" style="vertical-align:middle; margin-right:6px;">`
-    : "";
-
-
-    const winPct = (p.wins + p.losses) > 0
-      ? ((p.wins / (p.wins + p.losses)) * 100).toFixed(1)
-      : "0.0";
-
-    tbody.innerHTML += `
+    const row = `
       <tr>
         <td>${i + 1}</td>
-        <td>${charImg}${p.name}</td>
+        <td>
+          <img src="${withBase(`/images/games/tk8/characters/characters_select/select_${safeChar}.png`)}"
+               alt="${p.character}" width="30" height="30" style="vertical-align:middle; margin-right:6px;">
+          ${p.name}
+        </td>
         <td>${p.wins}</td>
         <td>${p.losses}</td>
-        <td>${winPct}%</td>
-        <td>${regionImg}</td>
+        <td>${setWinPct}</td>
+        <td>
+          <img src="${withBase(`/images/games/tk7/regions/${safeRegion}.png`)}"
+               alt="${p.region}" width="35" height="24" style="vertical-align:middle; margin-right:6px;">
+        </td>
       </tr>
     `;
+    tbody.insertAdjacentHTML("beforeend", row);
   });
 }
 
 // --------------------------
-// Populate Global Leaderboard Filters
+// Populate Filters
 // --------------------------
-function populateLeaderboardFilters() {
-  const yearFilter = document.getElementById("yearFilter");
-  const characterFilter = document.getElementById("characterFilter");
-  const regionFilter = document.getElementById("regionFilter");
-  if (!yearFilter || !characterFilter || !regionFilter) return;
+function populateFilters(yearId, charId, regionId, onChange) {
+  const yearFilter = document.getElementById(yearId);
+  const charFilter = document.getElementById(charId);
+  const regionFilter = document.getElementById(regionId);
+  if (!yearFilter || !charFilter || !regionFilter) return;
 
-  const years = ["all", ...new Set(globalTempData.map(p => p.year).sort((a,b)=>b-a))];
+  const years = ["all", ...new Set(globalTempData.map(p => p.year).sort((a, b) => b - a))];
   yearFilter.innerHTML = years.map(y => `<option value="${y}">${y==="all"?"All Time":y}</option>`).join("");
 
-  const chars = ["all", ...new Set(globalTempData.map(p => p.character).filter(Boolean))];
-  characterFilter.innerHTML = chars.map(c => `<option value="${c}">${c==="all"?"All Characters":c}</option>`).join("");
+  const chars = ["all", ...new Set(charTempData.map(c => c.character))];
+  charFilter.innerHTML = chars.map(c => `<option value="${c}">${c==="all"?"All Characters":c}</option>`).join("");
 
-  const regions = ["all", ...new Set(globalTempData.map(p => p.region).filter(Boolean))];
+  const regions = ["all", ...new Set(globalTempData.map(p => p.region))];
   regionFilter.innerHTML = regions.map(r => `<option value="${r}">${r==="all"?"All Regions":r.toUpperCase()}</option>`).join("");
 
-  [yearFilter, characterFilter, regionFilter].forEach(sel => {
-    sel.addEventListener("change", () => {
-      loadGlobalLeaderboard({
-        year: yearFilter.value,
-        character: characterFilter.value,
-        region: regionFilter.value
-      });
-    });
-  });
+  [yearFilter, charFilter, regionFilter].forEach(sel => sel.addEventListener("change", onChange));
 }
 
 // --------------------------
@@ -158,35 +150,58 @@ function populateLeaderboardFilters() {
 // --------------------------
 document.addEventListener("DOMContentLoaded", () => {
   const path = window.location.pathname;
+  const isIndex = path.endsWith("/") || path.endsWith("index.html");
+  const tbodyLeaderboard = document.getElementById("global-standings-body");
+  const tbodyCharUsage = document.getElementById("char-usage-body");
 
-  // --------------------------
-  // Character Usage Table
-  // --------------------------
-  if (path.includes("global-statistics.html")) {
-    // On stats page: show all and add dropdown for limit
-    loadCharacterUsage(null, "char-usage-body"); // Show all characters initially
+  // --- Leaderboard ---
+  if (tbodyLeaderboard) {
+    // Only limit on index page
+    const limit = isIndex ? 5 : null;
 
-    const limitSelect = document.getElementById("charLimitSelect");
-    if (limitSelect) {
-      limitSelect.addEventListener("change", () => {
-        const limit = parseInt(limitSelect.value) || null;
-        loadCharacterUsage(limit, "char-usage-body");
-      });
+    const updateLeaderboard = () => {
+      loadGlobalLeaderboard({
+        year: document.getElementById("yearFilter")?.value || "all",
+        character: document.getElementById("characterFilter")?.value || "all",
+        region: document.getElementById("regionFilter")?.value || "all"
+      }, limit);
+    };
+
+    if (document.getElementById("yearFilter")) {
+      populateFilters("yearFilter", "characterFilter", "regionFilter", updateLeaderboard);
     }
-  } else {
-    // On index page: show top 5 only
-    loadCharacterUsage(5, "char-usage-body");
+
+    updateLeaderboard();
   }
 
-  // --------------------------
-  // Global Leaderboard
-  // --------------------------
-  const isGlobalPage = path.includes("global-leaderboard.html");
-  if (isGlobalPage) {
-    populateLeaderboardFilters();
-    loadGlobalLeaderboard({ year: "all", character: "all", region: "all" });
-  } else {
-    loadGlobalLeaderboard({ limit: 5 });
+  // --- Character Usage ---
+  if (tbodyCharUsage) {
+    const limit = isIndex ? 5 : null;
+
+    const updateStats = () => {
+      const year = document.getElementById("yearFilter")?.value || "all";
+      const character = document.getElementById("characterFilter")?.value || "all";
+      const region = document.getElementById("regionFilter")?.value || "all";
+
+      const filteredData = charTempData.map(c => {
+        const count = globalTempData
+          .filter(p =>
+            (year === "all" || p.year.toString() === year.toString()) &&
+            (region === "all" || p.region.toLowerCase() === region.toLowerCase()) &&
+            (character === "all" || p.character.toLowerCase() === character.toLowerCase()) &&
+            p.character.toLowerCase() === c.character.toLowerCase()
+          )
+          .reduce((sum, p) => sum + p.wins + p.losses, 0);
+        return { ...c, count };
+      });
+
+      loadCharacterUsage(filteredData, limit, "char-usage-body");
+    };
+
+    if (document.getElementById("yearFilter")) {
+      populateFilters("yearFilter", "characterFilter", "regionFilter", updateStats);
+    }
+
+    updateStats();
   }
 });
-
