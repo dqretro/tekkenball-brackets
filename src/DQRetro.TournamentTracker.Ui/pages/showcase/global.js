@@ -95,15 +95,17 @@ function loadGlobalLeaderboard(filters = {}, tbodyId = "global-standings-body") 
 
   tbody.innerHTML = "";
   standings.forEach((p, i) => {
-    const charImg = p.character
+    const safeChar = p.character ? p.character.toLowerCase() : "";
+    const charImg = safeChar
       ? `<img src="${withBase(`/images/games/tk8/characters/characters_select/select_${p.character}.png`)}" 
                alt="${p.character}" width="30" height="30" style="vertical-align:middle; margin-right:6px;">`
       : "";
 
-    const regionImg = p.region
-    ? `<img src="${withBase(`images/games/tk7/regions/${p.region}.png`)}" 
+  const regionImg = p.region
+    ? `<img src="${withBase(`/images/games/tk7/regions/${p.region.toLowerCase()}.png`)}" 
             alt="${p.region}" width="35" height="24" style="vertical-align:middle; margin-right:6px;">`
     : "";
+
 
     const winPct = (p.wins + p.losses) > 0
       ? ((p.wins / (p.wins + p.losses)) * 100).toFixed(1)
