@@ -11,17 +11,17 @@
 ## 📌 Features & Pages
 This project provides a full front-end for **Tekken Ball tournaments, statistics, and media**.  
 
-- 🎮 **Tournaments** – brackets, matches, standings, players, and event overviews.  
-- 📊 **Global Statistics** – most used characters, leaderboards, and resettable filters.  
-- 🏆 **Leaderboards** – sortable results across all tracked events.  
-- 👥 **Player Profiles** – track individual performance and match history.  
-- 🎥 **Video Gallery** – curated YouTube videos dynamically loaded from Harry’s database.  
-- 📰 **Updates & Integration** – API-driven content with seamless navigation and UI consistency.  
+- **Tournaments** – brackets, matches, standings, players and event overviews.  
+- **Global Statistics** – most used characters, leaderboards, and resettable filters.  
+- **Leaderboards** – sortable results across all tracked events.  
+- **Player Profiles** – track individual performance and match history.  
+- **Video Gallery** – curated YouTube videos dynamically loaded from Harry’s database.  
+- **Updates & Integration** – API-driven content with seamless navigation and UI consistency.  
 
 ---
 
 ## 🏟️ start.gg API Integration
-A big part of tournament data is powered by **start.gg API integration** (implemented by Harry).  
+A big part of the tournament data is powered by **start.gg API integration** (implemented by Harry).  
 
 - Pulls live tournament data directly from **start.gg**.  
 - Provides details for **events, brackets, players, standings, and matches**.  
