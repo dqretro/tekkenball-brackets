@@ -37,7 +37,7 @@ jobs:
         run: dotnet restore ${{ env.API_CSPROJ_PATH }}
       
       - name: ".NET: Build"
-        run: dotnet build ${{ env.API_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore
+        run: dotnet build ${{ env.API_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
       
       - name: ".NET: Publish"
         run: dotnet publish ${{ env.API_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --output ${{ env.API_OUTPUT_FOLDER }} /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
