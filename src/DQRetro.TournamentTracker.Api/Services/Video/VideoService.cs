@@ -1,4 +1,5 @@
 ﻿using DQRetro.TournamentTracker.Api.Models.Api.Responses;
+using DQRetro.TournamentTracker.Api.Models.Common;
 using DQRetro.TournamentTracker.Api.Models.Database.DTOs;
 using DQRetro.TournamentTracker.Api.Persistence.Database.Interfaces;
 using DQRetro.TournamentTracker.Api.Persistence.YouTube.Interfaces;
@@ -26,9 +27,16 @@ public sealed class VideoService : IVideoService
     }
 
     /// <inheritdoc />
-    public async Task<List<EventVideo>> GetEventVideosAsync()
+    public async Task<Result<List<EventVideo>>> GetEventVideosAsync()
     {
-        return await _videoSqlRepository.GetEventVideosAsync();
+        List<EventVideo> videos = await _videoSqlRepository.GetEventVideosAsync();
+
+        if (videos.Count == 0)
+        {
+            return Result<List<EventVideo>>.Failure(Code.NoResultsFound);
+        }
+
+        return Result<List<EventVideo>>.Success(videos);
     }
 
     /// <inheritdoc />
