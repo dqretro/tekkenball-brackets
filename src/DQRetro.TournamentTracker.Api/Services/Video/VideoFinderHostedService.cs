@@ -68,7 +68,13 @@ public sealed class VideoFinderHostedService : IHostedService
                 _logger.LogError(ex, "{ServiceName} failed to find new videos. Faulted with {ErrorMessage}", nameof(VideoFinderHostedService), ex.Message);
             }
 
-            Console.WriteLine("Finished finding new videos. Waiting 1 day.");
+            // This isn't ideal, but YouTube's JSON payloads that are parsed by the YouTubeExplode library are massive.
+            // The result of this is LOH allocations, which aren't automatically compacted.
+            // The server won't have too much available RAM, so I'd rather force an aggressive GC run to ensure
+            // the other background jobs, and requests have sufficient RAM available, at the cost of a short-term freeze-up.
+            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+            GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: true);
+            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
 
             _logger.LogInformation("{ServiceName} will wait 1 day before checking again", nameof(VideoFinderHostedService));
 
