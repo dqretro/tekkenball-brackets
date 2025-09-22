@@ -24,8 +24,11 @@ public class Program
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        // TODO: Change the port to be configurable...
-        const int port = 5002;
+        builder.WebHost.ConfigureKestrel(kestrelServerOptions =>
+        {
+            kestrelServerOptions.Configure(builder.Configuration.GetRequiredSection("Kestrel"));
+        });
+
         bool isDevelopment = builder.Environment.IsDevelopment();
 
         builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
@@ -38,7 +41,7 @@ public class Program
                         .AddDatabaseMigrations(isDevelopment)
                         .ConfigureForwardedHeaders(builder.Configuration, isDevelopment)
                         .AddCustomCors(builder.Configuration)
-                        .AddCustomSwagger(isDevelopment, port)
+                        .AddCustomSwagger(builder.Configuration, isDevelopment)
                         .AddControllersWithCustomSerialization();
 
 
@@ -46,7 +49,6 @@ public class Program
 
         app.UseForwardedHeaders();
         app.UseCors();
-        // app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
