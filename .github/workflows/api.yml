@@ -22,7 +22,7 @@ jobs:
       API_OUTPUT_FOLDER: ./DQRetro.TournamentTracker.Api
       DOTNET_CONFIGURATION: Release
       DOTNET_SERVER_GC: false
-      IS_MAIN: ${{ github.ref == "refs/heads/main" }}
+      IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
     
     steps:
       - name: "Src: Checkout"
