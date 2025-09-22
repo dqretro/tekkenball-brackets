@@ -1,4 +1,5 @@
-﻿using DQRetro.TournamentTracker.Api.Services.Video.Interfaces;
+﻿using System.Runtime;
+using DQRetro.TournamentTracker.Api.Services.Video.Interfaces;
 
 namespace DQRetro.TournamentTracker.Api.Services.Video;
 
@@ -8,14 +9,17 @@ namespace DQRetro.TournamentTracker.Api.Services.Video;
 public sealed class VideoFinderHostedService : IHostedService
 {
     private static CancellationTokenSource _cancellationTokenSource;
+    private readonly ILogger<VideoFinderHostedService> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
     /// <summary>
     /// Ctor.
     /// </summary>
+    /// <param name="logger"></param>
     /// <param name="serviceScopeFactory"></param>
-    public VideoFinderHostedService(IServiceScopeFactory serviceScopeFactory)
+    public VideoFinderHostedService(ILogger<VideoFinderHostedService> logger, IServiceScopeFactory serviceScopeFactory)
     {
+        _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;
     }
 
@@ -46,8 +50,7 @@ public sealed class VideoFinderHostedService : IHostedService
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            // TODO: REPLACE CONSOLE WRITELINES WITH LOGGER CALLS!
-            Console.WriteLine("Finding new videos...");
+            _logger.LogInformation("{ServiceName} is ensuring videos are up-to-date", nameof(VideoFinderHostedService));
 
             try
             {
@@ -57,16 +60,26 @@ public sealed class VideoFinderHostedService : IHostedService
                     IVideoService videoService = scope.ServiceProvider.GetRequiredService<IVideoService>();
                     await videoService.FindAndInsertNewVideosAsync();
                 }
+
+                _logger.LogInformation("{ServiceName} has ensured all videos are up-to-date", nameof(VideoFinderHostedService));
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to find new videos: {ex.Message}");
+                _logger.LogError(ex, "{ServiceName} failed to find new videos. Faulted with {ErrorMessage}", nameof(VideoFinderHostedService), ex.Message);
             }
 
-            Console.WriteLine("Finished finding new videos. Waiting 1 day.");
+            // This isn't ideal, but YouTube's JSON payloads that are parsed by the YouTubeExplode library are massive.
+            // The result of this is LOH allocations, which aren't automatically compacted.
+            // The server won't have too much available RAM, so I'd rather force an aggressive GC run to ensure
+            // the other background jobs, and requests have sufficient RAM available, at the cost of a short-term freeze-up.
+            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+            GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: true);
+            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+
+            _logger.LogInformation("{ServiceName} will wait 1 day before checking again", nameof(VideoFinderHostedService));
 
             // TODO: Change this to periodically check when the last job was executed from the DB!
-            // This would reduce the total wait time.
+            // This would reduce the total wait time, and remove duplicate runs on start-up.
             await Task.Delay(TimeSpan.FromDays(1), cancellationToken);
         }
     }

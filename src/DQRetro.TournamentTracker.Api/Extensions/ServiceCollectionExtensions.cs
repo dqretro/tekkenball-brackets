@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using DQRetro.TournamentTracker.Api.Models.Configuration;
 using DQRetro.TournamentTracker.Api.Persistence.Database;
 using DQRetro.TournamentTracker.Api.Persistence.Database.Interfaces;
@@ -37,7 +36,6 @@ public static class ServiceCollectionExtensions
 
         services.Configure<ForwardedHeadersOptions>(options =>
         {
-            // TODO: Verify if using All is necessary here, as we likely only need X-Forwarded-For.
             options.ForwardedHeaders = ForwardedHeaders.All;
 
             string reverseProxyIpAddress = configuration.GetRequiredSection("ForwardedHeaderOptions:ReverseProxyIpAddress").Get<string>();
@@ -55,13 +53,14 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Configures common services used throughout the application. TODO: MORE DESCRIPTIVE DESCRIPTION!
+    /// Configures common or shared services used throughout the application.
     /// </summary>
     /// <param name="services"></param>
     /// <param name="configuration"></param>
     /// <returns></returns>
     public static IServiceCollection AddCommonServices(this IServiceCollection services, IConfiguration configuration)
     {
+        ThrowIfKeysNotSet(configuration);
         services.Configure<KeysConfiguration>(configuration.GetRequiredSection(KeysConfiguration.SectionKey));
 
         // Can unit test 'TimeProvider' using Microsoft.Extensions.TimeProvider.Testing package.  Using this to avoid a custom DateTimeProvider abstraction.
@@ -85,11 +84,13 @@ public static class ServiceCollectionExtensions
     /// The API is only designed to be consumable from the UI.  Therefore, Swagger should only be enabled in Dev, not Prod.
     /// </summary>
     /// <param name="services"></param>
+    /// <param name="configuration"></param>
     /// <param name="isDevelopment"></param>
-    /// <param name="port"></param>
     /// <returns></returns>
-    public static IServiceCollection AddCustomSwagger(this IServiceCollection services, bool isDevelopment, int port)
+    public static IServiceCollection AddCustomSwagger(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
     {
+        string kestrelUrl = configuration.GetValue<string>("Kestrel:Endpoints:Http:Url");
+
         if (!isDevelopment)
         {
             return services;
@@ -106,7 +107,7 @@ public static class ServiceCollectionExtensions
 
             options.AddServer(new OpenApiServer
             {
-                Url = $"http://localhost:{port}"
+                Url = kestrelUrl
             });
         });
 
@@ -121,9 +122,6 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddCustomCors(this IServiceCollection services, IConfiguration configuration)
     {
-        // TODO: Need to add the actual site, and any of Sky's development locations into appsettings.
-        // TODO: Need to determine how auth will work (if we even implement account/auth) (as this will require AllowCredentials, which I have preemptively added.
-        // TODO: Need to determine the security of AllowAnyMethod/AllowAnyHeader.
         services.AddCors(options =>
         {
             options.AddDefaultPolicy(policyBuilder =>
@@ -151,7 +149,6 @@ public static class ServiceCollectionExtensions
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 });
 
         return services;
@@ -172,5 +169,26 @@ public static class ServiceCollectionExtensions
         }
 
         return services;
+    }
+
+    private static void ThrowIfKeysNotSet(IConfiguration configuration)
+    {
+        const string startGgApiKeySectionKey = "Keys:StartGgApiKey";
+        const string startGgApiKeyPlaceholder = "DO NOT COMMIT THIS FILE WITH THIS PROPERTY POPULATED WITH AN ACTUAL KEY!";
+
+        string startGgApiKey = configuration[startGgApiKeySectionKey];
+        if (string.IsNullOrEmpty(startGgApiKey) || startGgApiKey == startGgApiKeyPlaceholder)
+        {
+            throw new Exception("StartGG API Key was not set. The application cannot start without this. Exiting.");
+        }
+
+        const string sqlConnectionStringSectionKey = "Keys:SqlConnectionString";
+        const string sqlConnectionStringPlaceholder = "DO NOT COMMIT THIS FILE WITH THIS PROPERTY POPULATED WITH AN ACTUAL CONNECTION STRING!";
+
+        string sqlConnectionString = configuration[sqlConnectionStringSectionKey];
+        if (string.IsNullOrEmpty(sqlConnectionString) || sqlConnectionString == sqlConnectionStringPlaceholder)
+        {
+            throw new Exception("SQL Connection String was not set. The application cannot start without this. Exiting.");
+        }
     }
 }
