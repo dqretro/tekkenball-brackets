@@ -84,11 +84,13 @@ public static class ServiceCollectionExtensions
     /// The API is only designed to be consumable from the UI.  Therefore, Swagger should only be enabled in Dev, not Prod.
     /// </summary>
     /// <param name="services"></param>
+    /// <param name="configuration"></param>
     /// <param name="isDevelopment"></param>
-    /// <param name="port"></param>
     /// <returns></returns>
-    public static IServiceCollection AddCustomSwagger(this IServiceCollection services, bool isDevelopment, int port)
+    public static IServiceCollection AddCustomSwagger(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
     {
+        string kestrelUrl = configuration.GetValue<string>("Kestrel:Endpoints:Http:Url");
+
         if (!isDevelopment)
         {
             return services;
@@ -105,7 +107,7 @@ public static class ServiceCollectionExtensions
 
             options.AddServer(new OpenApiServer
             {
-                Url = $"http://localhost:{port}"
+                Url = kestrelUrl
             });
         });
 
