@@ -48,6 +48,11 @@ public sealed class VideoFinderHostedService : IHostedService
 
     private async Task UpdateAsync(CancellationToken cancellationToken)
     {
+        // Db-Up migrations run on start-up, and run fairly quickly.
+        // I'm adding a delay here to ensure all migrations have had enough time to execute before attempting to update videos,
+        // as this may otherwise cause the updater to break.
+        await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+
         while (!cancellationToken.IsCancellationRequested)
         {
             _logger.LogInformation("{ServiceName} has started ensuring videos are up-to-date", nameof(VideoFinderHostedService));
