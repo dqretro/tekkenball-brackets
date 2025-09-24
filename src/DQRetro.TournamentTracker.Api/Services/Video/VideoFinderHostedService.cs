@@ -50,7 +50,7 @@ public sealed class VideoFinderHostedService : IHostedService
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            _logger.LogInformation("{ServiceName} is ensuring videos are up-to-date", nameof(VideoFinderHostedService));
+            _logger.LogInformation("{ServiceName} has started ensuring videos are up-to-date", nameof(VideoFinderHostedService));
 
             try
             {
@@ -61,7 +61,7 @@ public sealed class VideoFinderHostedService : IHostedService
                     await videoService.FindAndInsertNewVideosAsync();
                 }
 
-                _logger.LogInformation("{ServiceName} has ensured all videos are up-to-date", nameof(VideoFinderHostedService));
+                _logger.LogInformation("{ServiceName} has finished ensuring all videos are up-to-date", nameof(VideoFinderHostedService));
             }
             catch (Exception ex)
             {
