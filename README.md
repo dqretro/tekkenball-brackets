@@ -21,7 +21,7 @@ This project provides a full front-end for **Tekken Ball tournaments, statistics
 ---
 
 ## 🏟️ start.gg API Integration
-Tournament data is powered by **start.gg API integration** (implemented by Harry).  
+Tournament data is powered by **start.gg API integration**.  
 
 - Pulls live tournament data directly from **start.gg**.  
 - Provides details for **events, brackets, players, standings, and matches**.  
@@ -32,12 +32,11 @@ Tournament data is powered by **start.gg API integration** (implemented by Harry
 ---
 
 ## 🎥 Video Gallery Integration
-The **Gallery** page directly integrates with [Harry’s Tournament Tracker API](https://therollingbuffoons.zapto.org/tournamenttracker/videos).  
+The **Gallery** page directly integrates with the Tournament Tracker API.  
 
-- API supports direct requests (no more CORS proxy required).  
-- `gallery.js` fetches videos directly from Harry’s database.  
+- `gallery.js` fetches videos directly from the API.  
 - Videos are dynamically filtered by **year** and displayed with thumbnails linking to YouTube.  
-- Fully synced with Harry’s curated database of DQRetro content.  
+- Fully synced with DQRetro's content.  
 
 ---
 
