@@ -7,6 +7,7 @@ CREATE TABLE [dbo].[EventVideo] (
     [YouTubeVideoUrl]     VARCHAR(256)                  NOT NULL,
     [YouTubeThumbnailUrl] VARCHAR(256)                  NOT NULL,
     [ReleaseDate]         DATETIME                          NULL,
+    [ExcludedOn]          DATETIME                          NULL, 
     CONSTRAINT [PK_EventVideo] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

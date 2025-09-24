@@ -1,4 +1,4 @@
-﻿using DQRetro.TournamentTracker.Api.Models.Database.DTOs;
+﻿using DQRetro.TournamentTracker.Api.Models.YouTube.Responses;
 
 namespace DQRetro.TournamentTracker.Api.Persistence.YouTube.Interfaces;
 
@@ -12,5 +12,5 @@ public interface IYouTubeRepository
     /// </summary>
     /// <param name="channelId">ChannelId to filter.</param>
     /// <returns>Collection of videos.</returns>
-    Task<IEnumerable<InsertEventVideo>> GetPlaylistVideosByChannelIdAsync(string channelId);
+    Task<IEnumerable<VideosByPlaylistResponse>> GetPlaylistVideosByChannelIdAsync(string channelId);
 }

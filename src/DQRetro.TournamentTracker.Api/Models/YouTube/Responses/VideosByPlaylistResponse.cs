@@ -1,20 +1,10 @@
-﻿namespace DQRetro.TournamentTracker.Api.Models.Database.DTOs;
+﻿namespace DQRetro.TournamentTracker.Api.Models.YouTube.Responses;
 
 /// <summary>
-/// Model representing the variables required for dbo.InsertEventVideo.
+/// Model representing the required variables wrapped from YouTubeExplode's GetUploadsAsync method.
 /// </summary>
-public sealed class InsertEventVideo
+public sealed class VideosByPlaylistResponse
 {
-    /// <summary>
-    /// The uploader's Channel ID.
-    /// </summary>
-    public string YouTubeChannelId { get; set; }
-
-    /// <summary>
-    /// The uploader's Channel Name.
-    /// </summary>
-    public string YouTubeChannelName { get; set; }
-
     /// <summary>
     /// The associated Event ID for this video.
     /// This is not currently automatically populated.
