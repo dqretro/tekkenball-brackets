@@ -167,6 +167,10 @@ public static class ServiceCollectionExtensions
         {
             services.AddHostedService<DbMigrationBackgroundService>();
         }
+        else
+        {
+            Console.WriteLine("DB Migrations are disabled in development mode...");
+        }
 
         return services;
     }
