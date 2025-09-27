@@ -19,6 +19,8 @@ This project provides a full front-end for **Tekken Ball tournaments, statistics
 - **Updates & Integration** – API-driven content with seamless navigation and UI consistency.  
 
 ---
+![Global Players Screenshot](screenshot_globalplayers.png)
+---
 
 ## 🏟️ start.gg API Integration
 Tournament data is powered by **start.gg API integration**.  
@@ -29,8 +31,6 @@ Tournament data is powered by **start.gg API integration**.
 - Ensures accuracy and automation for DQRetro’s Tekken Ball tournament coverage.  
 - 🔗 Reference: [start.gg API Documentation](https://developer.start.gg/)  
 
----
-![Global Players Screenshot](screenshot_globalplayers)
 ---
 
 ## 🎥 Video Gallery Integration
