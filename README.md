@@ -5,10 +5,11 @@
 [![pages-build-deployment](https://github.com/dqretro/tekkenball-brackets/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/dqretro/tekkenball-brackets/actions/workflows/pages/pages-build-deployment)
 
 🌐 Live site: [dqretro.github.io/tekkenball-brackets](https://dqretro.github.io/tekkenball-brackets/)
-
+---
+![Global Players Screenshot](screenshot_globalplayers.png)
 ---
 
-## 📌 Features & Pages
+## Features & Pages
 This project provides a full front-end for **Tekken Ball tournaments, statistics, and media**.  
 
 - **Tournaments** – brackets, matches, standings, players, and event overviews.  
@@ -19,10 +20,8 @@ This project provides a full front-end for **Tekken Ball tournaments, statistics
 - **Updates & Integration** – API-driven content with seamless navigation and UI consistency.  
 
 ---
-![Global Players Screenshot](screenshot_globalplayers.png)
----
 
-## 🏟️ start.gg API Integration
+## start.gg API Integration
 Tournament data is powered by **start.gg API integration**.  
 
 - Pulls live tournament data directly from **start.gg**.  
@@ -33,7 +32,7 @@ Tournament data is powered by **start.gg API integration**.
 
 ---
 
-## 🎥 Video Gallery Integration
+## Video Gallery Integration
 The **Gallery** page directly integrates with the Tournament Tracker API.  
 
 - `gallery.js` fetches videos directly from the API.  
@@ -42,6 +41,6 @@ The **Gallery** page directly integrates with the Tournament Tracker API.
 
 ---
 
-## 👥 Contributors
+## Contributors
 - **Sky Williamson** – [GitHub Profile](https://github.com/SlawSimulation)  
 - **Harry Mather** – [GitHub Profile](https://github.com/HarryCMather)  
