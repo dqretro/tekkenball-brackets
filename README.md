@@ -30,6 +30,8 @@ Tournament data is powered by **start.gg API integration**.
 - 🔗 Reference: [start.gg API Documentation](https://developer.start.gg/)  
 
 ---
+![Global Players Screenshot](screenshot_globalplayers)
+---
 
 ## 🎥 Video Gallery Integration
 The **Gallery** page directly integrates with the Tournament Tracker API.  
