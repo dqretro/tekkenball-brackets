@@ -1,7 +1,6 @@
 using System.Runtime;
 using DQRetro.TournamentTracker.Api.Extensions;
 using DQRetro.TournamentTracker.Api.Middleware;
-using DQRetro.TournamentTracker.Api.Persistence.Database;
 
 namespace DQRetro.TournamentTracker.Api;
 

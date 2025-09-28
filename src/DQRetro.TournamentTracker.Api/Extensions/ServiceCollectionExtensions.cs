@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.RateLimiting;
 using DQRetro.TournamentTracker.Api.Models.Common;
