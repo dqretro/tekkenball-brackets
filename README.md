@@ -16,7 +16,7 @@ This project provides a full front-end for **Tekken Ball tournaments, statistics
 - **Global Statistics** – most used characters, leaderboards, and resettable filters.  
 - **Leaderboards** – sortable results across all tracked events.  
 - **Player Profiles** – track individual performance and match history.  
-- **Video Gallery** – curated YouTube videos dynamically loaded from Harry’s database.  
+- **Video Gallery** – curated YouTube videos dynamically loaded from the Tournament Tracker API.  
 - **Updates & Integration** – API-driven content with seamless navigation and UI consistency.  
 
 ---
