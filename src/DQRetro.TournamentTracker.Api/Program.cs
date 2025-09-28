@@ -28,6 +28,7 @@ public class Program
         builder.WebHost.ConfigureKestrel(kestrelServerOptions =>
         {
             kestrelServerOptions.Configure(builder.Configuration.GetRequiredSection("Kestrel"));
+            kestrelServerOptions.AddServerHeader = false;
         });
 
         bool isDevelopment = builder.Environment.IsDevelopment();
@@ -55,7 +56,7 @@ public class Program
         app.UseAuthorization();
         app.MapControllers();
         app.UseCustomSwagger(isDevelopment);
-        
+
         app.Services.GetRequiredService<ILogger<Program>>()
                     .LogInformation("Startup complete\n" +
                                     "ServerGc: {IsServerGc}\n" +
