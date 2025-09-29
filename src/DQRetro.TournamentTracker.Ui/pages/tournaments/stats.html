@@ -1,39 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Stats</title>
-  <link rel="stylesheet" href="../../styles.css">
-  <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Stats</title>
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+<style>
+/* Layout and basic styling */
+.overview-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+.overview-header .overview-title{display:flex; gap:12px; align-items:baseline;}
+.overview-header h1{margin:0;}
+.overview-header h2{margin:0;font-weight:normal;color:var(--muted);font-size:20px;}
+.stats-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px; margin-top:16px;}
+.not-found { padding: 40px; text-align: center; font-size: 1.2rem; color: var(--muted); }
+.pool-card { display:flex; flex-direction: column; gap:6px; padding:8px 12px; background:var(--card-bg); border-radius:6px; color:var(--text); font-weight:bold; }
+.overview-column { margin-bottom:32px; }
+
+/* Overall Stats Box */
+.overall-stats-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  color: var(--text);
+  font-weight: bold;
+}
+.overall-stats-box .stat-item {
+  flex: 1 1 100px;
+  text-align: center;
+  padding: 8px;
+  background: var(--card-bg-secondary, #333);
+  border-radius: 6px;
+}
+
+/* Sets styling */
+.set {
+  padding: 4px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+  font-size: 0.9rem;
+  position: relative;
+}
+.set.completed { background-color: rgba(0,255,0,0.2); }
+.set.missing { background-color: rgba(255,0,0,0.2); }
+.set .tooltip {
+  visibility: hidden;
+  width: 200px;
+  background-color: #222;
+  color: #fff;
+  text-align: left;
+  padding: 6px 8px;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 10;
+  top: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.85rem;
+}
+.set:hover .tooltip { visibility: visible; }
+</style>
 </head>
 <body class="dark">
 
-  <div id="nav-t-placeholder"></div>
+<div id="nav-t-placeholder"></div>
+<script src="/shared/layout/header/nav/nav_t.js" defer></script>
 
-  <div class="container">
-    <h1>Event Stats</h1>
-
-    <section class="overview-column">
-      <h2>Character Usage</h2>
-      <div id="stats-container" class="stats-grid"></div>
-    </section>
-
-    <section>
-      <h2>Character Usage Pie Chart</h2>
-      <div id="pie-container"></div>
-    </section>
+<div class="container">
+  <div class="overview-header">
+    <div class="overview-title">
+      <h1>Event Statistics</h1>
+      <h2 id="standings-title"></h2>
+    </div>
+    <div id="back-to-events" class="back-button"></div>
   </div>
 
-  <div id="footer-placeholder"></div>
-  <script src="../../script.js"></script>
-  <script src="tournaments.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const slug = urlParams.get("slug");
-      if(slug) renderEventStats(slug);
-    });
-  </script>
+  <!-- Overall Stats -->
+  <section class="overview-column">
+    <h2>Overall Stats</h2>
+    <div id="overall-stats" class="overall-stats-box">
+      <!-- Injected by JS -->
+    </div>
+  </section>
+
+  <!-- Pools Section -->
+  <section class="overview-column">
+    <h2>Pools</h2>
+    <div id="pools-container">
+      <!-- Injected by JS -->
+    </div>
+  </section>
+
+  <!-- Topcut Section -->
+  <section class="overview-column">
+    <h2>Topcut</h2>
+    <div id="topcut-container">
+      <!-- Injected by JS -->
+    </div>
+  </section>
+
+  <!-- Character Usage Section -->
+  <section class="overview-column">
+    <h2>Character Usage</h2>
+    <div id="stats-container" class="stats-grid"></div>
+    <canvas id="characterUsageChart" style="max-height:600px; width:100%; margin-top:16px;"></canvas>
+  </section>
+
+</div>
+
+<div id="footer-placeholder"></div>
+
+<!-- Utilities -->
+<script src="../../shared/utils/not-found.js"></script>
+<script src="../../script.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- Your read-only stats script -->
+<script src="stats.js"></script>
+
+<script>
+loadNav();
+loadFooter();
+</script>
+
 </body>
 </html>
