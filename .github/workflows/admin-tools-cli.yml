@@ -24,6 +24,8 @@ jobs:
       DOTNET_SERVER_GC: false
       DOTNET_RUNTIME_ID: win-x64
       DOTNET_SELF_CONTAINED: true
+      DOTNET_SINGLE_FILE: true
+      DOTNET_PUBLISH_TRIMMED: false
       IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
     
     steps:
@@ -39,13 +41,13 @@ jobs:
         run: dotnet restore ${{ env.CLI_CSPROJ_PATH }} --runtime ${{ env.DOTNET_RUNTIME_ID }}
       
       - name: ".NET: Build"
-        run: dotnet build ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --runtime ${{ env.DOTNET_RUNTIME_ID }} /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
+        run: dotnet build ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
       
       - name: ".NET: Publish"
-        run: dotnet publish ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --runtime ${{ env.DOTNET_RUNTIME_ID }} --self-contained ${{ env.DOTNET_SELF_CONTAINED }} --output ${{ env.CLI_OUTPUT_FOLDER }} /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
+        run: dotnet publish ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --runtime ${{ env.DOTNET_RUNTIME_ID }} --self-contained ${{ env.DOTNET_SELF_CONTAINED }} --output ${{ env.CLI_OUTPUT_FOLDER }} /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }} /p:PublishSingleFile=${{ env.DOTNET_SINGLE_FILE }} /p:PublishTrimmed=${{ env.DOTNET_PUBLISH_TRIMMED }}
 
       - name: "Publish: CLI Artifact"
-        if: ${{ env.IS_MAIN == 'true' }}
+        # if: ${{ env.IS_MAIN == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: DQRetro.TournamentTracker.Admin.Tools-${{ env.DOTNET_RUNTIME_ID }}
