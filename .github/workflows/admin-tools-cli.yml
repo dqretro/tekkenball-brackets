@@ -44,7 +44,7 @@ jobs:
         run: dotnet build ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --runtime ${{ env.DOTNET_RUNTIME_ID }} /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
       
       - name: ".NET: Publish"
-        run: dotnet publish ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --runtime ${{ env.DOTNET_RUNTIME_ID }} --output ${{ env.CLI_OUTPUT_FOLDER }} /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }} /p:SelfContained=${{ env.DOTNET_SELF_CONTAINED }} /p:PublishSingleFile=${{ env.DOTNET_SINGLE_FILE }} /p:PublishTrimmed=${{ env.DOTNET_PUBLISH_TRIMMED }}
+        run: dotnet publish ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --runtime ${{ env.DOTNET_RUNTIME_ID }} --self-contained ${{ env.DOTNET_SELF_CONTAINED }} --output ${{ env.CLI_OUTPUT_FOLDER }} /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }} /p:PublishSingleFile=${{ env.DOTNET_SINGLE_FILE }} /p:PublishTrimmed=${{ env.DOTNET_PUBLISH_TRIMMED }}
 
       - name: "Publish: CLI Artifact"
         # if: ${{ env.IS_MAIN == 'true' }}

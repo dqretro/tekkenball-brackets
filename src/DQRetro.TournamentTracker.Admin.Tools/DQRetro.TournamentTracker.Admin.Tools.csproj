@@ -14,7 +14,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DQRetro.TournamentTracker.Api\DQRetro.TournamentTracker.Api.csproj" />
+      <ProjectReference Include="..\DQRetro.TournamentTracker.Api\DQRetro.TournamentTracker.Api.csproj">
+        <Private>false</Private>
+        <ExcludeAssets>runtime</ExcludeAssets>
+      </ProjectReference>
     </ItemGroup>
 
     <ItemGroup>
