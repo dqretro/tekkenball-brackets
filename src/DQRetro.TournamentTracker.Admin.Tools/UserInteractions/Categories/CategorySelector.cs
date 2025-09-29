@@ -18,7 +18,7 @@ public sealed class CategorySelector
         _categories = categories;
         _categoryDescriptions = _categories.Select(kvp => $"{kvp.Key} - {kvp.Value.Description}").ToList();
         _exitOption = (byte)(_categories.Count + 1);
-        _categoryDescriptions.Add($"{_exitOption} - Go Back");
+        _categoryDescriptions.Add($"{_exitOption} - Exit");
     }
 
     /// <summary>
