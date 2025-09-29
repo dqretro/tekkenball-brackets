@@ -42,7 +42,7 @@ public sealed class ExcludeVideoCategoryItem : ICategoryItem
         Console.WriteLine("Enter the number to the left of the video you wish to exclude:");
         for (ushort count = 1; count <= videos.Count; count++)
         {
-            Console.WriteLine($"{count}\t\"{videos[count].Title}\"\tBy\"{videos[count].ChannelName}\"");
+            Console.WriteLine($"{count}\t\"{videos[count - 1].Title}\"\tBy \"{videos[count - 1].ChannelName}\"");
         }
 
         ushort videoIndex;
