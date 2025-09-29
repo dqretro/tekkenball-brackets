@@ -36,10 +36,10 @@ jobs:
           dotnet-version: "9.0.x"
       
       - name: ".NET: Restore"
-        run: dotnet restore ${{ env.CLI_CSPROJ_PATH }}
+        run: dotnet restore ${{ env.CLI_CSPROJ_PATH }} --runtime ${{ env.DOTNET_RUNTIME_ID }}
       
       - name: ".NET: Build"
-        run: dotnet build ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
+        run: dotnet build ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --runtime ${{ env.DOTNET_RUNTIME_ID }} /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
       
       - name: ".NET: Publish"
         run: dotnet publish ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --runtime ${{ env.DOTNET_RUNTIME_ID }} --self-contained ${{ env.DOTNET_SELF_CONTAINED }} --output ${{ env.CLI_OUTPUT_FOLDER }} /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
