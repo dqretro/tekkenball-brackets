@@ -364,3 +364,7 @@ src/DQRetro.TournamentTracker.Ui/images/socials/icons/icon-template.psd
 src/DQRetro.TournamentTracker.Ui/images/dqretro/logostournament_logo.psd
 src/DQRetro.TournamentTracker.Ui/images/games/boxart-template.psd
 src/DQRetro.TournamentTracker.Ui/pages/gallery/config.json
+
+src/DQRetro.TournamentTracker.Ui/pages/tournaments/placeholder-data/tournaments-placeholder-3.json
+src/DQRetro.TournamentTracker.Ui/pages/tournaments/placeholder-data/tournaments-placeholder-6.json
+src/DQRetro.TournamentTracker.Ui/pages/json-generator.html

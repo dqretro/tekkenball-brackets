@@ -22,23 +22,12 @@ async function fetchVideosFromDB() {
   try {
     showLoading();
 
-    const proxyUrl = "https://corsproxy.io/?";
-    const targetUrl = "https://therollingbuffoons.zapto.org/tournamenttracker/video";
-    const res = await fetch(proxyUrl + encodeURIComponent(targetUrl));
+    const targetUrl = "https://therollingbuffoons.zapto.org/tournamenttracker/videos";
+    const res = await fetch(targetUrl);
 
     console.log("Fetch response status:", res.status, res.statusText);
 
-    const text = await res.text();
-    console.log("Raw response text:", text);
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (err) {
-      console.error("Failed to parse JSON:", err);
-      showGalleryMessage("Failed to parse JSON from the database.");
-      return;
-    }
+    const data = await res.json();
 
     if (!Array.isArray(data) || data.length === 0) {
       showGalleryMessage("No videos found in the database.");
@@ -63,7 +52,6 @@ async function fetchVideosFromDB() {
     showGalleryMessage("Failed to fetch videos from the database.");
   }
 }
-
 
 // --------------------------
 // Populate Year Dropdown

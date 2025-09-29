@@ -1,67 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Brackets</title>
-  <link rel="stylesheet" href="../../styles.css">
-  <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Brackets</title>
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+<style>
+  .overview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .overview-header .overview-title {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+  }
+  .overview-header h1 { margin: 0; }
+  .overview-header h2 { margin: 0; font-weight: normal; color: var(--muted); font-size: 20px; }
+
+  .summary, .pools, .top-cut { margin-top: 16px; }
+  .pool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+  .pool-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--card-bg);
+    padding: 12px;
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: bold;
+    transition: transform 0.1s ease-in-out;
+  }
+  .pool-card:hover { transform: scale(1.05); background: var(--highlight); color: #fff; }
+
+  /* Not found message */
+  .not-found {
+    padding: 40px;
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--muted);
+  }
+</style>
 </head>
 <body class="dark">
 
-  <!-- Navigation -->
-  <div id="nav-t-placeholder"></div>
+<div id="nav-t-placeholder"></div>
+<script src="/shared/layout/header/nav/nav_t.js" defer></script>
 
-  <div class="container">
-
-    <h1>Tournament Brackets</h1>
-
-  <!-- Summary -->
-  <section class="summary">
-    <h2>Summary</h2>
-    <p>
-      <strong id="entrant-count">0 Entrants</strong>, 
-      <span id="pool-count">0 Pools</span> → 
-      <span id="topcut-size">Top 0</span>, Double Elimination
-    </p>
-  </section>
-
-  <!-- Pools -->
-  <section class="pools">
-    <h2>Pools</h2>
-    <div class="pool-grid">
-      <!-- Pool links generated dynamically -->
+<div class="container">
+  <div class="overview-header">
+    <div class="overview-title">
+      <h1>Event Brackets</h1>
+      <h2 id="standings-title"></h2>
     </div>
-  </section>
+    <div id="back-to-events" class="back-button"></div>
+  </div>
 
-  <!-- Top Cut -->
-  <section class="top-cut">
-    <h2>Top Cut</h2>
-    <p><span id="topcut-size">Top 0</span> Bracket</p>
-    <a id="topcut-link" href="#" class="pool-card">Top Bracket</a>
-  </section>
+  <div id="content-container">
+    <!-- Summary -->
+    <section class="summary">
+      <h2>Summary</h2>
+      <p>
+        <strong id="entrant-count">0 Entrants</strong>,
+        <span id="pool-count">0 Pools</span> → 
+        <span id="topcut-size-text">Top 0</span>, Double Elimination
+      </p>
+    </section>
 
-  <!-- Tournament List -->
-  <section id="tournamentList" class="tournament-list"></section>
-  <section id="topcutBracket" class="tournament-list"></section>
+    <!-- Pools -->
+    <section class="pools">
+      <h2>Pools</h2>
+      <div id="poolsContainer" class="pool-grid">
+        <!-- Pools dynamically loaded -->
+      </div>
+    </section>
 
-<!-- Footer -->
+    <!-- Top Cut -->
+    <section class="top-cut">
+      <h2>Top Cut</h2>
+      <div id="topcutContainer" class="pool-grid">
+        <!-- Top Cut dynamically loaded -->
+      </div>
+    </section>
+  </div>
+</div>
+
 <div id="footer-placeholder"></div>
 
-<!-- Load JS -->
+<!-- Utilities first -->
+<script src="../../shared/utils/not-found.js"></script>
 <script src="../../script.js"></script>
 <script src="tournaments.js"></script>
+<script src="standings.js"></script>
+<script src="pools.js" defer></script>
+<script src="topcut.js" defer></script>
 
-  <script>
-    // Load shared nav and footer
-    loadNav();
-    loadFooter();
+<script>
+  loadNav();
+  loadFooter();
 
-    // Load tournaments dynamically on homepage
-    if(document.getElementById("tournamentList")){
-      loadTournamentsLanding(); // /api/tournaments
+  (async () => {
+    const urlSlug = new URLSearchParams(window.location.search).get("slug");
+    if (!urlSlug) {
+      showNotFound("No event specified. Please return to Events.");
+      return;
     }
-  </script>
+
+    const event = await loadEventStats(urlSlug);
+    if (!event) {
+      showNotFound(`Event with slug "${urlSlug}" not found. Please return to Events.`);
+      return;
+    }
+
+    // Update header dynamically
+    const headerEl = document.getElementById("standings-title");
+    if(headerEl) headerEl.textContent = `${event.tournamentName} - ${event.name}`;
+
+    // Load summary stats, pools, and top cut
+    await loadPools(urlSlug);
+    await loadTopCut(urlSlug);
+
+    // Handle back/forward browser navigation
+    window.addEventListener("popstate", async () => {
+      const newSlug = new URLSearchParams(window.location.search).get("slug");
+      if (!newSlug) return;
+
+      const newEvent = await loadEventStats(newSlug);
+      if (!newEvent) {
+        showNotFound(`Event with slug "${newSlug}" not found. Please return to Events.`);
+        return;
+      }
+
+      if(headerEl) headerEl.textContent = `${newEvent.tournamentName} - ${newEvent.name}`;
+      await loadPools(newSlug);
+      await loadTopCut(newSlug);
+    });
+  })();
+</script>
 
 </body>
 </html>

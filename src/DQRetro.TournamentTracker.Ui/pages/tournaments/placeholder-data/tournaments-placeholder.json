@@ -1,0 +1,71 @@
+{
+  "tournaments": [
+    {
+      "name": "VSFighting XIII",
+      "slug": "vsfighting-xiii",
+      "game": "Tekken 8",
+      "status": "completed",
+      "startAt": "2025-08-16"
+    }
+  ],
+  "events": [
+    {
+      "slug": "vsfighting-xiii",
+      "events": [
+        {
+          "name": "Tekken Ball Hosted by DQRetro",
+          "slug": "vsfighting-xiii-tekken-ball-hosted-by-dqretro",
+          "startAt": "2025-08-16",
+          "game": "Tekken 8",
+          "entrants": {
+            "nodes": [
+              {"name":"PND | Strykie","mainCharacter":"Yoshimitsu","characters":["Yoshimitsu", "Jun"],"wins":6,"losses":0},
+              {"name":"NGI | Sabrewoif","mainCharacter":"Clive","characters":["Clive","Kuma", "Law"],"wins":6,"losses":2},
+              {"name":"HarryCM01","mainCharacter":"Anna","characters":["Anna", "Asuka", "Law"],"wins":4,"losses":2},
+              {"name":"MILKGUY | Orion","mainCharacter":"Random","characters":["Random"],"wins":4,"losses":2},
+              {"name":"DQ | ProtonicCobra","mainCharacter":"Jack-8","characters":["Jack-8", "Alisa", "Lee"],"wins":5,"losses":2},
+              {"name":"RIF | Geowesome","mainCharacter":"Clive","characters":["Clive", "Alisa"],"wins":4,"losses":2},
+              {"name":"SFO | Zepphyr","mainCharacter":"Devil-Jin","characters":["Devil-Jin"],"wins":5,"losses":2},
+              {"name":"Cringe Lord","mainCharacter":"Random","characters":["Random"],"wins":3,"losses":2},
+              {"name":"Zollith","mainCharacter":"Victor","characters":["Victor"],"wins":3,"losses":2},
+              {"name":"Xavio Tao","mainCharacter":"Asuka","characters":["Asuka"],"wins":3,"losses":2},
+              {"name":"DQ | SlawPro","mainCharacter":"Azucena","characters":["Azucena", "Leo"],"wins":2,"losses":2},
+              {"name":"TKC | Temphuibis","mainCharacter":"King","characters":["King"],"wins":2,"losses":2},
+              {"name":"Lucky Merc","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
+              {"name":"Scarwork","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
+              {"name":"Martian Stache","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
+              {"name":"meowmeow","mainCharacter":"Random","characters":["Random"],"wins":3,"losses":2},
+              {"name":"Gaer Gaeaf","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
+              {"name":"WizardKing","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
+              {"name":"ELF | Pygmy_Slaaneesh","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
+              {"name":"Schizoid","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
+              {"name":"MBA | Icarus","mainCharacter":"Law","characters":["Law"],"wins":3,"losses":2},
+              {"name":"MU | Alumento","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
+              {"name":"NJT | DerpxShikari","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
+              {"name":"JustATreatMan","mainCharacter":"Lidia","characters":["Eddy", "Lidia"],"wins":2,"losses":2},
+              {"name":"EXGaiden","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
+              {"name":"Saerilee","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
+              {"name":"arfrix","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
+              {"name":"Laughing Bat","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
+              {"name":"Druger","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
+              {"name":"AgentApe","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
+              {"name":"BigHenchy","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
+              {"name":"Sephiroth","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
+              {"name":"Remmy","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
+              {"name":"SCHIZOPHRENIC69","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
+              {"name":"MJ-Raijin","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
+              {"name":"DQ | Rampage","mainCharacter":"Asuka","characters":["Asuka"],"wins":0,"losses":2},
+              {"name":"4SPG | Divine Blade of Scuff","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
+              {"name":"HarleKris","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
+              {"name":"Bloke-Chan","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
+              {"name":"Average Gang | Zane","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
+              {"name":"MFGC | Mackone","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
+              {"name":"Tokon Black","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
+              {"name":"ESC | The 129","mainCharacter":"Kazuya","characters":["Kazuya"],"wins":0,"losses":2}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
