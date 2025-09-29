@@ -22,6 +22,8 @@ jobs:
       CLI_OUTPUT_FOLDER: ./DQRetro.TournamentTracker.Admin.Tools
       DOTNET_CONFIGURATION: Release
       DOTNET_SERVER_GC: false
+      DOTNET_RUNTIME_ID: win-x64
+      DOTNET_SELF_CONTAINED: true
       IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
     
     steps:
@@ -40,13 +42,13 @@ jobs:
         run: dotnet build ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
       
       - name: ".NET: Publish"
-        run: dotnet publish ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --output ${{ env.CLI_OUTPUT_FOLDER }} /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
+        run: dotnet publish ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --runtime ${{ env.DOTNET_RUNTIME_ID }} --self-contained ${{ env.DOTNET_SELF_CONTAINED }} --output ${{ env.CLI_OUTPUT_FOLDER }} /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
 
       - name: "Publish: CLI Artifact"
         if: ${{ env.IS_MAIN == 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: DQRetro.TournamentTracker.Admin.Tools
+          name: DQRetro.TournamentTracker.Admin.Tools-${{ DOTNET_RUNTIME_ID }}
           path: ${{ env.CLI_OUTPUT_FOLDER }}
           compression-level: 9 # Refers to ZLib compression levels (between 0(none) and 9(heavily compressed))
           if-no-files-found: error
