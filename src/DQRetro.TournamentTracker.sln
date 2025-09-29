@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DQRetro.TournamentTracker.A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{700839F6-DC41-451C-9F7F-CF045AADFE6A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{D629716F-D7B8-486C-992A-48F8BA345DC6}"
-EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DQRetro.TournamentTracker.Db", "DQRetro.TournamentTracker.Db\DQRetro.TournamentTracker.Db.sqlproj", "{0F0C8F3F-8769-4BD7-84D2-CE275E3AB8E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DQRetro.TournamentTracker.Admin.Tools", "DQRetro.TournamentTracker.Admin.Tools\DQRetro.TournamentTracker.Admin.Tools.csproj", "{4B41D491-DEB5-4A64-8302-C5225C81FC17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +27,10 @@ Global
 		{0F0C8F3F-8769-4BD7-84D2-CE275E3AB8E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F0C8F3F-8769-4BD7-84D2-CE275E3AB8E1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0F0C8F3F-8769-4BD7-84D2-CE275E3AB8E1}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4B41D491-DEB5-4A64-8302-C5225C81FC17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B41D491-DEB5-4A64-8302-C5225C81FC17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B41D491-DEB5-4A64-8302-C5225C81FC17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B41D491-DEB5-4A64-8302-C5225C81FC17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -34,5 +38,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{639D0825-6993-4FD2-AF10-1DFA4EEC1317} = {700839F6-DC41-451C-9F7F-CF045AADFE6A}
 		{0F0C8F3F-8769-4BD7-84D2-CE275E3AB8E1} = {700839F6-DC41-451C-9F7F-CF045AADFE6A}
+		{4B41D491-DEB5-4A64-8302-C5225C81FC17} = {700839F6-DC41-451C-9F7F-CF045AADFE6A}
 	EndGlobalSection
 EndGlobal
