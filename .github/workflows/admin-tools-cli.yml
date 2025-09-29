@@ -48,7 +48,7 @@ jobs:
         if: ${{ env.IS_MAIN == 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: DQRetro.TournamentTracker.Admin.Tools-${{ DOTNET_RUNTIME_ID }}
+          name: DQRetro.TournamentTracker.Admin.Tools-${{ env.DOTNET_RUNTIME_ID }}
           path: ${{ env.CLI_OUTPUT_FOLDER }}
           compression-level: 9 # Refers to ZLib compression levels (between 0(none) and 9(heavily compressed))
           if-no-files-found: error
