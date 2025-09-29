@@ -1,0 +1,52 @@
+name: Build & Publish Admin Tools CLI
+
+on:
+  push:
+    branches:
+     - main
+    paths:
+     - "src/DQRetro.TournamentTracker.Admin.Tools/**"
+     - ".github/workflows/admin-tools-cli.yml"
+  pull_request:
+    paths:
+     - "src/DQRetro.TournamentTracker.Admin.Tools/**"
+     - ".github/workflows/admin-tools-cli.yml"
+
+jobs:
+  build:
+    name: Build & Publish Admin Tools CLI
+    runs-on: "ubuntu-latest"
+    
+    env:
+      CLI_CSPROJ_PATH: src/DQRetro.TournamentTracker.Admin.Tools/DQRetro.TournamentTracker.Admin.Tools.csproj
+      CLI_OUTPUT_FOLDER: ./DQRetro.TournamentTracker.Admin.Tools
+      DOTNET_CONFIGURATION: Release
+      DOTNET_SERVER_GC: false
+      IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
+    
+    steps:
+      - name: "Src: Checkout"
+        uses: actions/checkout@v5
+      
+      - name: ".NET: Install SDK"
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "9.0.x"
+      
+      - name: ".NET: Restore"
+        run: dotnet restore ${{ env.CLI_CSPROJ_PATH }}
+      
+      - name: ".NET: Build"
+        run: dotnet build ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
+      
+      - name: ".NET: Publish"
+        run: dotnet publish ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --output ${{ env.CLI_OUTPUT_FOLDER }} /p:ServerGarbageCollection=${{ env.DOTNET_SERVER_GC }}
+
+      - name: "Publish: CLI Artifact"
+        if: ${{ env.IS_MAIN == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: DQRetro.TournamentTracker.Admin.Tools
+          path: ${{ env.CLI_OUTPUT_FOLDER }}
+          compression-level: 9 # Refers to ZLib compression levels (between 0(none) and 9(heavily compressed))
+          if-no-files-found: error
