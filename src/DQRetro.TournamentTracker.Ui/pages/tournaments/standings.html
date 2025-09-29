@@ -1,47 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Standings</title>
-  <link rel="stylesheet" href="../../styles.css">
-  <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+<meta charset="UTF-8">
+<title>Event Standings</title>
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+<style>
+.overview-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+.overview-header .overview-title{display:flex; gap:12px; align-items:baseline;}
+.overview-header h1{margin:0;}
+.overview-header h2{margin:0;font-weight:normal;color:var(--muted);font-size:20px;}
+.standings-table table{width:100%;border-collapse:collapse;}
+.standings-table th,.standings-table td{padding:8px 12px;border:1px solid var(--line);text-align:left;}
+</style>
 </head>
 <body class="dark">
 
-  <!-- Navigation -->
-  <div id="nav-t-placeholder"></div>
+<div id="nav-t-placeholder"></div>
+<script src="/shared/layout/header/nav/nav_t.js" defer></script>
 
-  <div class="container">
-
-    <h1>Event Standings</h1>
-
-    <section class="overview-column">
-
-      <div class="standings-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Placed</th>
-              <th>Player</th>
-              <th>Wins</th>
-              <th>Losses</th>
-              <th>Set Win %</th>
-              <th>Lost To</th>
-            </tr>
-          </thead>
-          <tbody id="standings-body">
-            <!-- Populated by script.js -->
-          </tbody>
-        </table>
-      </div>
-    </section>
+<div class="container">
+  <div class="overview-header">
+    <div class="overview-title">
+      <h1>Event Standings</h1>
+      <h2 id="standings-title"></h2>
+    </div>
+    <div id="back-to-events" class="back-button"></div>
   </div>
 
-  <!-- Footer -->
-  <div id="footer-placeholder"></div>
+  <section class="standings-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Placed</th>
+          <th>Player</th>
 
-  <script src="../../script.js"></script>
-  <script src="tournaments.js"></script>
+          <th>Wins</th>
+          <th>Losses</th>
+          <th>Set Win %</th>
+          <th>Lost To</th>
+        </tr>
+      </thead>
+      <tbody id="standings-body"></tbody>
+    </table>
+  </section>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<!-- Shared utility for not-found handling -->
+<script src="../../shared/utils/not-found.js"></script>
+<script src="../../script.js"></script>
+<script src="standings.js"></script>
+
+<script>
+loadNav();
+loadFooter();
+
+(async () => {
+  const slug = new URLSearchParams(window.location.search).get("slug");
+
+  if (!slug) {
+    showNotFound("No event specified. Please return to Events.");
+    return;
+  }
+
+  const event = await loadEventStats(slug);
+  if (!event) {
+    showNotFound(`Event with slug "${slug}" not found. Please return to Events.`);
+    return;
+  }
+
+  await loadStandings(slug);
+  await updateEventHeader(slug);
+})();
+</script>
+
 </body>
 </html>
