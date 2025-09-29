@@ -24,8 +24,8 @@ public sealed class AddNewVideoChannelCategoryItem : ICategoryItem
     /// <param name="videoAdminToolsYouTubeRepository">YouTubeRepository containing admin-only tools logic.</param>
     /// <param name="videoAdminToolsSqlRepository">Videos SQL Repository containing admin-only tools logic.</param>
     public AddNewVideoChannelCategoryItem(IYouTubeRepository youTubeRepository,
-                                     VideoAdminToolsYouTubeRepository videoAdminToolsYouTubeRepository,
-                                     VideoAdminToolsSqlRepository videoAdminToolsSqlRepository)
+                                          VideoAdminToolsYouTubeRepository videoAdminToolsYouTubeRepository,
+                                          VideoAdminToolsSqlRepository videoAdminToolsSqlRepository)
     {
         _youTubeRepository = youTubeRepository;
         _videoAdminToolsYouTubeRepository = videoAdminToolsYouTubeRepository;
