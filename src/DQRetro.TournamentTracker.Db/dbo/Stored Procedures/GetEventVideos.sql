@@ -15,7 +15,8 @@ BEGIN
       LEFT JOIN dbo.VideoChannel vc
         ON ev.[VideoChannelId] = vc.[Id]
       LEFT JOIN dbo.[Event] e
-        ON ev.[EventId] = e.[Id];
+        ON ev.[EventId] = e.[Id]
+     WHERE ev.[ExcludedOn] IS NULL;
 END
 GO
 GRANT EXECUTE

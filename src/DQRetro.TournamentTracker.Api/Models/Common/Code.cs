@@ -10,5 +10,6 @@ public enum Code
     TimeoutError = 4,
     SqlError = 5,
     FeatureNotImplemented = 6,
+    RateLimitExceeded = 7,
     #endregion
 }

@@ -1,4 +1,5 @@
-﻿using DQRetro.TournamentTracker.Api.Models.Api.Responses;
+﻿using System.Data;
+using DQRetro.TournamentTracker.Api.Models.Api.Responses;
 using DQRetro.TournamentTracker.Api.Models.Database.DTOs;
 
 namespace DQRetro.TournamentTracker.Api.Persistence.Database.Interfaces;
@@ -15,22 +16,15 @@ public interface IVideoSqlRepository
     Task<List<EventVideo>> GetEventVideosAsync();
 
     /// <summary>
-    /// Gets a list of all currently tracked YouTube Channel IDs from the VideoChannel table.
+    /// Gets a list of all currently tracked YouTube Channels from the VideoChannel table.
     /// </summary>
-    /// <returns>Collection of Video Channel IDs.</returns>
-    Task<IEnumerable<string>> GetYouTubeChannelIdsAsync();
+    /// <returns>Collection of VideoChannels.</returns>
+    Task<IEnumerable<YouTubeChannel>> GetYouTubeChannelsAsync();
 
     /// <summary>
-    /// Checks whether a given EventVideo already exists in the database.
+    /// Updates (if already exists) or Inserts (if it doesn't already exist) a collection of EventVideos from the provided DataTable.
     /// </summary>
-    /// <param name="youTubeVideoId">The YouTubeVideoId to check.</param>
-    /// <returns>True if it already exists, otherwise false.</returns>
-    Task<bool> CheckIfEventVideoExistsAsync(string youTubeVideoId);
-
-    /// <summary>
-    /// Inserts a new EventVideo into the EventVideo table.
-    /// </summary>
-    /// <param name="video">Video to insert.</param>
-    /// <returns></returns>
-    Task InsertEventVideoAsync(InsertEventVideo video);
+    /// <param name="eventVideosUpsertTvpDataTable">Datatable to convert to dbo.EventVideoUpsertTvp.</param>
+    /// <returns>A collection of modified (updated or inserted) EventVideos.</returns>
+    Task<IEnumerable<UpsertEventVideoResponse>> UpsertEventVideosAsync(DataTable eventVideosUpsertTvpDataTable);
 }
