@@ -26,27 +26,20 @@
 
   <!-- Tournament List -->
   <div id="tournamentList" class="tournament-grid">
-    <!-- Populated via script.js -->
+    <!-- Populated via tournaments.js -->
   </div>
 </div>
 
 <!-- Footer -->
 <div id="footer-placeholder"></div>
 
-<!-- Load JS -->
 <script src="../../script.js"></script>
 <script src="tournaments.js"></script>
-
-  <script>
-    // Load shared nav and footer
-    loadNav();
-    loadFooter();
-
-    // Load tournaments dynamically on homepage
-    if(document.getElementById("tournamentList")){
-      loadTournamentsLanding(); // /api/tournaments
-    }
-  </script>
+<script>
+  // Load shared nav and footer
+  loadNav();
+  loadFooter();
+</script>
 
 </body>
 </html>

@@ -6,49 +6,110 @@
   <title>Event Page</title>
   <link rel="stylesheet" href="../../styles.css">
   <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+  <style>
+    /* Highlight active event */
+    #relatedEvents a.active-event {
+      font-weight: bold;
+      color: gold;
+    }
+    #relatedEvents a {
+      display: block;
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+    /* Inline header layout */
+    .event-header > * {
+      display: inline-block;
+      margin-right: 12px;
+    }
+  </style>
 </head>
 <body class="dark">
 
-  <!-- Navigation -->
   <div id="nav-t-placeholder"></div>
 
   <div class="container">
+    <div id="stats-container">
+      <!-- Event Header -->
+      <header class="event-header">
+        <h2 id="tournament-name">Tournament Name</h2>
+        <p id="event-date">Date: </p>
+        <p id="event-game">Game: </p>
+        <p id="event-entrants">Entrants: </p>
+      </header>
 
-    <!-- Event Header -->
-    <header class="event-header">
-      <h1 id="event-title">Events - VSFighting XIII</h1>
-      <p id="event-date-location">15-17/08/25 | Curzon St, Birmingham B4 7XG, UK</p>
-    </header>
+      <!-- Related Events -->
+      <section id="relatedEvents" class="event-list"></section>
 
-    <!-- Related Events -->
-    <section id="relatedEvents" class="event-list">
-      <a href="/pages/tournaments/overview.html"><h2>Tekken 8 Ball</h2></a>
-      <!-- Dynamically generated list of other events in the tournament -->
-    </section>
+      <!-- Show More Button -->
+      <div class="show-more-section">
+        <a id="showMoreLink" href="#" target="_blank" rel="noopener noreferrer">
+          <button type="button">Show More on Start.gg</button>
+        </a>
+      </div>
 
-    <!-- Show More Button -->
-    <div class="show-more-section">
-      <a href="https://www.start.gg/tournament/vsfighting-xiii/events" target="_blank" rel="noopener noreferrer">
-      <button type="button">Show More</button>
-      </a>
+      <!-- Back to Tournaments -->
+      <div id="back-to-tournaments"></div>
     </div>
   </div>
 
-  <!-- Footer -->
-<div id="footer-placeholder"></div>
+  <div id="footer-placeholder"></div>
 
   <script src="../../script.js"></script>
-  <script src="tournaments.js"></script>
-
-    <script>
-    // Load shared nav and footer
-
+  <script src="events.js"></script>
+  <script>
+    loadNav();
     loadFooter();
 
-    // Load tournaments dynamically on homepage
-    if(document.getElementById("tournamentList")){
-      loadTournamentsLanding(); // /api/tournaments
+    const urlParams = new URLSearchParams(window.location.search);
+    let slug = urlParams.get("slug");
+
+    async function initEventPage(currentSlug) {
+      if (!currentSlug) {
+        const placeholders = await loadPlaceholderData();
+        currentSlug = placeholders.events?.[0]?.events?.[0]?.slug || null;
+        if (currentSlug) {
+          window.history.replaceState({}, "", `?slug=${encodeURIComponent(currentSlug)}`);
+        }
+      }
+      if (!currentSlug) return;
+
+      await loadEventStats(currentSlug);
+
+      // Populate Related Events
+      const relatedEventsContainer = document.getElementById("relatedEvents");
+      const tournament = await fetchTournament(currentSlug);
+      relatedEventsContainer.innerHTML = "";
+
+      (tournament?.events || []).forEach(ev => {
+        const link = document.createElement("a");
+        link.textContent = ev.name;
+        if (ev.slug === currentSlug) link.classList.add("active-event");
+
+        // Navigate to overview page on click
+        link.href = withBase(`/pages/tournaments/overview.html?slug=${encodeURIComponent(ev.slug)}`);
+        link.addEventListener("click", e => {
+          e.preventDefault();
+          window.location.href = link.href;
+        });
+
+        relatedEventsContainer.appendChild(link);
+      });
+
+      // Update Show More link
+      const showMoreLink = document.getElementById("showMoreLink");
+      if (showMoreLink) {
+        showMoreLink.href = `https://www.start.gg/tournament/${tournament?.slug}/events`;
+      }
     }
+
+    initEventPage(slug);
+
+    // Handle browser back/forward navigation
+    window.addEventListener("popstate", () => {
+      const newSlug = new URLSearchParams(window.location.search).get("slug");
+      if (newSlug) initEventPage(newSlug);
+    });
   </script>
 </body>
 </html>

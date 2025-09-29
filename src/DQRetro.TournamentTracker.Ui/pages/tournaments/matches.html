@@ -1,81 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Matches</title>
-  <link rel="stylesheet" href="../../styles.css">
-  <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Matches</title>
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+<style>
+.overview-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+.overview-header .overview-title { display:flex; gap:12px; align-items:baseline; }
+.overview-header h1 { margin:0; }
+.overview-header h2 { margin:0; font-weight:normal; color:var(--muted); font-size:20px; }
+
+.matches-column { margin-top:16px; }
+.matches-table table { width:100%; border-collapse:collapse; margin-top:8px; }
+.matches-table th, .matches-table td { padding:8px 12px; border:1px solid var(--line); text-align:left; }
+
+#topcut-section { margin-top:24px; }
+#topcut-section h2 { margin-bottom:8px; }
+
+.not-found { padding: 40px; text-align: center; font-size: 1.2rem; color: var(--muted); }
+.pool-card { display:inline-block; padding:8px 12px; background:var(--card-bg); border-radius:6px; color:var(--text); text-decoration:none; font-weight:bold; }
+.pool-card:hover { background:var(--highlight); color:#fff; }
+</style>
 </head>
 <body class="dark">
 
-  <!-- Navigation -->
-  <div id="nav-t-placeholder"></div>
+<div id="nav-t-placeholder"></div>
+<script src="/shared/layout/header/nav/nav_t.js" defer></script>
 
-  <div class="container">
-
-    <h1>Matches</h1>
-
-    <!-- Matches Table -->
-    <section class="matches-column">
-      <h2>Match History</h2>
-      <div class="matches-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Round</th>
-              <th>Player 1</th>
-              <th>Score</th>
-              <th>Player 2</th>
-              <th>Winner</th>
-            </tr>
-          </thead>
-          <tbody id="matches-body">
-            <!-- Populated by script.js (Start.gg API) -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Upcoming Matches -->
-    <section class="matches-column">
-      <h2>Upcoming Matches</h2>
-      <div class="matches-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Round</th>
-              <th>Player 1</th>
-              <th>Player 2</th>
-              <th>Scheduled Time</th>
-            </tr>
-          </thead>
-          <tbody id="upcoming-body">
-            <!-- Populated by script.js -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
+<div class="container">
+  <div class="overview-header">
+    <div class="overview-title">
+      <h1>Event Matches</h1>
+      <h2 id="standings-title"></h2>
+    </div>
+    <div id="back-to-events"></div>
   </div>
 
-<!-- Footer -->
+<section class="matches-column">
+  <h2>Match History</h2>
+  <div class="matches-table">
+    <table>
+      <thead>
+        <tr><th>Round</th><th>Player 1</th><th>Score</th><th>Player 2</th><th>Winner</th></tr>
+      </thead>
+      <tbody id="matches-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="matches-column" id="topcut-section" style="display:none;">
+  <h2>Topcut Matches</h2>
+  <div class="matches-table">
+    <table>
+      <thead>
+        <tr><th>Round</th><th>Player 1</th><th>Score</th><th>Player 2</th><th>Winner</th></tr>
+      </thead>
+      <tbody id="topcut-body"></tbody>
+    </table>
+  </div>
+</section>
+
+</div>
+
 <div id="footer-placeholder"></div>
 
-<!-- Load JS -->
+<!-- Utilities -->
+<script src="../../shared/utils/not-found.js"></script>
 <script src="../../script.js"></script>
-<script src="tournaments.js"></script>
 
-  <script>
-    // Load shared nav and footer
-    loadNav();
-    loadFooter();
+<!-- Matches Script -->
+<script src="matches.js"></script>
 
-    // Load tournaments dynamically on homepage
-    if(document.getElementById("tournamentList")){
-      loadTournamentsLanding(); // /api/tournaments
-    }
-  </script>
+<script>
+loadNav();
+loadFooter();
+</script>
 
 </body>
 </html>

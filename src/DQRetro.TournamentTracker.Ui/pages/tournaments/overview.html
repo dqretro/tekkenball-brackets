@@ -1,75 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Overview</title>
-  <link rel="stylesheet" href="../../styles.css">
-  <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Overview</title>
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+<style>
+  .overview-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .overview-header .overview-title { display:flex; gap:12px; align-items:baseline; }
+  .overview-header h1 { margin:0; }
+  .overview-header h2 { margin:0; font-weight:normal; color:var(--muted); font-size:20px; }
+
+  .search-section { margin:16px auto; width:min(1100px,92vw); background:var(--panel); border:1px solid var(--line); border-radius:var(--radius-lg); padding:12px 14px; box-shadow:var(--shadow-1);}
+  .search-section input { width:100%; border:none; outline:none; background:transparent; color:var(--text); font-size:16px; }
+
+  .overview-links { display:flex; gap:12px; flex-wrap:wrap; }
+  .overview-links .pool-card { display:inline-block; padding:12px 16px; background:var(--card-bg); border-radius:6px; color:var(--text); text-decoration:none; font-weight:bold; transition:transform 0.1s ease-in-out; }
+  .overview-links .pool-card:hover { transform:scale(1.05); background:var(--highlight); color:#fff; }
+
+  .standings-table table { width:100%; border-collapse:collapse; margin-top:16px; }
+  .standings-table th, .standings-table td { padding:8px 12px; border:1px solid var(--line); text-align:left; }
+</style>
 </head>
 <body class="dark">
 
-  <!-- Navigation -->
-  <div id="nav-t-placeholder"></div>
+<div id="nav-t-placeholder"></div>
+<script src="/shared/layout/header/nav/nav_t.js" defer></script>
 
-  <div class="container">
+<div class="container">
 
-    <h1>Overview</h1>
+  <div class="overview-header">
+    <div class="overview-title">
+      <h1>Event Overview</h1>
+      <h2 id="standings-title"></h2>
+    </div>
+    <div id="back-to-events" class="back-button"></div>
+  </div>
 
-  <!-- Search -->
-  <div class="search-box">
+  <section class="search-section">
     <input type="text" id="search" placeholder="Search by player name...">
-  </div>
+  </section>
 
-    <!-- Brackets Column -->
-    <section class="overview-column">
-      <h2>Brackets</h2>
-      <div class="overview-links">
-        <a href="brackets.html" class="pool-card" id="overview-bracket-btn">Bracket (Pools + Overview)</a>
-        <a href="brackets.html?topcut=12" class="pool-card" id="overview-top-btn">Topcut Bracket</a>
-      </div>
-    </section>
+  <section class="overview-column"> 
+    <h2>Brackets</h2>
+    <div class="overview-links">
+      <a id="overview-bracket-btn" class="pool-card">Pools + Summary</a>
+      <a id="overview-top-btn" class="pool-card">Topcut Bracket</a>
+    </div>
+  </section>
 
-    <!-- Standings Column -->
-    <section class="overview-column">
-      <h2>Standings</h2>
-      <div class="standings-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Placed</th>
-              <th>Player</th>
-              <th>Wins</th>
-              <th>Losses</th>
-              <th>Set Win %</th>
-              <th>Lost To</th>
-            </tr>
-          </thead>
-          <tbody id="standings-body">
-            <!-- Populated by script.js -->
-          </tbody>
-        </table>
-      </div>
-    </section>
+  <section class="standings-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Placed</th><th>Player</th><th>Wins</th><th>Losses</th><th>Set Win %</th><th>Lost To</th>
+        </tr>
+      </thead>
+      <tbody id="standings-body"></tbody>
+    </table>
+  </section>
 
-  </div>
-<!-- Footer -->
+  <!-- Back to Events -->
+  <div id="back-to-events"></div>
+</div>
+
 <div id="footer-placeholder"></div>
 
-<!-- Load JS -->
+<!-- Utilities first -->
+<script src="../../shared/utils/not-found.js"></script>
 <script src="../../script.js"></script>
+<script src="standings.js"></script>
 <script src="tournaments.js"></script>
 
-  <script>
-    // Load shared nav and footer
-    loadNav();
-    loadFooter();
+<script>
+loadNav();
+loadFooter();
 
-    // Load tournaments dynamically on homepage
-    if(document.getElementById("tournamentList")){
-      loadTournamentsLanding(); // /api/tournaments
-    }
-  </script>
+(async () => {
+  const urlSlug = new URLSearchParams(window.location.search).get("slug");
+
+  if (!urlSlug) {
+    showNotFound("No event specified. Please return to Events.");
+    return;
+  }
+
+  const event = await loadEventStats(urlSlug);
+  if (!event) {
+    showNotFound(`Event with slug "${urlSlug}" not found. Please return to Events.`);
+    return;
+  }
+
+  await loadStandings(urlSlug);
+  await updateEventHeader(urlSlug);
+
+  const bracketBtn = document.getElementById('overview-bracket-btn');
+  const topcutBtn = document.getElementById('overview-top-btn');
+  if (bracketBtn) bracketBtn.href = `brackets.html?slug=${encodeURIComponent(urlSlug)}`;
+  if (topcutBtn) topcutBtn.href = `topcut.html?slug=${encodeURIComponent(urlSlug)}`;
+})();
+</script>
 
 </body>
 </html>
