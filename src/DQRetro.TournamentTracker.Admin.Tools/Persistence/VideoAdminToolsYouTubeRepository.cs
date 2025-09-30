@@ -46,12 +46,8 @@ public sealed class VideoAdminToolsYouTubeRepository
         {
             videos.Add(new YouTubePlaylistVideo
             {
-                EventId = null,
                 Title = playlistVideo.Title,
                 YouTubeVideoId = playlistVideo.Id,
-                YouTubeVideoUrl = playlistVideo.Url,
-                YouTubeVideoThumbnailUrl = playlistVideo.Thumbnails.MaxBy(thumbnail => thumbnail.Resolution.Width * thumbnail.Resolution.Height).Url,
-                ReleaseDate = null
             });
         }
 
