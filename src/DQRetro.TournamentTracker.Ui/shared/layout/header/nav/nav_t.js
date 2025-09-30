@@ -2,13 +2,17 @@ async function loadNav() {
   const placeholder = document.getElementById("nav-t-placeholder");
   if (!placeholder) return;
 
+  // Determine base path for GitHub Pages vs local
+  const base = window.location.hostname === "dqretro.github.io" ? "/tekkenball-brackets" : "";
+
+  // Insert nav HTML
   placeholder.innerHTML = `
     <nav>
-      <a href="/index.html" class="nav-logo" id="homeLogo">
-        <img src="/images/dqretro/logos/dqretro_logo_purpleyblue.png" alt="DQRetro Logo" height="50">
+      <a href="#" class="nav-logo" id="homeLogo">
+        <img src="${base}/images/dqretro/logos/dqretro_logo_purpleyblue.png" alt="DQRetro Logo" height="50">
       </a>
-      <a href="/pages/tournaments/tournaments.html" class="nav-logo" id="tournamentLogo">
-        <img src="/images/dqretro/logos/tournament_logo.png" alt="Tournament Logo" height="50">
+      <a href="#" class="nav-logo" id="tournamentLogo">
+        <img src="${base}/images/dqretro/logos/tournament_logo.png" alt="Tournament Logo" height="50">
       </a>
 
       <a data-slug-link="overview">Overview</a>
@@ -21,23 +25,28 @@ async function loadNav() {
 
   const slug = new URLSearchParams(window.location.search).get("slug");
 
+  // Update nav links dynamically
   document.querySelectorAll("[data-slug-link]").forEach(link => {
     const page = link.getAttribute("data-slug-link");
     link.href = slug
-      ? `/pages/tournaments/${page}.html?slug=${encodeURIComponent(slug)}`
-      : `/pages/tournaments/${page}.html`;
+      ? `${base}/pages/tournaments/${page}.html?slug=${encodeURIComponent(slug)}`
+      : `${base}/pages/tournaments/${page}.html`;
   });
 
+  // Highlight current page
   const currentPage = window.location.pathname.split("/").pop().replace(".html", "");
   document.querySelectorAll("[data-slug-link]").forEach(link => {
     link.classList.toggle("active", link.getAttribute("data-slug-link") === currentPage);
   });
 
+  // Set logo links
   const tournamentLogo = document.getElementById("tournamentLogo");
-  if (tournamentLogo && slug) {
-    tournamentLogo.href = `/pages/tournaments/tournaments.html?slug=${encodeURIComponent(slug)}`;
+  if (tournamentLogo) {
+    tournamentLogo.href = slug
+      ? `${base}/pages/tournaments/tournaments.html?slug=${encodeURIComponent(slug)}`
+      : `${base}/pages/tournaments/tournaments.html`;
   }
 
   const homeLogo = document.getElementById("homeLogo");
-  if (homeLogo) homeLogo.href = `/index.html`;
+  if (homeLogo) homeLogo.href = `${base}/index.html`;
 }
