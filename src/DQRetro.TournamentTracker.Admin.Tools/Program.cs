@@ -36,12 +36,10 @@ class Program
                 throw new Exception("Unable to connect to database. SELECT 1 query didn't return the expected result.");
             }
 
-            IYouTubeRepository youTubeRepository = new YouTubeExplodeRepository();
-            IVideoSqlRepository videoSqlRepository = new VideoSqlRepository(Options.Create(new KeysConfiguration { SqlConnectionString = settings.SqlConnectionString }));
             VideoAdminToolsYouTubeRepository videoAdminToolsYouTubeRepository = new();
             VideoAdminToolsSqlRepository videoAdminToolsSqlRepository = new(settings);
 
-            IReadOnlyDictionary<byte, ICategoryItemSelector> categories = CreateCategories(youTubeRepository, videoSqlRepository, videoAdminToolsYouTubeRepository, videoAdminToolsSqlRepository);
+            IReadOnlyDictionary<byte, ICategoryItemSelector> categories = CreateCategories(videoAdminToolsYouTubeRepository, videoAdminToolsSqlRepository);
 
             CategorySelector categorySelector = new(categories);
             await categorySelector.SelectCategoryAsync();
@@ -62,29 +60,25 @@ class Program
         return await fileRepository.ReadSettingsAsync(path);
     }
 
-    private static IReadOnlyDictionary<byte, ICategoryItemSelector> CreateCategories(IYouTubeRepository youTubeRepository,
-                                                                                     IVideoSqlRepository videoSqlRepository,
-                                                                                     VideoAdminToolsYouTubeRepository adminToolsYouTubeRepository,
+    private static IReadOnlyDictionary<byte, ICategoryItemSelector> CreateCategories(VideoAdminToolsYouTubeRepository adminToolsYouTubeRepository,
                                                                                      VideoAdminToolsSqlRepository adminToolsSqlRepository)
     {
         Dictionary<byte, ICategoryItemSelector> categories = [];
 
-        IReadOnlyDictionary<byte, ICategoryItem> videoCategoryItems = CreateVideosCategoryItems(youTubeRepository, videoSqlRepository, adminToolsYouTubeRepository, adminToolsSqlRepository);
+        IReadOnlyDictionary<byte, ICategoryItem> videoCategoryItems = CreateVideosCategoryItems(adminToolsYouTubeRepository, adminToolsSqlRepository);
         categories.Add(1, new VideosCategoryItemSelector(videoCategoryItems));
 
         return categories;
     }
 
-    private static IReadOnlyDictionary<byte, ICategoryItem> CreateVideosCategoryItems(IYouTubeRepository youTubeRepository,
-                                                                                      IVideoSqlRepository videoSqlRepository,
-                                                                                      VideoAdminToolsYouTubeRepository adminToolsYouTubeRepository,
+    private static IReadOnlyDictionary<byte, ICategoryItem> CreateVideosCategoryItems(VideoAdminToolsYouTubeRepository adminToolsYouTubeRepository,
                                                                                       VideoAdminToolsSqlRepository adminToolsSqlRepository)
     {
         Dictionary<byte, ICategoryItem> categoryItems = [];
 
-        categoryItems.Add(1, new AddNewVideoChannelCategoryItem(youTubeRepository, adminToolsYouTubeRepository, adminToolsSqlRepository));
+        categoryItems.Add(1, new AddNewVideoChannelCategoryItem(adminToolsYouTubeRepository, adminToolsSqlRepository));
         categoryItems.Add(2, new VideoReleaseDateFinderCategoryItem(adminToolsYouTubeRepository, adminToolsSqlRepository));
-        categoryItems.Add(3, new ExcludeVideoCategoryItem(adminToolsSqlRepository, videoSqlRepository));
+        categoryItems.Add(3, new ExcludeVideoCategoryItem(adminToolsSqlRepository));
 
         return categoryItems;
     }

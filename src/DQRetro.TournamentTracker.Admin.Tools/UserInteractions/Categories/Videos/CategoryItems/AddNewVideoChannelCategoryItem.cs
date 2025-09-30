@@ -1,6 +1,5 @@
-﻿using DQRetro.TournamentTracker.Admin.Tools.Persistence;
-using DQRetro.TournamentTracker.Api.Models.YouTube.Responses;
-using DQRetro.TournamentTracker.Api.Persistence.YouTube.Interfaces;
+﻿using DQRetro.TournamentTracker.Admin.Tools.Models;
+using DQRetro.TournamentTracker.Admin.Tools.Persistence;
 using YoutubeExplode.Channels;
 using YoutubeExplode.Videos;
 
@@ -13,21 +12,17 @@ namespace DQRetro.TournamentTracker.Admin.Tools.UserInteractions.Categories.Vide
 /// </summary>
 public sealed class AddNewVideoChannelCategoryItem : ICategoryItem
 {
-    private readonly IYouTubeRepository _youTubeRepository;
     private readonly VideoAdminToolsYouTubeRepository _videoAdminToolsYouTubeRepository;
     private readonly VideoAdminToolsSqlRepository _videoAdminToolsSqlRepository;
 
     /// <summary>
     /// Ctor.
     /// </summary>
-    /// <param name="youTubeRepository">The YouTubeRepository from the API.</param>
     /// <param name="videoAdminToolsYouTubeRepository">YouTubeRepository containing admin-only tools logic.</param>
     /// <param name="videoAdminToolsSqlRepository">Videos SQL Repository containing admin-only tools logic.</param>
-    public AddNewVideoChannelCategoryItem(IYouTubeRepository youTubeRepository,
-                                          VideoAdminToolsYouTubeRepository videoAdminToolsYouTubeRepository,
+    public AddNewVideoChannelCategoryItem(VideoAdminToolsYouTubeRepository videoAdminToolsYouTubeRepository,
                                           VideoAdminToolsSqlRepository videoAdminToolsSqlRepository)
     {
-        _youTubeRepository = youTubeRepository;
         _videoAdminToolsYouTubeRepository = videoAdminToolsYouTubeRepository;
         _videoAdminToolsSqlRepository = videoAdminToolsSqlRepository;
     }
@@ -55,14 +50,14 @@ public sealed class AddNewVideoChannelCategoryItem : ICategoryItem
         short videoChannelId = await _videoAdminToolsSqlRepository.InsertChannelAsync(channelId, channelName);
 
         Console.WriteLine("Finding videos for the requested channel...");
-        List<VideosByPlaylistResponse> videosByPlaylist = (await _youTubeRepository.GetPlaylistVideosByChannelIdAsync(channelId.ToString())).ToList();
+        List<YouTubePlaylistVideo> videosByPlaylist = await _videoAdminToolsYouTubeRepository.GetPlaylistVideosByChannelIdAsync(channelId.ToString());
         if (videosByPlaylist.Count == 0)
         {
             Console.WriteLine("Error: Channel contains no videos.");
             return;
         }
 
-        foreach (VideosByPlaylistResponse video in videosByPlaylist)
+        foreach (YouTubePlaylistVideo video in videosByPlaylist)
         {
             Console.WriteLine($"Finding Release Date for \"{video.Title}\"");
             DateTime releaseDate = await _videoAdminToolsYouTubeRepository.GetReleaseDateFromVideoIdAsync(VideoId.Parse(video.YouTubeVideoId));
