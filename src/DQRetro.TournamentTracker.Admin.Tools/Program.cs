@@ -3,12 +3,6 @@ using DQRetro.TournamentTracker.Admin.Tools.Persistence;
 using DQRetro.TournamentTracker.Admin.Tools.UserInteractions.Categories;
 using DQRetro.TournamentTracker.Admin.Tools.UserInteractions.Categories.Videos;
 using DQRetro.TournamentTracker.Admin.Tools.UserInteractions.Categories.Videos.CategoryItems;
-using DQRetro.TournamentTracker.Api.Models.Configuration;
-using DQRetro.TournamentTracker.Api.Persistence.Database;
-using DQRetro.TournamentTracker.Api.Persistence.Database.Interfaces;
-using DQRetro.TournamentTracker.Api.Persistence.YouTube;
-using DQRetro.TournamentTracker.Api.Persistence.YouTube.Interfaces;
-using Microsoft.Extensions.Options;
 
 namespace DQRetro.TournamentTracker.Admin.Tools;
 
