@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Model representing the required variables wrapped from YouTubeExplode's GetUploadsAsync method.
-/// Pretty much a copy of the API's model.
+/// A copy of the APIs YouTubePlaylistVideo model code, to avoid importing the API as a dependency, or creating separate modules.
 /// </summary>
 public sealed class YouTubePlaylistVideo
 {
