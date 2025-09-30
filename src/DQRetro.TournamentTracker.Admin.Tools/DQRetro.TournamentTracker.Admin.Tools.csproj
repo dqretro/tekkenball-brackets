@@ -5,16 +5,13 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
+        <SelfContained>true</SelfContained>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Dapper" Version="2.1.66" />
       <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
       <PackageReference Include="YoutubeExplode" Version="6.5.4" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\DQRetro.TournamentTracker.Api\DQRetro.TournamentTracker.Api.csproj" />
     </ItemGroup>
 
     <ItemGroup>

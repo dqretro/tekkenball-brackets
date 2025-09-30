@@ -1,5 +1,7 @@
-﻿using YoutubeExplode;
+﻿using DQRetro.TournamentTracker.Admin.Tools.Models;
+using YoutubeExplode;
 using YoutubeExplode.Channels;
+using YoutubeExplode.Playlists;
 using YoutubeExplode.Videos;
 
 namespace DQRetro.TournamentTracker.Admin.Tools.Persistence;
@@ -22,6 +24,38 @@ public sealed class VideoAdminToolsYouTubeRepository
         YoutubeClient youTubeClient = new();
         Channel channel = await youTubeClient.Channels.GetAsync(channelId);
         return channel.Title;
+    }
+
+    /// <summary>
+    /// Gets a list of videos for a given YouTube Channel Id.
+    /// A slightly modified version of the APIs code.
+    /// </summary>
+    /// <param name="channelId"></param>
+    /// <returns></returns>
+    public async Task<List<YouTubePlaylistVideo>> GetPlaylistVideosByChannelIdAsync(string channelId)
+    {
+        ChannelId channel = ChannelId.Parse(channelId);
+        YoutubeClient youTubeClient = new();
+
+        // Whilst I would rather take advantage of the IAsyncEnumerable's efficiency benefits here,
+        // this will result in the large allocations from YouTubeExplode staying in memory longer.
+        // Therefore, in this case I'd rather force an enumeration.
+        List<YouTubePlaylistVideo> videos = [];
+
+        await foreach (PlaylistVideo playlistVideo in youTubeClient.Channels.GetUploadsAsync(channel))
+        {
+            videos.Add(new YouTubePlaylistVideo
+            {
+                EventId = null,
+                Title = playlistVideo.Title,
+                YouTubeVideoId = playlistVideo.Id,
+                YouTubeVideoUrl = playlistVideo.Url,
+                YouTubeVideoThumbnailUrl = playlistVideo.Thumbnails.MaxBy(thumbnail => thumbnail.Resolution.Width * thumbnail.Resolution.Height).Url,
+                ReleaseDate = null
+            });
+        }
+
+        return videos;
     }
 
     /// <summary>

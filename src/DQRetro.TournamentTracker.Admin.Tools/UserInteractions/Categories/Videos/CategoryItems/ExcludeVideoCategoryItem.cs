@@ -1,6 +1,5 @@
-﻿using DQRetro.TournamentTracker.Admin.Tools.Persistence;
-using DQRetro.TournamentTracker.Api.Models.Api.Responses;
-using DQRetro.TournamentTracker.Api.Persistence.Database.Interfaces;
+﻿using DQRetro.TournamentTracker.Admin.Tools.Models;
+using DQRetro.TournamentTracker.Admin.Tools.Persistence;
 
 namespace DQRetro.TournamentTracker.Admin.Tools.UserInteractions.Categories.Videos.CategoryItems;
 
@@ -10,18 +9,14 @@ namespace DQRetro.TournamentTracker.Admin.Tools.UserInteractions.Categories.Vide
 public sealed class ExcludeVideoCategoryItem : ICategoryItem
 {
     private readonly VideoAdminToolsSqlRepository _videoAdminToolsSqlRepository;
-    private readonly IVideoSqlRepository _videoSqlRepository;
 
     /// <summary>
     /// Ctor.
     /// </summary>
     /// <param name="videoAdminToolsSqlRepository"></param>
-    /// <param name="videoSqlRepository"></param>
-    public ExcludeVideoCategoryItem(VideoAdminToolsSqlRepository videoAdminToolsSqlRepository,
-                                    IVideoSqlRepository videoSqlRepository)
+    public ExcludeVideoCategoryItem(VideoAdminToolsSqlRepository videoAdminToolsSqlRepository)
     {
         _videoAdminToolsSqlRepository = videoAdminToolsSqlRepository;
-        _videoSqlRepository = videoSqlRepository;
     }
 
     /// <inheritdoc />
@@ -31,7 +26,7 @@ public sealed class ExcludeVideoCategoryItem : ICategoryItem
     public async Task ExecuteAsync()
     {
         Console.WriteLine("Finding videos...");
-        List<EventVideo> videos = await _videoSqlRepository.GetEventVideosAsync();
+        List<EventVideo> videos = await _videoAdminToolsSqlRepository.GetEventVideosAsync();
 
         if (videos.Count == 0)
         {

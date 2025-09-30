@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Data;
+using Dapper;
 using DQRetro.TournamentTracker.Admin.Tools.Models;
 using Microsoft.Data.SqlClient;
 
@@ -33,6 +34,21 @@ public sealed class VideoAdminToolsSqlRepository : BaseSqlRepository
             parameters.Add("@ChannelId", channelId);
             parameters.Add("@ChannelName", channelName);
             return await connection.QueryFirstOrDefaultAsync<bool>(sql, parameters);
+        }
+    }
+
+    /// <summary>
+    /// Gets all Event Videos.
+    /// A copy of the APIs GetEventVideosAsync code, to avoid importing the API as a dependency, or creating separate modules.
+    /// </summary>
+    /// <returns>Collection of Event Videos</returns>
+    public async Task<List<EventVideo>> GetEventVideosAsync()
+    {
+        const string procName = "dbo.GetEventVideos";
+
+        using (SqlConnection connection = await OpenConnectionAsync())
+        {
+            return (await connection.QueryAsync<EventVideo>(procName, commandType: CommandType.StoredProcedure)).ToList();
         }
     }
 

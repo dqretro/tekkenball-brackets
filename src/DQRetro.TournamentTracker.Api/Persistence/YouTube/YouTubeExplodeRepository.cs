@@ -13,6 +13,11 @@ public sealed class YouTubeExplodeRepository : IYouTubeRepository
 {
     // Not using YouTubeClient at a class-level, as it's memory inefficient and I want it to be collected ASAP to reduce memory pressure.
 
+    /// <summary>
+    /// Gets a list of videos for a given YouTube Channel Id.
+    /// </summary>
+    /// <param name="channelId"></param>
+    /// <returns></returns>
     public async Task<IEnumerable<VideosByPlaylistResponse>> GetPlaylistVideosByChannelIdAsync(string channelId)
     {
         ChannelId channel = ChannelId.Parse(channelId);
