@@ -45,7 +45,7 @@ jobs:
         run: dotnet publish ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --runtime ${{ env.DOTNET_RUNTIME_ID }} --output ${{ env.CLI_OUTPUT_FOLDER }} /p:PublishSingleFile=${{ env.DOTNET_SINGLE_FILE }} /p:PublishTrimmed=${{ env.DOTNET_PUBLISH_TRIMMED }}
 
       - name: "Publish: CLI Artifact"
-        # if: ${{ env.IS_MAIN == 'true' }}
+        if: ${{ env.IS_MAIN == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: DQRetro.TournamentTracker.Admin.Tools-${{ env.DOTNET_RUNTIME_ID }}
