@@ -22,7 +22,6 @@ jobs:
       CLI_OUTPUT_FOLDER: ./DQRetro.TournamentTracker.Admin.Tools
       DOTNET_CONFIGURATION: Release
       DOTNET_RUNTIME_ID: win-x64
-      DOTNET_SELF_CONTAINED: true
       DOTNET_SINGLE_FILE: true
       DOTNET_PUBLISH_TRIMMED: false
       IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
@@ -43,7 +42,7 @@ jobs:
         run: dotnet build ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --runtime ${{ env.DOTNET_RUNTIME_ID }}
       
       - name: ".NET: Publish"
-        run: dotnet publish ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --runtime ${{ env.DOTNET_RUNTIME_ID }} --self-contained ${{ env.DOTNET_SELF_CONTAINED }} --output ${{ env.CLI_OUTPUT_FOLDER }} /p:PublishSingleFile=${{ env.DOTNET_SINGLE_FILE }} /p:PublishTrimmed=${{ env.DOTNET_PUBLISH_TRIMMED }}
+        run: dotnet publish ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --runtime ${{ env.DOTNET_RUNTIME_ID }} --output ${{ env.CLI_OUTPUT_FOLDER }} /p:PublishSingleFile=${{ env.DOTNET_SINGLE_FILE }} /p:PublishTrimmed=${{ env.DOTNET_PUBLISH_TRIMMED }}
 
       - name: "Publish: CLI Artifact"
         # if: ${{ env.IS_MAIN == 'true' }}
