@@ -26,7 +26,10 @@
 </head>
 <body class="dark">
 
+<!-- Nav placeholder -->
 <div id="nav-t-placeholder"></div>
+<div id="nav-t-placeholder"></div>
+<script src="/tekkenball-brackets/shared/layout/header/nav/nav_t.js" defer></script>
 <script src="/shared/layout/header/nav/nav_t.js" defer></script>
 
 <div class="container">
@@ -35,33 +38,32 @@
       <h1>Event Matches</h1>
       <h2 id="standings-title"></h2>
     </div>
-    <div id="back-to-events"></div>
+    <div id="back-to-events" class="back-button"></div>
   </div>
 
-<section class="matches-column">
-  <h2>Match History</h2>
-  <div class="matches-table">
-    <table>
-      <thead>
-        <tr><th>Round</th><th>Player 1</th><th>Score</th><th>Player 2</th><th>Winner</th></tr>
-      </thead>
-      <tbody id="matches-body"></tbody>
-    </table>
-  </div>
-</section>
+  <section class="matches-column">
+    <h2>Match History</h2>
+    <div class="matches-table">
+      <table>
+        <thead>
+          <tr><th>Round</th><th>Player 1</th><th>Score</th><th>Player 2</th><th>Winner</th></tr>
+        </thead>
+        <tbody id="matches-body"></tbody>
+      </table>
+    </div>
+  </section>
 
-<section class="matches-column" id="topcut-section" style="display:none;">
-  <h2>Topcut Matches</h2>
-  <div class="matches-table">
-    <table>
-      <thead>
-        <tr><th>Round</th><th>Player 1</th><th>Score</th><th>Player 2</th><th>Winner</th></tr>
-      </thead>
-      <tbody id="topcut-body"></tbody>
-    </table>
-  </div>
-</section>
-
+  <section class="matches-column" id="topcut-section" style="display:none;">
+    <h2>Topcut Matches</h2>
+    <div class="matches-table">
+      <table>
+        <thead>
+          <tr><th>Round</th><th>Player 1</th><th>Score</th><th>Player 2</th><th>Winner</th></tr>
+        </thead>
+        <tbody id="topcut-body"></tbody>
+      </table>
+    </div>
+  </section>
 </div>
 
 <div id="footer-placeholder"></div>
@@ -74,8 +76,10 @@
 <script src="matches.js"></script>
 
 <script>
-loadNav();
-loadFooter();
+document.addEventListener("DOMContentLoaded", () => {
+  if (typeof loadNav === "function") loadNav();
+  if (typeof loadFooter === "function") loadFooter();
+});
 </script>
 
 </body>
