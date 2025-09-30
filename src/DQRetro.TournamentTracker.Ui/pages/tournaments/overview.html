@@ -25,8 +25,9 @@
 </head>
 <body class="dark">
 
+<!-- Nav placeholder -->
 <div id="nav-t-placeholder"></div>
-<script src="/shared/layout/header/nav/nav_t.js" defer></script>
+<script src="/tekkenball-brackets/shared/layout/header/nav/nav_t.js" defer></script>
 
 <div class="container">
 
@@ -61,25 +62,23 @@
     </table>
   </section>
 
-  <!-- Back to Events -->
-  <div id="back-to-events"></div>
 </div>
 
 <div id="footer-placeholder"></div>
 
-<!-- Utilities first -->
+<!-- Utilities -->
 <script src="../../shared/utils/not-found.js"></script>
 <script src="../../script.js"></script>
 <script src="standings.js"></script>
 <script src="tournaments.js"></script>
 
 <script>
-loadNav();
-loadFooter();
+document.addEventListener("DOMContentLoaded", async () => {
+  // Load nav + footer after DOM ready
+  if (typeof loadNav === "function") loadNav();
+  if (typeof loadFooter === "function") loadFooter();
 
-(async () => {
   const urlSlug = new URLSearchParams(window.location.search).get("slug");
-
   if (!urlSlug) {
     showNotFound("No event specified. Please return to Events.");
     return;
@@ -92,13 +91,15 @@ loadFooter();
   }
 
   await loadStandings(urlSlug);
-  await updateEventHeader(urlSlug);
+  if (typeof updateEventHeader === "function") {
+    await updateEventHeader(urlSlug);
+  }
 
-  const bracketBtn = document.getElementById('overview-bracket-btn');
-  const topcutBtn = document.getElementById('overview-top-btn');
+  const bracketBtn = document.getElementById("overview-bracket-btn");
+  const topcutBtn = document.getElementById("overview-top-btn");
   if (bracketBtn) bracketBtn.href = `brackets.html?slug=${encodeURIComponent(urlSlug)}`;
   if (topcutBtn) topcutBtn.href = `topcut.html?slug=${encodeURIComponent(urlSlug)}`;
-})();
+});
 </script>
 
 </body>
