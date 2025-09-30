@@ -39,6 +39,7 @@ public sealed class VideoAdminToolsSqlRepository : BaseSqlRepository
 
     /// <summary>
     /// Gets all Event Videos.
+    /// A copy of the APIs GetEventVideosAsync code, to avoid importing the API as a dependency, or creating separate modules.
     /// </summary>
     /// <returns>Collection of Event Videos</returns>
     public async Task<List<EventVideo>> GetEventVideosAsync()
