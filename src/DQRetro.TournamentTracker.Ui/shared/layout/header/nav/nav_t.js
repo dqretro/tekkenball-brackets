@@ -2,24 +2,24 @@ async function loadNav() {
   const placeholder = document.getElementById("nav-t-placeholder");
   if (!placeholder) return;
 
-  // Determine base path for GitHub Pages vs local
+  // Base path
   const base = window.location.hostname === "dqretro.github.io" ? "/tekkenball-brackets" : "";
 
-  // Insert nav HTML
+  // Insert nav HTML with dummy hrefs
   placeholder.innerHTML = `
     <nav>
-      <a href="#" class="nav-logo" id="homeLogo">
+      <a href="${base}/index.html" class="nav-logo" id="homeLogo">
         <img src="${base}/images/dqretro/logos/dqretro_logo_purpleyblue.png" alt="DQRetro Logo" height="50">
       </a>
-      <a href="#" class="nav-logo" id="tournamentLogo">
+      <a href="${base}/pages/tournaments/tournaments.html" class="nav-logo" id="tournamentLogo">
         <img src="${base}/images/dqretro/logos/tournament_logo.png" alt="Tournament Logo" height="50">
       </a>
 
-      <a data-slug-link="overview">Overview</a>
-      <a data-slug-link="brackets">Brackets</a>
-      <a data-slug-link="standings">Standings</a>
-      <a data-slug-link="matches">Matches</a>
-      <a data-slug-link="stats">Stats</a>
+      <a data-slug-link="overview" href="#">Overview</a>
+      <a data-slug-link="brackets" href="#">Brackets</a>
+      <a data-slug-link="standings" href="#">Standings</a>
+      <a data-slug-link="matches" href="#">Matches</a>
+      <a data-slug-link="stats" href="#">Stats</a>
     </nav>
   `;
 
@@ -28,9 +28,12 @@ async function loadNav() {
   // Update nav links dynamically
   document.querySelectorAll("[data-slug-link]").forEach(link => {
     const page = link.getAttribute("data-slug-link");
-    link.href = slug
-      ? `${base}/pages/tournaments/${page}.html?slug=${encodeURIComponent(slug)}`
-      : `${base}/pages/tournaments/${page}.html`;
+    link.setAttribute(
+      "href",
+      slug
+        ? `${base}/pages/tournaments/${page}.html?slug=${encodeURIComponent(slug)}`
+        : `${base}/pages/tournaments/${page}.html`
+    );
   });
 
   // Highlight current page
@@ -38,15 +41,4 @@ async function loadNav() {
   document.querySelectorAll("[data-slug-link]").forEach(link => {
     link.classList.toggle("active", link.getAttribute("data-slug-link") === currentPage);
   });
-
-  // Set logo links
-  const tournamentLogo = document.getElementById("tournamentLogo");
-  if (tournamentLogo) {
-    tournamentLogo.href = slug
-      ? `${base}/pages/tournaments/tournaments.html?slug=${encodeURIComponent(slug)}`
-      : `${base}/pages/tournaments/tournaments.html`;
-  }
-
-  const homeLogo = document.getElementById("homeLogo");
-  if (homeLogo) homeLogo.href = `${base}/index.html`;
 }
