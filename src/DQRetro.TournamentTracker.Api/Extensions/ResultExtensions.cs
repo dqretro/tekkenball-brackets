@@ -22,6 +22,7 @@ public static class ResultExtensions
         const string timeoutErrorMessage = "Unable to access the requested resource in the allotted time frame.";
         const string sqlErrorMessage = "Unable to query the database.";
         const string featureNotImplementedMessage = "The requested feature has not been implemented.";
+        const string rateLimitExceededMessage = "You have exceeded the rate limit for this resource. Please try again later.";
 
         return code switch
         {
@@ -32,6 +33,7 @@ public static class ResultExtensions
             Code.TimeoutError => timeoutErrorMessage,
             Code.SqlError => sqlErrorMessage,
             Code.FeatureNotImplemented => featureNotImplementedMessage,
+            Code.RateLimitExceeded => rateLimitExceededMessage,
             _ => unknownErrorMessage
         };
     }
@@ -47,6 +49,7 @@ public static class ResultExtensions
             Code.TimeoutError => StatusCodes.Status408RequestTimeout,
             Code.SqlError => StatusCodes.Status500InternalServerError,
             Code.FeatureNotImplemented => StatusCodes.Status400BadRequest,
+            Code.RateLimitExceeded => StatusCodes.Status429TooManyRequests,
             _ => StatusCodes.Status500InternalServerError
         };
     }

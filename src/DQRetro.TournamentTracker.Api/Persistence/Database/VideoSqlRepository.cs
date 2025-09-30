@@ -37,48 +37,28 @@ public sealed class VideoSqlRepository : IVideoSqlRepository
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<string>> GetYouTubeChannelIdsAsync()
+    public async Task<IEnumerable<YouTubeChannel>> GetYouTubeChannelsAsync()
     {
-        const string procName = "dbo.GetYouTubeChannelIds";
+        const string procName = "dbo.GetYouTubeChannels";
 
         using (SqlConnection connection = await OpenConnectionAsync())
         {
-            return await connection.QueryAsync<string>(procName, commandType: CommandType.StoredProcedure);
+            return await connection.QueryAsync<YouTubeChannel>(procName, commandType: CommandType.StoredProcedure);
         }
     }
 
     /// <inheritdoc />
-    public async Task<bool> CheckIfEventVideoExistsAsync(string youTubeVideoId)
+    public async Task<IEnumerable<UpsertEventVideoResponse>> UpsertEventVideosAsync(DataTable eventVideosUpsertTvpDataTable)
     {
-        const string procName = "dbo.CheckIfEventVideoExists";
+        const string procName = "dbo.UpsertEventVideos";
+        const string eventVideoTvpName = "dbo.EventVideoUpsertTvp";
 
         using (SqlConnection connection = await OpenConnectionAsync())
         {
             DynamicParameters parameters = new();
-            parameters.Add("@YouTubeVideoId", youTubeVideoId);
+            parameters.Add("@UpdatedEventVideos", eventVideosUpsertTvpDataTable.AsTableValuedParameter(eventVideoTvpName));
 
-            return await connection.QueryFirstOrDefaultAsync<bool>(procName, parameters, commandType: CommandType.StoredProcedure);
-        }
-    }
-
-    /// <inheritdoc />
-    public async Task InsertEventVideoAsync(InsertEventVideo video)
-    {
-        const string procName = "dbo.InsertEventVideo";
-
-        using (SqlConnection connection = await OpenConnectionAsync())
-        {
-            DynamicParameters parameters = new();
-            parameters.Add("@YouTubeChannelId", video.YouTubeChannelId);
-            parameters.Add("@YouTubeChannelName", video.YouTubeChannelName);
-            parameters.Add("@EventId", video.EventId);
-            parameters.Add("@Title", video.Title);
-            parameters.Add("@YouTubeVideoId", video.YouTubeVideoId);
-            parameters.Add("@YouTubeVideoUrl", video.YouTubeVideoUrl);
-            parameters.Add("@YouTubeVideoThumbnailUrl", video.YouTubeVideoThumbnailUrl);
-            parameters.Add("@ReleaseDate", video.ReleaseDate);
-
-            await connection.ExecuteAsync(procName, parameters, commandType: CommandType.StoredProcedure);
+            return await connection.QueryAsync<UpsertEventVideoResponse>(procName, parameters, commandType: CommandType.StoredProcedure);
         }
     }
 

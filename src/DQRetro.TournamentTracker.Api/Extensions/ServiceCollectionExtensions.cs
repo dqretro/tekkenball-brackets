@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
+using System.Threading.RateLimiting;
+using DQRetro.TournamentTracker.Api.Models.Common;
 using DQRetro.TournamentTracker.Api.Models.Configuration;
 using DQRetro.TournamentTracker.Api.Persistence.Database;
 using DQRetro.TournamentTracker.Api.Persistence.Database.Interfaces;
@@ -139,6 +141,49 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
+    /// Adds a Token Bucket Rate Limiter for the API, with the aim of allowing fair usage of the API to legitimate requests.
+    /// Rate Limiting by UserId aims to prevent administrators from being blocked during tournaments, where multiple
+    /// users could, in theory, be accessing the API from the same IP Address.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddTokenBucketRateLimiter(this IServiceCollection services)
+    {
+        services.AddRateLimiter(options =>
+        {
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+            {
+                string ipAddressKey = context?.Connection?.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                // This looks weird, so what I want here is to allow a max of 20 requests in a 10-second period per user (determined by IP Address).
+                // Setting TokensPerPeriod to 20 and the ReplenishmentPeriod to 10 seconds would act like a fixed window limiter, which I don't want,
+                // as this will result in higher bursts.
+                // Instead, as an alternative, 20 requests in 10 seconds is equivalent to 2 requests per second.
+                // Therefore, as tokens are used up, we can start re-populating at a rate of 2 tokens per second.
+                // I don't want requests to be backed up, if a user is exceeding this limit, then drop their extra requests.
+                return RateLimitPartition.GetTokenBucketLimiter(ipAddressKey, _ => new TokenBucketRateLimiterOptions
+                {
+                    TokenLimit = 20,
+                    TokensPerPeriod = 2,
+                    ReplenishmentPeriod = TimeSpan.FromSeconds(1),
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    QueueLimit = 0
+                });
+            });
+
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+            options.OnRejected = async (context, token) =>
+            {
+                Error error = ResultExtensions.GetError(Code.RateLimitExceeded);
+                await context.HttpContext.Response.WriteAsJsonAsync(error, token);
+            };
+        });
+
+        return services;
+    }
+
+    /// <summary>
     /// Configures Controllers with custom serialization (snake-case) and ignoring null values (reduce unnecessary bandwidth consumption).
     /// </summary>
     /// <param name="services"></param>
@@ -166,6 +211,10 @@ public static class ServiceCollectionExtensions
         if (!isDevelopment)
         {
             services.AddHostedService<DbMigrationBackgroundService>();
+        }
+        else
+        {
+            Console.WriteLine("DB Migrations are disabled in development mode...");
         }
 
         return services;

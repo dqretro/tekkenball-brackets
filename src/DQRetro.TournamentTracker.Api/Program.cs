@@ -1,7 +1,6 @@
 using System.Runtime;
 using DQRetro.TournamentTracker.Api.Extensions;
 using DQRetro.TournamentTracker.Api.Middleware;
-using DQRetro.TournamentTracker.Api.Persistence.Database;
 
 namespace DQRetro.TournamentTracker.Api;
 
@@ -28,6 +27,7 @@ public class Program
         builder.WebHost.ConfigureKestrel(kestrelServerOptions =>
         {
             kestrelServerOptions.Configure(builder.Configuration.GetRequiredSection("Kestrel"));
+            kestrelServerOptions.AddServerHeader = false;
         });
 
         bool isDevelopment = builder.Environment.IsDevelopment();
@@ -35,13 +35,12 @@ public class Program
         builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
         builder.Configuration.AddJsonFile("appsettings.Secrets.json", optional: false, reloadOnChange: false);
 
-        // TODO: ADD RATE LIMITING!
-
         builder.Services.AddCommonServices(builder.Configuration)
                         .AddVideoServices()
                         .AddDatabaseMigrations(isDevelopment)
                         .ConfigureForwardedHeaders(builder.Configuration, isDevelopment)
                         .AddCustomCors(builder.Configuration)
+                        .AddTokenBucketRateLimiter()
                         .AddCustomSwagger(builder.Configuration, isDevelopment)
                         .AddControllersWithCustomSerialization();
 
@@ -51,11 +50,12 @@ public class Program
         app.UseMiddleware<ExceptionHandlerMiddleware>();
         app.UseForwardedHeaders();
         app.UseCors();
+        app.UseRateLimiter();
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
         app.UseCustomSwagger(isDevelopment);
-        
+
         app.Services.GetRequiredService<ILogger<Program>>()
                     .LogInformation("Startup complete\n" +
                                     "ServerGc: {IsServerGc}\n" +
