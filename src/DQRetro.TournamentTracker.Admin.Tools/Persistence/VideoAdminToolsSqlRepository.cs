@@ -108,7 +108,7 @@ public sealed class VideoAdminToolsSqlRepository : BaseSqlRepository
     {
         // This app could run from a variety of machines, and I want a consistent server DateTime.
         // Therefore, I will be using the DB's clock.
-        const string sql = "DECLARE @UtcNow DATETIME = GETUTCDATE(); UPDATE ev SET ev.[ExcludedOn] = @UtcNow FROM [dbo].[EventVideo] ev JOIN (SELECT value AS [VideoId] FROM STRING_SPLIT(@VideoIds, ',')) s ON v.[YouTubeVideoId] = s.[VideoId];";
+        const string sql = "DECLARE @UtcNow DATETIME = GETUTCDATE(); UPDATE ev SET ev.[ExcludedOn] = @UtcNow FROM [dbo].[EventVideo] ev JOIN (SELECT value AS [VideoId] FROM STRING_SPLIT(@VideoIds, ',')) s ON ev.[YouTubeVideoId] = s.[VideoId];";
 
         using (SqlConnection connection = await OpenConnectionAsync())
         {
