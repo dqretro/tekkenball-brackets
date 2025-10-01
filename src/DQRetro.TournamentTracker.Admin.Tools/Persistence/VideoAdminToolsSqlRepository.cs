@@ -100,20 +100,20 @@ public sealed class VideoAdminToolsSqlRepository : BaseSqlRepository
     }
 
     /// <summary>
-    /// Sets ExcludedOn to the current UTC DateTime for the requested EventVideo (by VideoId).
+    /// Sets ExcludedOn to the current UTC DateTime for the requested EventVideos (by a CSV of VideoIds).
     /// This prevents the API from returning this Video.
     /// </summary>
-    /// <param name="videoId"></param>
-    public async Task ExcludeVideoAsync(string videoId)
+    /// <param name="videoIdsCsv"></param>
+    public async Task ExcludeVideosAsync(string videoIdsCsv)
     {
         // This app could run from a variety of machines, and I want a consistent server DateTime.
         // Therefore, I will be using the DB's clock.
-        const string sql = "DECLARE @UtcNow DATETIME = GETUTCDATE(); UPDATE [dbo].[EventVideo] SET [ExcludedOn] = @UtcNow WHERE [YouTubeVideoId] = @VideoId";
+        const string sql = "DECLARE @UtcNow DATETIME = GETUTCDATE(); UPDATE ev SET ev.[ExcludedOn] = @UtcNow FROM [dbo].[EventVideo] ev JOIN (SELECT value AS [VideoId] FROM STRING_SPLIT(@VideoIds, ',')) s ON v.[YouTubeVideoId] = s.[VideoId];";
 
         using (SqlConnection connection = await OpenConnectionAsync())
         {
             DynamicParameters parameters = new();
-            parameters.Add("@VideoId", videoId);
+            parameters.Add("@VideoIds", videoIdsCsv);
             await connection.ExecuteAsync(sql, parameters);
         }
     }
