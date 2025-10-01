@@ -24,7 +24,7 @@ public sealed class ExcludeVideoCategoryItem : ICategoryItem
     }
 
     /// <inheritdoc />
-    public string Description { get; } = "Exclude existing video (won't show up in API responses)";
+    public string Description { get; } = "Exclude existing video(s) (won't show up in API responses)";
 
     /// <inheritdoc />
     public async Task ExecuteAsync()
