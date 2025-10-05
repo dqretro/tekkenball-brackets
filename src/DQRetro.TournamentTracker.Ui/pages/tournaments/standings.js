@@ -2,7 +2,7 @@
 // Helpers
 // ---------------------------
 function withBase(path) {
-  const BASE = window.location.hostname === "dqretro.github.io" ? "/tekkenball-brackets" : "";
+  const BASE = window.location.hostname.includes("github.io") ? "/tekkenball-brackets" : "";
   if (!path) return path;
   if (/^https?:\/\//i.test(path)) return path;
   return `${BASE}${path.startsWith("/") ? path : "/" + path}`;
@@ -17,6 +17,22 @@ function playerSlugify(name) {
     .replace(/\s*\|\s*/g, "-")
     .replace(/\s+/g, "-")
     .replace(/[^\w-]/g, "");
+}
+
+function getGameFolder(game) {
+  switch ((game || "").toLowerCase()) {
+    case "tekken tag tournament 1": return "ttt1";
+    case "tekken tag tournament 2": return "ttt2";
+    case "tekken 1": return "tk1";
+    case "tekken 2": return "tk2";
+    case "tekken 3": return "tk3";
+    case "tekken 4": return "tk4";
+    case "tekken 5": return "tk5";
+    case "tekken 6": return "tk6";
+    case "tekken 7": return "tk7";
+    case "tekken 8": return "tk8";
+    default: return "tk8";
+  }
 }
 
 // ---------------------------
@@ -120,10 +136,11 @@ async function loadStandings(slug) {
     const realPlayer = allPlayers.find(p => playerSlugify(p.name) === playerSlug);
     const avatarSrc = realPlayer?.avatar || withBase("/images/placeholders/icons-profile/icon-pfp-player.png");
 
-    // Character icons
-    const charsHTML = (player.characters || []).map(c =>
-      `<img src="${withBase(`/images/games/tk8/characters/characters_select/select_${slugify(c)}.png`)}" title="${c}">`
-    ).join("");
+    // Character icons dynamically get game folder
+    const charsHTML = (player.characters || []).map(c => {
+      const gameFolder = getGameFolder(c);
+      return `<img src="${withBase(`/images/games/${gameFolder}/characters/characters_select/select_${slugify(c)}.png`)}" title="${c}">`;
+    }).join("");
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -165,7 +182,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const urlSlug = new URLSearchParams(window.location.search).get("slug");
   if (urlSlug) await loadStandings(urlSlug);
 
-  // Only reload table on popstate if not overview.html
   if (!window.location.pathname.includes("overview.html")) {
     window.addEventListener("popstate", async () => {
       const newSlug = new URLSearchParams(window.location.search).get("slug");
