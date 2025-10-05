@@ -6,6 +6,13 @@
       "game": "Tekken 8",
       "status": "completed",
       "startAt": "2025-08-16"
+    },
+    {
+      "name": "Arcade Throwdown II",
+      "slug": "arcade-throwdown-ii",
+      "game": "Tekken 8",
+      "status": "completed",
+      "startAt": "2025-09-21"
     }
   ],
   "events": [
@@ -19,17 +26,17 @@
           "game": "Tekken 8",
           "entrants": {
             "nodes": [
-              {"name":"PND | Strykie","mainCharacter":"Yoshimitsu","characters":["Yoshimitsu", "Jun"],"wins":6,"losses":0},
-              {"name":"NGI | Sabrewoif","mainCharacter":"Clive","characters":["Clive","Kuma", "Law"],"wins":6,"losses":2},
-              {"name":"HarryCM01","mainCharacter":"Anna","characters":["Anna", "Asuka", "Law"],"wins":4,"losses":2},
-              {"name":"MILKGUY | Orion","mainCharacter":"Random","characters":["Random"],"wins":4,"losses":2},
-              {"name":"DQ | ProtonicCobra","mainCharacter":"Jack-8","characters":["Jack-8", "Alisa", "Lee"],"wins":5,"losses":2},
-              {"name":"RIF | Geowesome","mainCharacter":"Clive","characters":["Clive", "Alisa"],"wins":4,"losses":2},
-              {"name":"SFO | Zepphyr","mainCharacter":"Devil-Jin","characters":["Devil-Jin"],"wins":5,"losses":2},
+              {"name":"PND | Strykie","mainCharacter":"Yoshimitsu","characters":["Yoshimitsu","Jun"],"wins":6,"losses":0},
+              {"name":"NGI | Sabrewoif","mainCharacter":"Clive","characters":["Clive","Kuma","Law"],"wins":6,"losses":2},
+              {"name":"HarryCM01","mainCharacter":"Anna","characters":["Anna","Asuka","Law"],"wins":4,"losses":2},
+              {"name":"MILKGUY | Orion","mainCharacter":"Law","characters":["Law"],"wins":4,"losses":2},
+              {"name":"DQ | ProtonicCobra","mainCharacter":"Jack-8","characters":["Jack-8","Alisa","Lee"],"wins":5,"losses":2},
+              {"name":"RIF | Geowesome","mainCharacter":"Clive","characters":["Clive","Alisa"],"wins":4,"losses":2},
+              {"name":"SFO | Zephhyr","mainCharacter":"Devil-Jin","characters":["Devil-Jin"],"wins":5,"losses":2},
               {"name":"Cringe Lord","mainCharacter":"Random","characters":["Random"],"wins":3,"losses":2},
               {"name":"Zollith","mainCharacter":"Victor","characters":["Victor"],"wins":3,"losses":2},
               {"name":"Xavio Tao","mainCharacter":"Asuka","characters":["Asuka"],"wins":3,"losses":2},
-              {"name":"DQ | SlawPro","mainCharacter":"Azucena","characters":["Azucena", "Leo"],"wins":2,"losses":2},
+              {"name":"DQ | SlawPro","mainCharacter":"Azucena","characters":["Azucena","Leo"],"wins":2,"losses":2},
               {"name":"TKC | Temphuibis","mainCharacter":"King","characters":["King"],"wins":2,"losses":2},
               {"name":"Lucky Merc","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
               {"name":"Scarwork","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
@@ -42,9 +49,9 @@
               {"name":"MBA | Icarus","mainCharacter":"Law","characters":["Law"],"wins":3,"losses":2},
               {"name":"MU | Alumento","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
               {"name":"NJT | DerpxShikari","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
-              {"name":"JustATreatMan","mainCharacter":"Lidia","characters":["Eddy", "Lidia"],"wins":2,"losses":2},
-              {"name":"EXGaiden","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
-              {"name":"Saerilee","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
+              {"name":"JustATreatMan","mainCharacter":"Lidia","characters":["Eddy","Lidia"],"wins":2,"losses":2},
+              {"name":"RISE | EXGaiden","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
+              {"name":"iam | Saerilee","mainCharacter":"Random","characters":["Random"],"wins":2,"losses":2},
               {"name":"arfrix","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
               {"name":"Laughing Bat","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
               {"name":"Druger","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
@@ -56,12 +63,175 @@
               {"name":"MJ-Raijin","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
               {"name":"DQ | Rampage","mainCharacter":"Asuka","characters":["Asuka"],"wins":0,"losses":2},
               {"name":"4SPG | Divine Blade of Scuff","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
-              {"name":"HarleKris","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
+              {"name":"NGI | HarleKris","mainCharacter":"Random","characters":["Random"],"wins":1,"losses":2},
               {"name":"Bloke-Chan","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
               {"name":"Average Gang | Zane","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
               {"name":"MFGC | Mackone","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
               {"name":"Tokon Black","mainCharacter":"Random","characters":["Random"],"wins":0,"losses":2},
               {"name":"ESC | The 129","mainCharacter":"Kazuya","characters":["Kazuya"],"wins":0,"losses":2}
+            ]
+          },
+          "pools": [
+            {
+              "name": "Pool 1",
+              "players": [
+                "Remmy","Gaer Gaeaf","RIZE | EXGaiden","SCHIZOPHRENIC69","MJ-Raijin","WizardKing","ELF | Pygmy_Slaanesh","iam | Saerilee",
+                "arfrix","Scarwork","PND | Strykie","Zollith","TKC | TEMPHUiBIS","Divine Blade of Scuff","NGI | Sabrewoif","Xavio Tao",
+                "Lucky Merc","DQ | SlawPro","Laughing Bat","Schizoid"
+              ],
+              "sets": [
+                {"winner":"Gaer Gaeaf","loser":"Remmy","score":"2-0"},
+                {"winner":"RIZE | EXGaiden","loser":"SCHIZOPHRENIC69","score":"0-0"},
+                {"winner":"WizardKing","loser":"MJ-Raijin","score":"0-0"},
+                {"winner":"iam | Saerilee","loser":"… | Pygmy_Slaanesh","score":"2-0"},
+                {"winner":"Scarwork","loser":"arfrix","score":"2-0"},
+                {"winner":"PND | Strykie","loser":"Gaer Gaeaf","score":"2-0"},
+                {"winner":"Zollith","loser":"DQ | Rampage","score":"0-0"},
+                {"winner":"TKC | TEMPHUiBIS","loser":"RIZE | EXGaiden","score":"2-0"},
+                {"winner":"Divine Blade of Scuff","loser":"WizardKing","score":"0-2"},
+                {"winner":"NGI | Sabrewoif","loser":"iam | Saerilee","score":"2-0"},
+                {"winner":"Xavio Tao","loser":"Schizoid","score":"2-1"},
+                {"winner":"Lucky Merc","loser":"Scarwork","score":"0-2"},
+                {"winner":"DQ | SlawPro","loser":"… | Laughing Bat","score":"2-0"},
+                {"winner":"PND | Strykie","loser":"Zollith","score":"2-0"},
+                {"winner":"TKC | TEMPHUiBIS","loser":"WizardKing","score":"2-0"},
+                {"winner":"NGI | Sabrewoif","loser":"Xavio Tao","score":"2-0"},
+                {"winner":"DQ | SlawPro","loser":"Scarwork","score":"2-0"},
+                {"winner":"PND | Strykie","loser":"TKC | TEMPHUiBIS","score":"1-0"},
+                {"winner":"NGI | Sabrewoif","loser":"DQ | SlawPro","score":"1-0"},
+                {"winner":"Laughing Bat","loser":"Remmy","score":"2-0"},
+                {"winner":"iam | Saerilee","loser":"Schizoid","score":"0-0"},
+                {"winner":"ELF | Pygmy_Slaanesh","loser":"Divine Blade of Scuff","score":"2-0"},
+                {"winner":"arfrix","loser":"Gaer Gaeaf","score":"0-2"},
+                {"winner":"WizardKing","loser":"Lucky Merc","score":"0-2"},
+                {"winner":"Zollith","loser":"Schizoid","score":"2-0"},
+                {"winner":"Scarwork","loser":"ELF | Pygmy_Slaanesh","score":"2-0"},
+                {"winner":"Xavio Tao","loser":"Gaer Gaeaf","score":"2-1"},
+                {"winner":"Zollith","loser":"Lucky Merc","score":"2-0"},
+                {"winner":"Xavio Tao","loser":"Scarwork","score":"2-0"}
+              ]
+            },
+            {
+              "name": "Pool 2",
+              "players": [
+                "NGI | HarleKris","Bloke-Chan","Average Gang | Zane","Druger","MFGC | Mackone","Martian Stache","ESC | The129","MBA | Icarus",
+                "Tokon Black","AgentApe","SFO | Zephhyr","BigHenchy","DQ | ProtonicCobra","MILKGUY | Orion","meowmeow","Cringe Lord",
+                "MU | Alumento","HarryCM01","NJT | DerpxShikari","Sephiroth"
+              ],
+              "sets": [
+                {"winner":"NGI | HarleKris","loser":"Bloke-Chan","score":"2-0"},
+                {"winner":"Martian Stache","loser":"MFGC | Mackone","score":"2-0"},
+                {"winner":"MBA | Icarus","loser":"ESC | The129","score":"2-0"},
+                {"winner":"SFO | Zephhyr","loser":"BigHenchy","score":"2-0"},
+                {"winner":"DQ | ProtonicCobra","loser":"NGI | HarleKris","score":"2-0"},
+                {"winner":"MILKGUY | Orion","loser":"meowmeow","score":"2-1"},
+                {"winner":"Cringe Lord","loser":"Druger","score":"2-0"},
+                {"winner":"HarryCM01","loser":"MBA | Icarus","score":"2-0"},
+                {"winner":"NJT | DerpxShikari","loser":"Sephiroth","score":"2-0"},
+                {"winner":"RIF | Geowesome","loser":"AgentApe","score":"2-0"},
+                {"winner":"SFO | Zephhyr","loser":"MU | Alumento","score":"2-0"},
+                {"winner":"DQ | ProtonicCobra","loser":"MBA | Icarus","score":"2-1"},
+                {"winner":"DQ | ProtonicCobra","loser":"MU | Alumento","score":"2-0"},
+                {"winner":"NGI | HarleKris","loser":"BigHenchy","score":"2-0"},
+                {"winner":"MU | Alumento","loser":"Druger","score":"2-0"},
+                {"winner":"meowmeow","loser":"Tokon Black","score":"2-0"},
+                {"winner":"Martian Stache","loser":"JustATreatMan","score":"2-0"},
+                {"winner":"SFO | Zephhyr","loser":"MU | Alumento","score":"2-0"},
+                {"winner":"NJT | DerpxShikari","loser":"meowmeow","score":"1-2"}
+              ]
+            }
+          ],
+          "topcut": {
+            "size": 12,
+            "players": [
+              "PND | Strykie","NGI | Sabrewoif","MILKGUY | Orion","HarryCM01","RIF | Geowesome","Zollith",
+              "Cringe Lord","Xavio Tao","DQ | SlawPro","TKC | TEMPHUiBIS","DQ | ProtonicCobra","SFO | Zephhyr"
+            ],
+            "sets": [
+              {"round":"Top 12 Match 1","winner":"PND | Strykie","loser":"NGI | Sabrewoif","score":"2-0"},
+              {"round":"Top 12 Match 2","winner":"MILKGUY | Orion","loser":"HarryCM01","score":"0-2"},
+              {"round":"Top 12 Match 3","winner":"PND | Strykie","loser":"HarryCM01","score":"3-0"},
+              {"round":"Top 12 Match 4","winner":"PND | Strykie","loser":"NGI | Sabrewoif","score":"3-1"},
+              {"round":"Top 12 Match 5","winner":"RIF | Geowesome","loser":"Zollith","score":"2-1"},
+              {"round":"Top 12 Match 6","winner":"Cringe Lord","loser":"Xavio Tao","score":"2-1"},
+              {"round":"Top 12 Match 7","winner":"DQ | SlawPro","loser":"DQ | ProtonicCobra","score":"0-2"},
+              {"round":"Top 12 Match 8","winner":"TKC | TEMPHUiBIS","loser":"SFO | Zephhyr","score":"0-2"},
+              {"round":"Top 12 Match 9","winner":"RIF | Geowesome","loser":"Cringe Lord","score":"2-1"},
+              {"round":"Top 12 Match 10","winner":"DQ | ProtonicCobra","loser":"SFO | Zephhyr","score":"2-1"},
+              {"round":"Top 12 Match 11","winner":"NGI | Sabrewoif","loser":"RIF | Geowesome","score":"2-1"},
+              {"round":"Top 12 Match 12","winner":"MILKGUY | Orion","loser":"DQ | ProtonicCobra","score":"2-1"},
+              {"round":"Top 12 Match 13","winner":"NGI | Sabrewoif","loser":"MILKGUY | Orion","score":"2-0"},
+              {"round":"Top 12 Match 14","winner":"HarryCM01","loser":"NGI | Sabrewoif","score":"1-3"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "arcade-throwdown-ii",
+      "events": [
+        {
+          "name": "Tekken Ball Clash",
+          "slug": "arcade-throwdown-ii-tekken-ball-clash",
+          "startAt": "2025-09-21",
+          "game": "Tekken 8",
+          "entrants": {
+            "nodes": [
+              {"name":"ShadowReign","mainCharacter":"Steve","characters":["Steve","Paul"],"wins":7,"losses":1},
+              {"name":"Eclipse","mainCharacter":"Zafina","characters":["Zafina","Xiaoyu"],"wins":6,"losses":2},
+              {"name":"LoneWolf","mainCharacter":"Leo","characters":["Leo","Jun"],"wins":5,"losses":2},
+              {"name":"IronFist","mainCharacter":"Dragunov","characters":["Dragunov","Bryan"],"wins":5,"losses":2},
+              {"name":"Cobalt","mainCharacter":"Bryan","characters":["Bryan"],"wins":4,"losses":2},
+              {"name":"Mythril","mainCharacter":"Xiaoyu","characters":["Xiaoyu"],"wins":4,"losses":3},
+              {"name":"Ashen","mainCharacter":"Paul","characters":["Paul","Law"],"wins":3,"losses":2},
+              {"name":"Venomous","mainCharacter":"Lili","characters":["Lili","Jin"],"wins":3,"losses":3},
+              {"name":"ZeroBeat","mainCharacter":"Law","characters":["Law"],"wins":2,"losses":2},
+              {"name":"GhostFox","mainCharacter":"Feng","characters":["Feng","Claudio"],"wins":2,"losses":3},
+              {"name":"Ravenous","mainCharacter":"Raven","characters":["Raven"],"wins":1,"losses":2},
+              {"name":"Stormcry","mainCharacter":"Jun","characters":["Jun"],"wins":1,"losses":3},
+              {"name":"RandomJoe","mainCharacter":"Random","characters":["Steve","Zafina","Leo"],"wins":2,"losses":2},
+              {"name":"MysticFox","mainCharacter":"Random","characters":["Dragunov","Xiaoyu"],"wins":1,"losses":2},
+              {"name":"NightOwl","mainCharacter":"Random","characters":["Paul","Lili"],"wins":1,"losses":2},
+              {"name":"ShadowPaw","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"BlazingStar","mainCharacter":"Random","characters":["Bryan","Raven"],"wins":0,"losses":2}
+            ]
+          },
+          "pools": [
+            {
+              "name": "Pool 1",
+              "players": ["ShadowReign","LoneWolf","Cobalt","Ashen","ZeroBeat","Ravenous","RandomJoe","MysticFox"],
+              "sets": [
+                {"winner":"ShadowReign","loser":"LoneWolf","score":"2-0"},
+                {"winner":"Cobalt","loser":"ZeroBeat","score":"2-1"},
+                {"winner":"Ashen","loser":"Ravenous","score":"2-0"},
+                {"winner":"ShadowReign","loser":"Cobalt","score":"2-1"},
+                {"winner":"LoneWolf","loser":"Ashen","score":"2-1"}
+              ]
+            },
+            {
+              "name": "Pool 2",
+              "players": ["Eclipse","IronFist","Mythril","Venomous","GhostFox","Stormcry","NightOwl","ShadowPaw","BlazingStar"],
+              "sets": [
+                {"winner":"Eclipse","loser":"Venomous","score":"2-0"},
+                {"winner":"IronFist","loser":"Stormcry","score":"2-0"},
+                {"winner":"Mythril","loser":"GhostFox","score":"2-1"},
+                {"winner":"Eclipse","loser":"IronFist","score":"2-1"},
+                {"winner":"Venomous","loser":"Mythril","score":"2-0"}
+              ]
+            }
+          ],
+          "topcut": {
+            "size": 12,
+            "players": ["ShadowReign","Eclipse","LoneWolf","IronFist","Cobalt","Mythril","Ashen","Venomous","ZeroBeat","GhostFox","Ravenous","Stormcry"],
+            "sets": [
+              {"round":"Winners Semi","winner":"ShadowReign","loser":"IronFist","score":"3-1"},
+              {"round":"Winners Semi","winner":"Eclipse","loser":"LoneWolf","score":"3-2"},
+              {"round":"Winners Final","winner":"ShadowReign","loser":"Eclipse","score":"3-2"},
+              {"round":"Losers Quarter","winner":"LoneWolf","loser":"Cobalt","score":"3-1"},
+              {"round":"Losers Quarter","winner":"IronFist","loser":"Mythril","score":"3-0"},
+              {"round":"Losers Semi","winner":"IronFist","loser":"LoneWolf","score":"3-2"},
+              {"round":"Losers Final","winner":"Eclipse","loser":"IronFist","score":"3-1"},
+              {"round":"Grand Final","winner":"ShadowReign","loser":"Eclipse","score":"3-2"}
             ]
           }
         }

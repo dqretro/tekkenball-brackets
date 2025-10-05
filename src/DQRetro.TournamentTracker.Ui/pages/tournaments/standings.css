@@ -1,0 +1,63 @@
+/* ---------------------------
+   Character Icons in Standings
+--------------------------- */
+.character-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px; /* small gap between icons */
+  margin-left: 6px; /* spacing from player name */
+}
+
+.character-icons img {
+  width: 24px;
+  height: 24px;
+  cursor: default;
+  transition: transform 0.1s;
+}
+
+/* Optional: slightly enlarge on hover */
+.character-icons img:hover {
+  transform: scale(1.2);
+}
+
+/* Sub characters appear after main character (already handled by JS order) */
+.character-icons .sub-character {
+  opacity: 0.7;
+}
+
+/* Optional: show tooltip only on main character or all icons */
+.character-icons img[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+
+/* Player avatar in standings table */
+.player-avatar-table {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #6f42c1;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.player-cell a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: #fff;
+}
+
+.player-name-text {
+  font-weight: 600;
+}

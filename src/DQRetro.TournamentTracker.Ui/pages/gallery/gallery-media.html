@@ -3,35 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gallery</title>
+  <title>Media Gallery</title>
   <link rel="stylesheet" href="../../styles.css">
   <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
   <link rel="stylesheet" href="gallery.css">
 </head>
 <body class="dark">
 
-<!-- Navigation -->
 <div id="nav-placeholder"></div>
 
-  <div class="container">
-    <h1>DQRetro Video Gallery</h1>
+<div class="container">
+  <h1>DQRetro Media Gallery</h1>
 
-    <!-- Year Filter -->
-    <div class="filter-container">
-      <label for="yearFilter">Filter by Year:</label>
-      <select id="yearFilter">
-        <option value="all">All Years</option>
-      </select>
-    </div>
-
-    <!-- Gallery Grid -->
-    <div id="gallery-grid" class="gallery-grid"></div>
+<!-- Gallery Banner Slider -->
+<div id="banner-slider-container">
+  <button id="prev-banner">❮</button>
+  <div id="banner-slider"></div>
+  <button id="next-banner">❯</button>
+</div>
+  
+  <!-- Tabs -->
+  <div class="gallery-tabs">
+    <button id="videos-tab" class="active-tab">Videos</button>
+    <button id="photos-tab">Photos</button>
   </div>
 
-  <!-- Footer -->
-  <div id="footer-placeholder"></div>
+  <!-- Video Filter -->
+  <div id="video-filter-container" class="filter-container">
+    <label for="yearFilter">Filter Videos by Year:</label>
+    <select id="yearFilter">
+      <option value="all">All Years</option>
+    </select>
+  </div>
 
-  <script src="../../script.js"></script>
-  <script src="gallery.js"></script>
+  <!-- Video Gallery -->
+  <div id="gallery-grid" class="gallery-grid"></div>
+  <div id="pagination" class="pagination"></div>
+
+  <!-- Photo Filter -->
+  <div id="photo-filter-container" class="filter-container" style="display:none">
+    <label for="photoYearFilter">Filter Photos by Year:</label>
+    <select id="photoYearFilter">
+      <option value="all">All Years</option>
+    </select>
+  </div>
+
+  <!-- Photo Gallery -->
+  <div id="photo-gallery-grid" class="gallery-grid" style="display:none"></div>
+  <div id="photo-pagination" class="pagination" style="display:none"></div>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="../../script.js"></script>
+<script src="gallery.js"></script>
 </body>
 </html>

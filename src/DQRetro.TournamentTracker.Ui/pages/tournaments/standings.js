@@ -1,5 +1,5 @@
 // ---------------------------
-// Helpers (reuse from tournaments.js)
+// Helpers
 // ---------------------------
 function withBase(path) {
   const BASE = window.location.hostname === "dqretro.github.io" ? "/tekkenball-brackets" : "";
@@ -8,20 +8,32 @@ function withBase(path) {
   return `${BASE}${path.startsWith("/") ? path : "/" + path}`;
 }
 
-// Simple slugify for character images
 function slugify(name) {
   return (name || "").toString().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_-]/g, "");
 }
 
-let placeholderData = null;
+function playerSlugify(name) {
+  return (name || "").toString().toLowerCase()
+    .replace(/\s*\|\s*/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]/g, "");
+}
 
+// ---------------------------
+// Data caches
+// ---------------------------
+let placeholderData = null;
+let playersData = null;
+
+// ---------------------------
+// Load placeholder tournaments
+// ---------------------------
 async function loadPlaceholderData() {
   if (placeholderData) return placeholderData;
   try {
     const res = await fetch(withBase("/pages/tournaments/placeholder-data/tournaments-placeholder.json"));
     placeholderData = await res.json();
 
-    // Ensure all events have a slug
     placeholderData.events.forEach(wrapper => {
       wrapper.events.forEach(ev => {
         if (!ev.slug) ev.slug = `${wrapper.slug}-${ev.name.toLowerCase().replace(/\s+/g, "-")}`;
@@ -34,7 +46,21 @@ async function loadPlaceholderData() {
 }
 
 // ---------------------------
-// Load Event Info (title, back link, and summary)
+// Load players.json for avatars
+// ---------------------------
+async function loadPlayersData() {
+  if (playersData) return playersData;
+  try {
+    const res = await fetch(withBase("/pages/player-profiles/players/players.json"));
+    playersData = await res.json();
+  } catch {
+    playersData = [];
+  }
+  return playersData;
+}
+
+// ---------------------------
+// Load Event Info
 // ---------------------------
 async function loadEventStats(slug) {
   if (!slug) return;
@@ -51,49 +77,30 @@ async function loadEventStats(slug) {
   }
   if (!foundEvent || !tournamentMeta) return;
 
-  // Update header title
   const titleEl = document.getElementById("standings-title");
   if (titleEl) {
     const overviewUrl = withBase(`/pages/tournaments/overview.html?slug=${encodeURIComponent(foundEvent.slug)}`);
     titleEl.innerHTML = `<a href="${overviewUrl}">${tournamentMeta.name} - ${foundEvent.name}</a>`;
   }
 
-  // Back button logic
-  const backOverviewEl = document.getElementById("back-to-overview");
-  const backEventsEl = document.getElementById("back-to-events");
-  const backTournamentsEl = document.getElementById("back-to-tournaments");
-
-  if (window.location.pathname.includes("standings.html")) {
-    if (backOverviewEl) backOverviewEl.innerHTML = `<a href="${withBase(`/pages/tournaments/overview.html?slug=${encodeURIComponent(foundEvent.slug)}`)}" class="button secondary">← Back to Overview</a>`;
-  } else if (window.location.pathname.includes("overview.html")) {
-    if (backEventsEl) backEventsEl.innerHTML = `<a href="${withBase("/pages/tournaments/events.html?slug=" + encodeURIComponent(tournamentMeta.slug))}" class="button secondary">← Back to Events</a>`;
-  } else if (window.location.pathname.includes("events.html")) {
-    if (backTournamentsEl) backTournamentsEl.innerHTML = `<a href="${withBase("/pages/tournaments/tournaments.html")}" class="button secondary">← Back to Tournaments</a>`;
-  }
-
   return foundEvent;
 }
 
 // ---------------------------
-// Render all character icons (chronological, including main)
-// ---------------------------
-function renderCharacterIcons(characters) {
-  if (!characters || !characters.length) return "";
-  
-  return characters.map(c => {
-    const slug = slugify(c);
-    return `<img src="${withBase(`/images/games/tk8/characters/characters_select/select_${slug}.png`)}" title="${c}">`;
-  }).join("");
-}
-
-// ---------------------------
-// Load Standings Table
+// Render Standings Table
 // ---------------------------
 async function loadStandings(slug) {
   if (!slug) return;
-  const event = await loadEventStats(slug);
+
+  const [event, allPlayers] = await Promise.all([
+    loadEventStats(slug),
+    loadPlayersData()
+  ]);
+
   const tbody = document.getElementById("standings-body");
   if (!event || !tbody) return;
+
+  tbody.innerHTML = "";
 
   const entrants = event.entrants?.nodes || [];
   if (!entrants.length) {
@@ -101,54 +108,68 @@ async function loadStandings(slug) {
     return;
   }
 
-  tbody.innerHTML = "";
-  const limit = window.location.pathname.includes("overview.html") ? 8 : entrants.length;
+  const isOverview = window.location.pathname.includes("overview.html");
+  const limit = isOverview ? Math.min(8, entrants.length) : entrants.length;
 
   entrants.slice(0, limit).forEach((player, index) => {
     const stats = player.standing?.stats || {};
+
+    const playerSlug = playerSlugify(player.name);
+
+    // Find real player info from players.json to get avatar
+    const realPlayer = allPlayers.find(p => playerSlugify(p.name) === playerSlug);
+    const avatarSrc = realPlayer?.avatar || withBase("/images/placeholders/icons-profile/icon-pfp-player.png");
+
+    // Character icons
+    const charsHTML = (player.characters || []).map(c =>
+      `<img src="${withBase(`/images/games/tk8/characters/characters_select/select_${slugify(c)}.png`)}" title="${c}">`
+    ).join("");
+
     const tr = document.createElement("tr");
-
-    // Main character
-    const mainCharHTML = player.characters?.[0]
-      ? `<img src="${withBase(`/images/games/tk8/characters/characters_select/select_${slugify(player.characters[0])}.png`)}" class="main-character" title="${player.characters[0]}">`
-      : "";
-
-    // Alt characters only (exclude main)
-    const altChars = player.characters?.slice(1) || [];
-    const altCharsHTML = altChars
-      .map(c => `<img src="${withBase(`/images/games/tk8/characters/characters_select/select_${slugify(c)}.png`)}" class="alt-character" title="${c}">`)
-      .join("");
-
     tr.innerHTML = `
-<td>${index + 1}</td>
-<td class="player-cell">
-  <span class="main-character-wrapper">${mainCharHTML}</span>
-  <span class="player-name">
-    <span class="name-text">${player.name}</span>
-    <span class="character-icons">${altCharsHTML}</span>
-  </span>
-</td>
-<td>${stats.wins?.value ?? player.wins ?? "-"}</td>
-<td>${stats.losses?.value ?? player.losses ?? "-"}</td>
-<td>${stats.score?.value != null ? stats.score.value.toFixed(2) + "%" : "-"}</td>
-<td>${stats.lostTo?.value || "-"}</td>
-`;
-
+      <td>${index + 1}</td>
+      <td class="player-cell">
+        <a href="#" onclick="checkPlayerExists(event, '${playerSlug}')">
+          <img src="${avatarSrc}" class="player-avatar-table" alt="${player.name}">
+          <span class="player-name-text">${player.name}</span>
+        </a>
+        <span class="character-icons">${charsHTML}</span>
+      </td>
+      <td>${stats.wins?.value ?? player.wins ?? "-"}</td>
+      <td>${stats.losses?.value ?? player.losses ?? "-"}</td>
+      <td>${stats.score?.value != null ? stats.score.value.toFixed(2) + "%" : "-"}</td>
+      <td>${stats.lostTo?.value || "-"}</td>
+    `;
     tbody.appendChild(tr);
   });
 }
 
 // ---------------------------
-// Initialize on DOM Ready
+// Check Player Exists
+// ---------------------------
+async function checkPlayerExists(event, slug) {
+  event.preventDefault();
+  if (!slug) return;
+
+  const allPlayers = await loadPlayersData();
+  const exists = allPlayers.some(p => playerSlugify(p.name) === slug);
+  if (!exists) return alert("Player not found.");
+
+  window.location.href = withBase(`/pages/player-profiles/players/players.html?player=${encodeURIComponent(slug)}`);
+}
+
+// ---------------------------
+// Init
 // ---------------------------
 document.addEventListener("DOMContentLoaded", async () => {
   const urlSlug = new URLSearchParams(window.location.search).get("slug");
-  if (!urlSlug) return;
+  if (urlSlug) await loadStandings(urlSlug);
 
-  await loadStandings(urlSlug);
-
-  window.addEventListener("popstate", async () => {
-    const newSlug = new URLSearchParams(window.location.search).get("slug");
-    if (newSlug) await loadStandings(newSlug);
-  });
+  // Only reload table on popstate if not overview.html
+  if (!window.location.pathname.includes("overview.html")) {
+    window.addEventListener("popstate", async () => {
+      const newSlug = new URLSearchParams(window.location.search).get("slug");
+      if (newSlug) await loadStandings(newSlug);
+    });
+  }
 });

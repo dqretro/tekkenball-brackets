@@ -8,6 +8,8 @@ let leaderboardData = [];
 let usageChart = null;
 const chartTopN = 10; // Top N characters for chart
 
+let allPlayers = null; // For real avatars
+
 // ---------------------------
 // Base helper for GH Pages vs local
 // ---------------------------
@@ -19,7 +21,7 @@ function withBase(path) {
 }
 
 // ---------------------------
-// Slugify names
+// Slugify names (for characters)
 // ---------------------------
 function slugify(name) {
   return (name || "")
@@ -30,7 +32,21 @@ function slugify(name) {
 }
 
 // ---------------------------
-// Load placeholder JSON once
+// Player slugify (for URLs)
+// ---------------------------
+function playerSlugify(name) {
+  return (name || "")
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")        // spaces → hyphens
+    .replace(/[^a-z0-9-]/g, "") // remove invalid chars
+    .replace(/-+/g, "-")        // collapse multiple hyphens
+    .replace(/^-|-$/g, "");     // remove leading/trailing hyphen
+}
+
+// ---------------------------
+// Fetch placeholder JSON
 // ---------------------------
 async function fetchPlaceholderData() {
   if (placeholderData) return placeholderData;
@@ -71,12 +87,70 @@ async function fetchEventData(slug) {
 }
 
 // ---------------------------
-// Generate charData from leaderboard
+// Load all players
+// ---------------------------
+async function loadAllPlayers() {
+  if (allPlayers) return allPlayers;
+  try {
+    const res = await fetch(withBase("/pages/player-profiles/players/players.json"));
+    allPlayers = await res.json();
+    return allPlayers;
+  } catch (err) {
+    console.error("Failed to load players.json", err);
+    allPlayers = [];
+    return allPlayers;
+  }
+}
+
+// ---------------------------
+// Get player avatar
+// ---------------------------
+function getPlayerAvatar(name) {
+  if (!allPlayers) return withBase('/images/placeholders/icons-profile/icon-pfp-player.png');
+  const player = allPlayers.find(p => p.name.toLowerCase() === name.toLowerCase());
+  return player?.avatar || withBase('/images/placeholders/icons-profile/icon-pfp-player.png');
+}
+
+// ---------------------------
+// Get player profile URL
+// ---------------------------
+function getPlayerProfileUrl(name) {
+  return `/pages/players/players.html?player=${encodeURIComponent(playerSlugify(name))}`;
+}
+
+// ---------------------------
+// Generate leaderboardData counting main character only
+// ---------------------------
+function generateLeaderboardData(nodes) {
+  const data = [];
+  (nodes || []).forEach(p => {
+    const chars = p.characters?.length ? p.characters : ["Random"];
+    data.push({
+      name: p.name,
+      character: chars[0] // only main character
+    });
+  });
+
+  // Remove duplicates
+  const unique = [];
+  const seen = new Set();
+  data.forEach(d => {
+    if (!seen.has(d.name.toLowerCase())) {
+      unique.push(d);
+      seen.add(d.name.toLowerCase());
+    }
+  });
+  return unique;
+}
+
+// ---------------------------
+// Generate charData for chart (exclude "Random")
 // ---------------------------
 function generateCharDataFromLeaderboard(maxSlots = chartTopN) {
   const charCounts = {};
   leaderboardData.forEach(p => {
     const char = p.character || "Random";
+    if (char.toLowerCase() === "random") return; // skip Random
     charCounts[char] = (charCounts[char] || 0) + 1;
   });
 
@@ -149,7 +223,8 @@ function renderCharacterUsageChart(data) {
 }
 
 // ---------------------------
-// Render Pools (read-only)
+// Render Pools
+// ---------------------------
 function renderPools(eventData) {
   const container = document.getElementById("pools-container");
   if (!container) return;
@@ -168,8 +243,10 @@ function renderPools(eventData) {
     if (pool.sets?.length) {
       setsHtml = pool.sets.map((s, idx) => {
         const statusClass = s.winner || s.score ? "completed" : "missing";
-        const display = s.players ? `${s.players.join(" vs ")} (${s.winner || "?"})` : "Set info missing";
-        const tooltipText = s.winner || s.score ? `Completed: ${s.winner || "?"}` : "Match not reported";
+        const winnerLink = s.winner ? `<a href="${getPlayerProfileUrl(s.winner)}" target="_blank">${s.winner}</a>` : "?";
+        const loserLink = s.loser ? `<a href="${getPlayerProfileUrl(s.loser)}" target="_blank">${s.loser}</a>` : "?";
+        const display = `${winnerLink} vs ${loserLink} (${s.score || "?"})`;
+        const tooltipText = s.winner || s.score ? `Completed: ${s.score || "?"}` : "Match not reported";
 
         return `<div class="set ${statusClass}">
                   Set ${idx + 1}: ${display}
@@ -179,7 +256,7 @@ function renderPools(eventData) {
     }
 
     poolDiv.innerHTML = `
-      <strong>${pool.name}</strong> — Players: ${pool.players.join(", ")}
+      <strong>${pool.name}</strong> — Players: ${pool.players.map(p => `<a href="${getPlayerProfileUrl(p)}" target="_blank">${p}</a>`).join(", ")}
       <div class="sets-container">${setsHtml}</div>
     `;
     container.appendChild(poolDiv);
@@ -187,7 +264,8 @@ function renderPools(eventData) {
 }
 
 // ---------------------------
-// Render Topcut (read-only)
+// Render Topcut
+// ---------------------------
 function renderTopcut(eventData) {
   const container = document.getElementById("topcut-container");
   if (!container) return;
@@ -202,8 +280,10 @@ function renderTopcut(eventData) {
   if (eventData.topcut.sets?.length) {
     setsHtml = eventData.topcut.sets.map((s, idx) => {
       const statusClass = s.winner || s.score ? "completed" : "missing";
-      const display = s.players ? `${s.players.join(" vs ")} (${s.winner || "?"})` : "Set info missing";
-      const tooltipText = s.winner || s.score ? `Completed: ${s.winner || "?"}` : "Match not reported";
+      const winnerLink = s.winner ? `<a href="${getPlayerProfileUrl(s.winner)}" target="_blank">${s.winner}</a>` : "?";
+      const loserLink = s.loser ? `<a href="${getPlayerProfileUrl(s.loser)}" target="_blank">${s.loser}</a>` : "?";
+      const display = `${winnerLink} vs ${loserLink} (${s.score || "?"})`;
+      const tooltipText = s.winner || s.score ? `Completed: ${s.score || "?"}` : "Match not reported";
 
       return `<div class="set ${statusClass}">
                 Set ${idx + 1}: ${display}
@@ -215,7 +295,7 @@ function renderTopcut(eventData) {
   const topcutDiv = document.createElement("div");
   topcutDiv.className = "pool-card";
   topcutDiv.innerHTML = `
-    <strong>Top ${eventData.topcut.size}</strong> — Players: ${eventData.topcut.players.join(", ")}
+    <strong>Top ${eventData.topcut.size}</strong> — Players: ${eventData.topcut.players.map(p => `<a href="${getPlayerProfileUrl(p)}" target="_blank">${p}</a>`).join(", ")}
     <div class="sets-container">${setsHtml}</div>
   `;
   container.appendChild(topcutDiv);
@@ -224,9 +304,11 @@ function renderTopcut(eventData) {
 // ---------------------------
 // Render Overall Stats
 // ---------------------------
-function renderOverallStats(eventData) {
+async function renderOverallStats(eventData) {
   const container = document.getElementById("overall-stats");
   if (!container) return;
+
+  await loadAllPlayers();
 
   const poolMatchesReported = eventData.pools?.reduce((sum, p) => sum + (p.sets?.filter(s => s.winner || s.score).length || 0), 0) || 0;
   const totalPoolMatches = eventData.pools?.reduce((sum, p) => sum + (p.sets?.length || 0), 0) || 0;
@@ -246,10 +328,12 @@ function renderOverallStats(eventData) {
     </div>
     ${top8.map((player, i) => `
       <div class="stat-item">
-        <img src="${withBase('/images/placeholders/icons-profile/icon-pfp-discord.png')}" alt="${player.name}">
-        <div class="position">${i+1}${i===0?'st':i===1?'nd':i===2?'rd':'th'}</div>
-        <div class="name">${player.name}</div>
-        <div class="subtext">${player.character || ''}</div>
+        <a href="${getPlayerProfileUrl(player.name)}" target="_blank" style="color:inherit; text-decoration:none;">
+          <img src="${getPlayerAvatar(player.name)}" alt="${player.name}">
+          <div class="position">${i+1}${i===0?'st':i===1?'nd':i===2?'rd':'th'}</div>
+          <div class="name">${player.name}</div>
+          <div class="subtext">${player.character || ''}</div>
+        </a>
       </div>
     `).join('')}
   `;
@@ -264,18 +348,14 @@ async function renderEventStats(slug) {
 
   const { event: eventData, tournament } = data;
 
-  leaderboardData = eventData.entrants?.nodes.map(p => ({
-    name: p.name,
-    character: p.character || "Random"
-  })) || [];
-
+  leaderboardData = generateLeaderboardData(eventData.entrants?.nodes || []);
   charData = generateCharDataFromLeaderboard(chartTopN);
 
   loadCharacterUsage(charData);
   renderCharacterUsageChart(charData);
   renderPools(eventData);
   renderTopcut(eventData);
-  renderOverallStats(eventData);
+  await renderOverallStats(eventData);
 
   return { name: eventData.name, tournamentName: tournament.name };
 }

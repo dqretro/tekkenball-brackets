@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Tools - Tournament Tracker</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+</head>
+<body class="dark">
+
+<!-- Navigation -->
+<div id="nav-placeholder"></div>
+
+<div class="container">
+  <h1>Admin Tools - Tournament Tracker</h1>
+
+  <!-- Event Selection -->
+  <section class="overview-column">
+    <h2>Select Event</h2>
+    <select id="eventGame">
+      <option value="tekken3">Tekken 3</option>
+      <option value="tekken8">Tekken 8</option>
+      <option value="tag2">Tekken Tag Tournament 2</option>
+    </select>
+  </section>
+
+  <!-- Add New Player -->
+  <section class="overview-column">
+    <h2>Add New Player</h2>
+    <input type="text" id="newPlayerName" placeholder="Player Name">
+    <select id="newPlayerCharacter"></select>
+    <button id="addPlayerBtn">Add Player</button>
+  </section>
+
+  <!-- Edit Player -->
+  <section class="overview-column">
+    <h2>Edit Player</h2>
+    <input type="text" id="updatePlayerName" placeholder="Player Name">
+    <select id="updatePlayerCharacter"></select>
+    <button id="updatePlayerBtn">Update Player</button>
+  </section>
+
+  <!-- Player List -->
+  <section class="overview-column">
+    <h2>Players</h2>
+    <ul id="playerList"></ul>
+  </section>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="../../script.js"></script>
+<script src="/shared/layout/header/nav/nav.js" defer></script>
+<script src="admin.js" defer></script>
+
+</body>
+</html>

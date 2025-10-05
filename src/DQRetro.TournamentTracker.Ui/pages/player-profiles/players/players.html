@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Profile</title>
+  <link rel="stylesheet" href="../../../styles.css">
+  <link rel="stylesheet" href="players.css">
+  <link rel="stylesheet" href="../../../shared/layout/header/nav/nav.css">
+</head>
+<body class="dark">
+
+<!-- Navigation -->
+<div id="nav-placeholder"></div>
+
+<div class="container profile-page">
+  <h1>Player Profile</h1>
+
+  <!-- Modern two-column profile -->
+  <div class="profile-container-modern">
+
+    <!-- Left Panel: Personal Info -->
+    <div class="profile-left-modern">
+      <img src="/images/placeholders/icons-profile/icon-pfp-player.png" alt="Player Avatar" class="player-avatar-modern">
+      <h2 id="playerName">Player Name</h2>
+
+      <div class="character-row">
+        <div class="character-box inline-character-row">
+          <img id="playerMainCharacterImg" src="/images/placeholders/icons-characters/select_default.png" alt="Main Character" class="character-icon">
+          <div id="playerSubCharactersIcons" class="sub-icons">
+            <!-- Populated via JS with multiple sub character icons -->
+          </div>
+        </div>
+      </div>
+
+      <div id="playerTeamWrapper">Team: <span id="playerTeam"></span></div>
+      <div id="playerCountryWrapper">Country: <span id="playerCountry"></span></div>
+    </div>
+
+    <!-- Right Panel: Stats & Achievements -->
+    <div class="profile-right-modern">
+
+      <!-- Stats Card -->
+      <div class="card stats-card">
+        <h3>Stats</h3>
+        <div class="stats-grid-modern">
+          <div class="stat-card"><strong id="tournamentsPlayed">0</strong><span>Tournaments Played</span></div>
+          <div class="stat-card"><strong id="wins">0</strong><span>Wins</span></div>
+          <div class="stat-card"><strong id="losses">0</strong><span>Losses</span></div>
+          <div class="stat-card"><strong id="winRate">0%</strong><span>Win Rate</span></div>
+          <div class="stat-card"><strong id="titles">0</strong><span>Titles Won</span></div>
+        </div>
+      </div>
+
+      <!-- Achievements Card -->
+      <div class="card achievements-card">
+        <h3>Achievements</h3>
+        <div class="badge-list"><!-- populated via JS --></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tournament History -->
+  <section class="tournament-history">
+    <h2>Previous Tournaments</h2>
+    <table class="tournament-table">
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Placement</th>
+          <th>Date</th>
+          <th>Notable Wins</th>
+        </tr>
+      </thead>
+      <tbody id="tournamentHistory">
+        <!-- Populated via JS -->
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Upcoming Tournaments -->
+  <section class="upcoming-tournaments">
+    <h2>Upcoming Tournaments</h2>
+    <ul id="upcomingEvents">
+      <!-- Populated via JS -->
+    </ul>
+  </section>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="../../../script.js"></script>
+<script src="/shared/layout/header/nav/nav.js" defer></script>
+<script src="players.js" defer></script>
+
+</body>
+</html>

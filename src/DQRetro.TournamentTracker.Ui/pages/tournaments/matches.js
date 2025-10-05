@@ -1,20 +1,44 @@
 // ===========================
-// Matches.js – Dynamic Pools & Topcut
+// Matches.js – Pools & Topcut with Characters + Correct Image Paths
 // ===========================
 
+// ---------------------------
+// Base path helper
+// ---------------------------
+function withBase(path) {
+  const BASE = window.location.hostname === "dqretro.github.io" ? "/tekkenball-brackets" : "";
+  return `${BASE}${path.startsWith("/") ? path : "/" + path}`;
+}
+
+// ---------------------------
+// Slugify names
+// ---------------------------
+function slugify(name) {
+  return (name || "")
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_-]/g, "");
+}
+
+// ---------------------------
+// Fetch placeholder JSON
+// ---------------------------
 async function fetchPlaceholderData() {
   const path = "./placeholder-data/tournaments-placeholder.json"; // relative to matches.html
   try {
     const res = await fetch(path);
     if (!res.ok) throw new Error("Failed to fetch JSON");
-    const data = await res.json();
-    return data;
+    return await res.json();
   } catch (err) {
     console.error("Failed to load placeholder JSON:", err);
     return { tournaments: [], events: [] };
   }
 }
 
+// ---------------------------
+// Fetch specific event
+// ---------------------------
 async function fetchEventData(slug) {
   const data = await fetchPlaceholderData();
   const wrapper = data.events.find(w => w.events.some(ev => ev.slug === slug));
@@ -28,7 +52,26 @@ async function fetchEventData(slug) {
 }
 
 // ---------------------------
-// Render Pools into match history
+// Get characters used by a player
+// ---------------------------
+function getPlayerCharacters(playerName, entrants) {
+  const player = (entrants || []).find(p => p.name === playerName);
+  return player?.characters?.length ? player.characters : ["Unknown"];
+}
+
+// ---------------------------
+// Render character images for table
+// ---------------------------
+function renderCharactersHTML(playerName, entrants) {
+  const chars = getPlayerCharacters(playerName, entrants);
+  return chars.map(c => `
+    <img src="${withBase(`/images/games/tk8/characters/characters_select/select_${slugify(c)}.png`)}"
+         alt="${c}" title="${c}" width="24" height="24" style="margin-right:2px;">
+  `).join("");
+}
+
+// ---------------------------
+// Render Pools
 // ---------------------------
 function renderPools(eventData) {
   const matchesBody = document.getElementById("matches-body");
@@ -36,20 +79,25 @@ function renderPools(eventData) {
   matchesBody.innerHTML = "";
 
   if (!eventData.pools?.length) {
-    matchesBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No pool matches available.</td></tr>`;
+    matchesBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No pool matches available.</td></tr>`;
     return;
   }
 
   eventData.pools.forEach((pool, poolIndex) => {
     pool.sets?.forEach((set, idx) => {
       const roundName = `Pool ${poolIndex + 1} Round ${idx + 1}`;
+      const player1Name = set.winner || "Unknown";
+      const player2Name = set.loser || "Unknown";
+
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>${roundName}</td>
-        <td>${set.player1}</td>
-        <td>${set.score}</td>
-        <td>${set.player2}</td>
-        <td>${set.winner}</td>
+        <td>${player1Name}</td>
+        <td>${renderCharactersHTML(player1Name, eventData.entrants?.nodes)}</td>
+        <td>${set.score || "-"}</td>
+        <td>${player2Name}</td>
+        <td>${renderCharactersHTML(player2Name, eventData.entrants?.nodes)}</td>
+        <td>${set.winner || "Unknown"}</td>
       `;
       matchesBody.appendChild(row);
     });
@@ -57,7 +105,7 @@ function renderPools(eventData) {
 }
 
 // ---------------------------
-// Render Topcut Matches
+// Render Topcut
 // ---------------------------
 function renderTopcut(eventData) {
   const topcutSection = document.getElementById("topcut-section");
@@ -69,18 +117,23 @@ function renderTopcut(eventData) {
     return;
   }
 
-  // Set dynamic heading
   topcutSection.querySelector("h2").textContent = `Top ${eventData.topcut.size} Matches`;
   topcutBody.innerHTML = "";
 
-  eventData.topcut.sets.forEach(set => {
+  eventData.topcut.sets.forEach((set, idx) => {
+    const roundName = set.round || `Round ${idx + 1}`;
+    const player1Name = set.winner || "Unknown";
+    const player2Name = set.loser || "Unknown";
+
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${set.round}</td>
-      <td>${set.player1}</td>
-      <td>${set.score}</td>
-      <td>${set.player2}</td>
-      <td>${set.winner}</td>
+      <td>${roundName}</td>
+      <td>${player1Name}</td>
+      <td>${renderCharactersHTML(player1Name, eventData.entrants?.nodes)}</td>
+      <td>${set.score || "-"}</td>
+      <td>${player2Name}</td>
+      <td>${renderCharactersHTML(player2Name, eventData.entrants?.nodes)}</td>
+      <td>${set.winner || "Unknown"}</td>
     `;
     topcutBody.appendChild(row);
   });
@@ -98,7 +151,7 @@ function setupBackToEvents() {
 }
 
 // ---------------------------
-// Load Event Stats & Render
+// Load Event & Render All Matches
 // ---------------------------
 async function loadEventMatches(slug) {
   const data = await fetchEventData(slug);
@@ -109,15 +162,11 @@ async function loadEventMatches(slug) {
 
   const { event, tournament } = data;
 
-  // Update header
   const headerEl = document.getElementById("standings-title");
   if (headerEl) headerEl.textContent = `${tournament.name} - ${event.name}`;
 
-  // Render pools and topcut
   renderPools(event);
   renderTopcut(event);
-
-  // Setup back button
   setupBackToEvents();
 
   return data;
@@ -135,7 +184,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await loadEventMatches(slug);
 
-  // Handle browser back/forward
   window.addEventListener("popstate", async () => {
     const newSlug = new URLSearchParams(window.location.search).get("slug");
     if (!newSlug) return;
