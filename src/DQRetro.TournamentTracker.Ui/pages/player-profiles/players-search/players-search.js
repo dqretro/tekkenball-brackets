@@ -39,7 +39,7 @@ function renderResults(list) {
 
     const link = document.createElement("a");
     const slug = createSlug(player.name);
-    link.href = withBase(`/pages/player-profiles/players.html?player=${slug}`);
+    link.href = withBase(`/pages/player-profiles/players/players.html?player=${slug}`);
 
     // Create avatar image
     const img = document.createElement("img");
