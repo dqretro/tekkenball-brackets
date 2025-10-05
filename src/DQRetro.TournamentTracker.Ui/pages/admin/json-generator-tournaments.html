@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DQRetro | Tournament JSON Generator</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dark">
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>Tournament JSON Generator</h1>
+      <p style="font-size:1.1rem; color: var(--muted); max-width:600px; margin:10px auto;">
+        Create tournament JSON data with players, events, pools, sets, and topcut. Preview and export directly.
+      </p>
+    </div>
+  </section>
+
+  <!-- Tournament Info -->
+  <section>
+    <div class="container">
+      <div class="section">
+        <h2>Tournament Info</h2>
+        <input type="text" id="tournamentName" placeholder="Tournament Name">
+        <input type="text" id="tournamentSlug" placeholder="Slug">
+        <input type="text" id="tournamentGame" placeholder="Game">
+        <select id="tournamentStatus">
+          <option value="upcoming">Upcoming</option>
+          <option value="live">Live</option>
+          <option value="completed">Completed</option>
+        </select>
+        <input type="date" id="tournamentStart">
+      </div>
+    </div>
+  </section>
+
+  <!-- Players -->
+  <section>
+    <div class="container">
+      <div class="section">
+        <h2>Players</h2>
+        <input type="number" id="numPlayers" placeholder="Number of players">
+        <button class="button primary" onclick="createPlayerInputs()">Generate Player Fields</button>
+        <div id="playerFields"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Events -->
+  <section>
+    <div class="container">
+      <div class="section">
+        <h2>Events</h2>
+        <input type="number" id="numEvents" placeholder="Number of events">
+        <button class="button primary" onclick="createEventInputs()">Generate Event Fields</button>
+        <div id="eventFields"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Generate & Export -->
+  <section>
+    <div class="container">
+      <button class="button primary" onclick="generateJSON()">Generate JSON</button>
+      <button class="button" onclick="downloadJSON()">Download JSON</button>
+    </div>
+  </section>
+
+  <!-- Live JSON Preview -->
+  <section>
+    <div class="container">
+      <h2>Live JSON Preview</h2>
+      <textarea id="jsonPreview" readonly></textarea>
+    </div>
+  </section>
+
+  <script>
+    let tournament = { tournaments: [], events: [] };
+
+    function createPlayerInputs() {
+      const num = parseInt(document.getElementById('numPlayers').value);
+      const container = document.getElementById('playerFields');
+      container.innerHTML = '';
+      for (let i = 0; i < num; i++) {
+        container.innerHTML += `
+          <div class="subsection">
+            <strong>Player ${i+1}</strong><br>
+            <input type="text" placeholder="Name" id="playerName${i}">
+            <input type="text" placeholder="Character" id="playerChar${i}">
+            <input type="number" placeholder="Wins" id="playerWins${i}">
+            <input type="number" placeholder="Losses" id="playerLosses${i}">
+          </div>`;
+      }
+    }
+
+    function createEventInputs() {
+      const num = parseInt(document.getElementById('numEvents').value);
+      const container = document.getElementById('eventFields');
+      container.innerHTML = '';
+      for (let i = 0; i < num; i++) {
+        container.innerHTML += `
+          <div class="section" id="eventSection${i}">
+            <h3>Event ${i+1}</h3>
+            <input type="text" placeholder="Event Name" id="eventName${i}">
+            <input type="text" placeholder="Event Slug" id="eventSlug${i}">
+            <input type="date" id="eventStart${i}">
+            <input type="text" placeholder="Game" id="eventGame${i}">
+            <h4>Pools</h4>
+            <input type="number" placeholder="Number of Pools" id="numPools${i}">
+            <button class="button primary" onclick="createPools(${i})">Generate Pools</button>
+            <div id="poolsContainer${i}"></div>
+            <h4>Topcut</h4>
+            <input type="number" placeholder="Topcut Size" id="topcutSize${i}">
+            <input type="text" placeholder="Topcut Players (comma separated)" id="topcutPlayers${i}">
+          </div>`;
+      }
+    }
+
+    function createPools(eventIndex) {
+      const numPools = parseInt(document.getElementById(`numPools${eventIndex}`).value);
+      const container = document.getElementById(`poolsContainer${eventIndex}`);
+      container.innerHTML = '';
+      for (let p = 0; p < numPools; p++) {
+        container.innerHTML += `
+          <div class="subsection">
+            <strong>Pool ${p+1}</strong><br>
+            <input type="text" placeholder="Pool Name" id="poolName${eventIndex}_${p}">
+            <input type="text" placeholder="Players (comma separated)" id="poolPlayers${eventIndex}_${p}">
+            <textarea placeholder="Sets JSON (e.g., [{player1:'A',player2:'B',winner:'A',score:'2-1'}])" id="poolSets${eventIndex}_${p}"></textarea>
+          </div>`;
+      }
+    }
+
+    function generateJSON() {
+      tournament.tournaments = [{
+        name: document.getElementById('tournamentName').value,
+        slug: document.getElementById('tournamentSlug').value,
+        game: document.getElementById('tournamentGame').value,
+        status: document.getElementById('tournamentStatus').value,
+        startAt: document.getElementById('tournamentStart').value
+      }];
+
+      const numPlayers = parseInt(document.getElementById('numPlayers').value);
+      let nodes = [];
+      for (let i = 0; i < numPlayers; i++) {
+        nodes.push({
+          name: document.getElementById(`playerName${i}`).value,
+          character: document.getElementById(`playerChar${i}`).value,
+          wins: parseInt(document.getElementById(`playerWins${i}`).value) || 0,
+          losses: parseInt(document.getElementById(`playerLosses${i}`).value) || 0
+        });
+      }
+
+      const numEvents = parseInt(document.getElementById('numEvents').value);
+      let eventsArr = [];
+      for (let i = 0; i < numEvents; i++) {
+        const eventName = document.getElementById(`eventName${i}`).value;
+        const eventSlug = document.getElementById(`eventSlug${i}`).value;
+        const eventStart = document.getElementById(`eventStart${i}`).value;
+        const eventGame = document.getElementById(`eventGame${i}`).value;
+
+        const numPools = parseInt(document.getElementById(`numPools${i}`).value) || 0;
+        let poolsArr = [];
+        for (let p = 0; p < numPools; p++) {
+          let playersList = document.getElementById(`poolPlayers${i}_${p}`).value.split(',').map(s=>s.trim());
+          let setsJSON = document.getElementById(`poolSets${i}_${p}`).value;
+          let setsArr = [];
+          try { setsArr = JSON.parse(setsJSON); } catch(e){ setsArr = []; }
+          poolsArr.push({
+            name: document.getElementById(`poolName${i}_${p}`).value,
+            players: playersList,
+            sets: setsArr
+          });
+        }
+
+        const topcutSize = parseInt(document.getElementById(`topcutSize${i}`).value) || 0;
+        const topcutPlayers = document.getElementById(`topcutPlayers${i}`).value.split(',').map(s=>s.trim());
+
+        eventsArr.push({
+          slug: tournament.tournaments[0].slug,
+          events: [{
+            name: eventName,
+            slug: eventSlug,
+            startAt: eventStart,
+            game: eventGame,
+            entrants: { nodes },
+            pools: poolsArr,
+            topcut: { size: topcutSize, players: topcutPlayers, sets: [] }
+          }]
+        });
+      }
+
+      tournament.events = eventsArr;
+      document.getElementById('jsonPreview').value = JSON.stringify(tournament, null, 2);
+    }
+
+    function downloadJSON() {
+      const blob = new Blob([JSON.stringify(tournament, null, 2)], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "tournament.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+
+</body>
+</html>
