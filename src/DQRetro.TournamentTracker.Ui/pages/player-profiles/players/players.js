@@ -20,7 +20,7 @@ function getQueryParam(param) {
 function getGameFolder(game) {
   switch (game.toLowerCase()) {
     case "tekken tag tournament 1": return "ttt1";
-    case "tekken tag tournament 1": return "ttt2";
+    case "tekken tag tournament 2": return "ttt2";
     case "tekken 1": return "tk1";
     case "tekken 2": return "tk2";
     case "tekken 3": return "tk3";
@@ -34,11 +34,20 @@ function getGameFolder(game) {
 }
 
 // ---------------------------
+// Base path helper (local vs GitHub Pages)
+// ---------------------------
+function withBase(path) {
+  const base = window.location.hostname.includes("github.io") ? "/tekkenball-brackets" : "";
+  if (path.startsWith("/")) path = path.slice(1); // Remove leading slash
+  return `${base}/${path}`;
+}
+
+// ---------------------------
 // Load JSON data
 // ---------------------------
 async function loadAchievements() {
   try {
-    const res = await fetch("/pages/player-profiles/achievement-list.json");
+    const res = await fetch(withBase("/pages/player-profiles/achievement-list.json"));
     allAchievements = await res.json();
   } catch (err) {
     console.error("Failed to load achievements JSON:", err);
@@ -48,7 +57,7 @@ async function loadAchievements() {
 
 async function loadAchievementIcons() {
   try {
-    const res = await fetch("/pages/player-profiles/achievement-icons.json");
+    const res = await fetch(withBase("/pages/player-profiles/achievement-icons.json"));
     achievementIcons = await res.json();
   } catch (err) {
     console.error("Failed to load achievement icons JSON:", err);
@@ -61,7 +70,7 @@ async function loadAchievementIcons() {
 // ---------------------------
 async function collectPlayerData(playerName) {
   try {
-    const res = await fetch("/pages/tournaments/placeholder-data/tournaments-placeholder.json");
+    const res = await fetch(withBase("/pages/tournaments/placeholder-data/tournaments-placeholder.json"));
     const data = await res.json();
 
     const charUsage = {};
@@ -174,7 +183,8 @@ async function collectPlayerData(playerName) {
           placement,
           date: event.startAt || tournament.startAt,
           slug: event.slug,
-          notableWins: entrant.notableWins || ""
+          notableWins: entrant.notableWins || "",
+          mainGame: event.game || "tekken 8"
         });
       }
     }
@@ -255,12 +265,10 @@ async function populatePlayerProfile(player) {
   if (!player) return;
 
   await loadAchievements();
-  await loadAchievementIcons(); // <-- load icons
+  await loadAchievementIcons();
 
-  // NAME
   document.getElementById("playerName").textContent = player.name;
 
-  // TEAM
   const teamWrapper = document.getElementById("playerTeamWrapper");
   if (player.team && player.team.trim() !== "") {
     document.getElementById("playerTeam").textContent = player.team;
@@ -269,7 +277,6 @@ async function populatePlayerProfile(player) {
     teamWrapper.style.display = "none";
   }
 
-  // COUNTRY
   const countryWrapper = document.getElementById("playerCountryWrapper");
   if (player.country && player.country.trim() !== "") {
     document.getElementById("playerCountry").textContent = player.country;
@@ -278,35 +285,33 @@ async function populatePlayerProfile(player) {
     countryWrapper.style.display = "none";
   }
 
-  // AVATAR
-const avatarImg = document.querySelector(".player-avatar-modern");
-avatarImg.src = player.avatar || withBase("/images/placeholders/icons-profile/icon-pfp-player.png");
+  const avatarImg = document.querySelector(".player-avatar-modern");
+  avatarImg.src = player.avatar || withBase("/images/placeholders/icons-profile/icon-pfp-player.png");
 
-
-  // Player data
   const playerData = await collectPlayerData(player.name);
 
-  // MAIN CHARACTER
+  // Main character image (dynamic game folder)
   const mainCharImg = document.getElementById("playerMainCharacterImg");
   if (playerData.mainCharacter) {
-    mainCharImg.src = `/images/games/tk8/characters/characters_select/select_${playerData.mainCharacter.toLowerCase()}.png`;
+    const mainCharGame = getGameFolder(playerData.mainCharacter);
+    mainCharImg.src = withBase(`/images/games/${mainCharGame}/characters/characters_select/select_${playerData.mainCharacter.toLowerCase()}.png`);
   } else {
-    mainCharImg.src = "/images/games/default.png";
+    mainCharImg.src = withBase("/images/games/default.png");
   }
 
-  // SUB CHARACTERS
+  // Sub-characters images (dynamic game folder)
   const subContainer = document.getElementById("playerSubCharactersIcons");
   subContainer.innerHTML = "";
   playerData.subCharacters.forEach(char => {
+    const charGame = getGameFolder(char);
     const img = document.createElement("img");
-    img.src = `/images/games/tk8/characters/characters_select/select_${char.toLowerCase()}.png`;
+    img.src = withBase(`/images/games/${charGame}/characters/characters_select/select_${char.toLowerCase()}.png`);
     img.alt = char;
     img.title = char;
     img.className = "character-icon";
     subContainer.appendChild(img);
   });
 
-  // STATS
   const stats = playerData.stats || {};
   document.getElementById("tournamentsPlayed").textContent = stats.tournamentsPlayed || 0;
   document.getElementById("wins").textContent = stats.wins || 0;
@@ -314,7 +319,6 @@ avatarImg.src = player.avatar || withBase("/images/placeholders/icons-profile/ic
   document.getElementById("winRate").textContent = stats.winRate || "0%";
   document.getElementById("titles").textContent = stats.titles || 0;
 
-  // ACHIEVEMENTS WITH ICONS
   const badges = document.querySelector(".badge-list");
   badges.innerHTML = "";
   const unlocked = getUnlockedAchievements(playerData);
@@ -327,11 +331,10 @@ avatarImg.src = player.avatar || withBase("/images/placeholders/icons-profile/ic
     badges.appendChild(span);
   });
 
-  // TOURNAMENT HISTORY
   const historyBody = document.getElementById("tournamentHistory");
   historyBody.innerHTML = "";
   playerData.tournamentsList.forEach(t => {
-    const tournamentLink = `/pages/tournaments/overview.html?slug=${encodeURIComponent(t.slug)}`;
+    const tournamentLink = withBase(`/pages/tournaments/overview.html?slug=${encodeURIComponent(t.slug)}`);
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><a href="${tournamentLink}">${t.event}</a></td>
@@ -342,11 +345,10 @@ avatarImg.src = player.avatar || withBase("/images/placeholders/icons-profile/ic
     historyBody.appendChild(tr);
   });
 
-  // UPCOMING EVENTS
   const upcomingList = document.getElementById("upcomingEvents");
   upcomingList.innerHTML = "";
   playerData.upcomingEvents.forEach(e => {
-    const eventLink = `/pages/tournaments/events.html?slug=${encodeURIComponent(e.slug)}`;
+    const eventLink = withBase(`/pages/tournaments/events.html?slug=${encodeURIComponent(e.slug)}`);
     const li = document.createElement("li");
     li.innerHTML = `<a href="${eventLink}">${e.event}</a> – ${e.date}`;
     upcomingList.appendChild(li);
@@ -358,7 +360,7 @@ avatarImg.src = player.avatar || withBase("/images/placeholders/icons-profile/ic
 // ---------------------------
 async function loadPlayerProfile() {
   try {
-    const res = await fetch("/pages/player-profiles/players/players.json");
+    const res = await fetch(withBase("/pages/player-profiles/players/players.json"));
     allPlayers = await res.json();
 
     const slug = getQueryParam("player");

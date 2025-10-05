@@ -1,5 +1,14 @@
 let players = [];
 
+// ---------------------------
+// Base path helper (local vs GitHub Pages)
+// ---------------------------
+function withBase(path) {
+  const base = window.location.hostname.includes("github.io") ? "/tekkenball-brackets" : "";
+  if (path.startsWith("/")) path = path.slice(1); // Remove leading slash
+  return `${base}/${path}`;
+}
+
 // Utility: create slug from player name
 function createSlug(name) {
   return name.toLowerCase().replace(/\s*\|\s*/g, "-").replace(/\s+/g, "-").replace(/[^\w-]/g, "");
@@ -30,11 +39,11 @@ function renderResults(list) {
 
     const link = document.createElement("a");
     const slug = createSlug(player.name);
-    link.href = `../players/players.html?player=${slug}`;
+    link.href = withBase(`/pages/player-profiles/players.html?player=${slug}`);
 
     // Create avatar image
     const img = document.createElement("img");
-    img.src = player.avatar || "/images/placeholders/icons-profile/icon-pfp-player.png";
+    img.src = player.avatar || withBase("/images/placeholders/icons-profile/icon-pfp-player.png");
     img.alt = `${player.name} Avatar`;
     img.className = "search-avatar";
 
@@ -68,7 +77,7 @@ function initSearch() {
 // Load players JSON
 async function loadPlayers() {
   try {
-    const res = await fetch("../players/players.json");
+    const res = await fetch(withBase("/pages/player-profiles/players/players.json"));
     const data = await res.json();
     players = data;
 
