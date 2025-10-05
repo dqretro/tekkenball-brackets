@@ -52,5 +52,5 @@
   "survivor": `<svg viewBox="0 0 24 24" fill="#00FF00"><path d="M12 2l4 4-4 4-4-4z"/></svg>`,
   "unstoppable-2": `<svg viewBox="0 0 24 24" fill="#FF8C00"><path d="M12 2l3 7h7l-5.5 4.5L19 21l-7-4-7 4 1.5-7.5L2 9h7z"/></svg>`,
   "champion-legacy": `<svg viewBox="0 0 24 24" fill="#FFD700"><path d="M12 2l3 7h7l-5.5 4.5L19 21l-7-4-7 4 1.5-7.5L2 9h7z"/></svg>`,
-  "arena-master": `<svg viewBox="0 0 24 24" fill="#9C27B0"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/></svg>`
-};
+  "arena-master": `<svg viewBox="0 0 24 24" fill="#9C27B0"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/></svg>'
+}
