@@ -933,3 +933,39 @@ footer .social-icons a img:hover {
     height: 24px;
   }
 }
+
+.bracket-container {
+  margin-bottom: 30px;
+  background: var(--card-bg);
+  padding: 10px;
+  border-radius: 6px;
+}
+.bracket-container h3 {
+  margin-bottom: 10px;
+}
+
+/* Player name links */
+.player-name a {
+  color: #cdcdcd; /* coral-like color */
+  text-decoration: none; /* remove underline */
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.player-name a:hover {
+  color: #FFD700; /* gold on hover */
+  text-decoration: underline; /* optional underline on hover */
+}
+
+/* Reuse player-name link style for tournament links */
+.tournament-table a {
+  color: #cdcdcd; /* same as player links */
+  text-decoration: none; /* remove underline */
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.tournament-table a:hover {
+  color: #FFD700; /* gold on hover */
+  text-decoration: underline;
+}
