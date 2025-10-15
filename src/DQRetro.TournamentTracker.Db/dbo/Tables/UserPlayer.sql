@@ -1,10 +1,9 @@
-﻿CREATE TABLE [dbo].[UserPlayer] (
+CREATE TABLE [dbo].[UserPlayer] (
     [Id]              SMALLINT      IDENTITY (1, 1) NOT NULL,
     [UserId]          INT           NOT NULL,
     [PlayerId]        INT           NOT NULL,
     [Slug]            NVARCHAR (64) NULL,
     [SponsorPrefixId] SMALLINT      NULL,
-    [Name]            NVARCHAR (64) NULL,
     [GamerTag]        NVARCHAR (25) NOT NULL,
     [DiscordUsername] NVARCHAR (32) NULL,
     [TwitchUsername]  NVARCHAR (25) NULL,

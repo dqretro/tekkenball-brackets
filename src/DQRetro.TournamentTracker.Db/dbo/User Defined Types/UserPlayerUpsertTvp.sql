@@ -1,9 +1,8 @@
-﻿CREATE TYPE [dbo].[UserPlayerUpsertTvp] AS TABLE (
+CREATE TYPE [dbo].[UserPlayerUpsertTvp] AS TABLE (
     [UserId]            INT           NOT NULL,
     [PlayerId]          INT           NOT NULL,
     [Slug]              NVARCHAR (64) NOT NULL,
     [SponsorPrefixName] VARCHAR (15)  NULL,
-    [Name]              NVARCHAR (64) NULL,
     [GamerTag]          NVARCHAR (25) NOT NULL,
     [DiscordUsername]   NVARCHAR (32) NULL,
     [TwitchUsername]    NVARCHAR (25) NULL,
