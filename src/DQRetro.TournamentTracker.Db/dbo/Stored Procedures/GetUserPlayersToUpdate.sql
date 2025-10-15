@@ -12,7 +12,6 @@ BEGIN
     SELECT TOP(@ChunkSize) up.[UserId]
                          , up.[PlayerId]
                          , up.[Slug]
-                         , up.[Name]
                          , up.[GamerTag]
                          , up.[DiscordUsername]
                          , up.[TwitchUsername]

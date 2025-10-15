@@ -17,7 +17,6 @@ BEGIN
                , t.[RegistrationClosedAt]
                , t.[Status] AS [TournamentStatus]
                , sp.[Name] AS [TournamentOwnerSponsorPrefixName]
-               , up.[Name] AS [TournamentOwnerName]
                , up.[GamerTag] AS [TournamentOwnerGamerTag]
                , up.[UserId] AS [TournamentOwnerStartGgUserId]
                , up.[PlayerId] AS [TournamentOwnerStartGgPlayerId]
