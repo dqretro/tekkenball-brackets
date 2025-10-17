@@ -31,7 +31,7 @@ DROP PROCEDURE [dbo].[InsertNewUserSponsorPrefixes];
 GO
 DROP TYPE [dbo].[UserPlayerUpsertTvp];
 GO
---      End of dropping the UDP and stored procedures.
+--      End of dropping the UDT and stored procedures.
 
 
 --      Start of altering the UserPlayer table to remove the [Name] column:
