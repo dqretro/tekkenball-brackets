@@ -15,7 +15,6 @@ BEGIN
        SET up.[PlayerId]        = upt.[PlayerId]
          , up.[Slug]            = upt.[Slug]
          , up.[SponsorPrefixId] = sp.[Id]
-         , up.[Name]            = upt.[Name]
          , up.[GamerTag]        = upt.[GamerTag]
          , up.[DiscordUsername] = upt.[DiscordUsername]
          , up.[TwitchUsername]  = upt.[TwitchUsername]

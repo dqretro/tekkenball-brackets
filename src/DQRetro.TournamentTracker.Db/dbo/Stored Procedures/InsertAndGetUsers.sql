@@ -8,12 +8,11 @@ BEGIN
     EXEC dbo.InsertNewUserSponsorPrefixes @UserPlayerTvp = @UserPlayerTvp;
 
     -- Insert any users that don't already exist (after retrieving the correct sponsor/prefix (if applicable)):
-    INSERT INTO dbo.UserPlayer ([UserId], [PlayerId], [Slug], [SponsorPrefixId], [Name], [GamerTag], [DiscordUsername], [TwitchUsername], [TwitterUsername])
+    INSERT INTO dbo.UserPlayer ([UserId], [PlayerId], [Slug], [SponsorPrefixId], [GamerTag], [DiscordUsername], [TwitchUsername], [TwitterUsername])
     SELECT upt.[UserId]
          , upt.[PlayerId]
          , upt.[Slug]
          , sp.[Id] AS [SponsorPrefixId]
-         , upt.[Name]
          , upt.[GamerTag]
          , upt.[DiscordUsername]
          , upt.[TwitchUsername]
@@ -33,7 +32,6 @@ BEGIN
          , up.[UserId]
          , up.[PlayerId]
          , sp.[Name] AS [SponsorPrefixName]
-         , up.[Name]
          , up.[GamerTag]
          , up.[DiscordUserName]
          , up.[TwitchUsername]
