@@ -1,10 +1,15 @@
+// ============================
+// GLOBAL VARIABLES
+// ============================
 let allPlayers = [];
 let allAchievements = [];
-let achievementIcons = {}; // For icons JSON
+let achievementIcons = {}; 
+let winLossChart;
+let charUsageChart;
 
-// ---------------------------
-// Helpers
-// ---------------------------
+// ============================
+// HELPERS
+// ============================
 function createSlug(name) {
   return name.toLowerCase()
     .replace(/\s*\|\s*/g, "-")
@@ -18,33 +23,52 @@ function getQueryParam(param) {
 }
 
 function getGameFolder(game) {
-  switch (game.toLowerCase()) {
-    case "tekken tag tournament 1": return "ttt1";
-    case "tekken tag tournament 2": return "ttt2";
-    case "tekken 1": return "tk1";
-    case "tekken 2": return "tk2";
-    case "tekken 3": return "tk3";
-    case "tekken 4": return "tk4";
-    case "tekken 5": return "tk5";
-    case "tekken 6": return "tk6";
-    case "tekken 7": return "tk7";
-    case "tekken 8": return "tk8";
-    default: return "tk8";
-  }
+  const mapping = {
+    "tekken tag tournament 1": "ttt1",
+    "tekken tag tournament 2": "ttt2",
+    "tekken 1": "tk1",
+    "tekken 2": "tk2",
+    "tekken 3": "tk3",
+    "tekken 4": "tk4",
+    "tekken 5": "tk5",
+    "tekken 6": "tk6",
+    "tekken 7": "tk7",
+    "tekken 8": "tk8"
+  };
+  return mapping[game.toLowerCase()] || "tk8";
 }
 
-// ---------------------------
-// Base path helper (local vs GitHub Pages)
-// ---------------------------
 function withBase(path) {
   const base = window.location.hostname.includes("github.io") ? "/tekkenball-brackets" : "";
-  if (path.startsWith("/")) path = path.slice(1); // Remove leading slash
+  if (path.startsWith("/")) path = path.slice(1);
   return `${base}/${path}`;
 }
 
-// ---------------------------
-// Load JSON data
-// ---------------------------
+function showNotFound(message) {
+  alert(message);
+  document.body.innerHTML = `<h1 style="color:white;text-align:center;margin-top:3em;">${message}</h1>`;
+}
+
+// ============================
+// RANKING SYSTEM (placement -> points)
+// ============================
+function getPlacementPoints(placement) {
+  switch (placement) {
+    case 1: return 10;
+    case 2: return 8;
+    case 3: return 6;
+    case 4: return 5;
+    case 5: 
+    case 6: return 4;
+    case 7: 
+    case 8: return 2;
+    default: return 1;
+  }
+}
+
+// ============================
+// LOAD ACHIEVEMENTS & ICONS
+// ============================
 async function loadAchievements() {
   try {
     const res = await fetch(withBase("/pages/player-profiles/achievement-list.json"));
@@ -65,36 +89,20 @@ async function loadAchievementIcons() {
   }
 }
 
-// ---------------------------
-// Fetch tournament data and calculate stats
-// ---------------------------
+// ============================
+// PLAYER DATA COLLECTION
+// ============================
 async function collectPlayerData(playerName) {
   try {
     const res = await fetch(withBase("/pages/tournaments/placeholder-data/tournaments-placeholder.json"));
     const data = await res.json();
 
     const charUsage = {};
-    let tournamentsPlayed = 0;
-    let wins = 0, losses = 0, titles = 0;
-    let winStreak = 0, maxWinStreak = 0, lossStreak = 0, maxLossStreak = 0;
+    let tournamentsPlayed = 0, wins = 0, losses = 0, titles = 0;
+    let totalPoints = 0;
     let top3Count = 0, firstPlaceCount = 0, top4Count = 0, top8Count = 0;
 
-    // Achievement trackers
-    let multiGameSet = new Set();
-    let multiCitySet = new Set();
-    let multiYearSet = new Set();
-    let mainCharacterEvents = 0;
-    let differentCharactersSet = new Set();
-    let perfectEvent = false;
-    let beatChampion = false;
-    let seedTop3 = false;
-    let lastMatchWin = false;
-    let roundSurvivor = false;
-    let teamEvents = 0;
-    let defeatSameOpponentStreak = 0;
-
     const tournamentsList = [];
-    const upcomingEvents = [];
     const now = new Date();
 
     for (const tournament of data.tournaments) {
@@ -102,36 +110,21 @@ async function collectPlayerData(playerName) {
       if (!eventGroup || !Array.isArray(eventGroup.events)) continue;
 
       for (const event of eventGroup.events) {
-        const entrants = event.entrants?.nodes || [];
-        const entrant = entrants.find(e => e.name.toLowerCase() === playerName.toLowerCase());
+        const entrant = event.entrants?.nodes?.find(e => e.name.toLowerCase() === playerName.toLowerCase());
         if (!entrant) continue;
 
         const eventDate = new Date(event.startAt || tournament.startAt);
-
-        if (eventDate > now) {
-          upcomingEvents.push({
-            event: event.name,
-            date: eventDate.toLocaleDateString(),
-            slug: event.slug
-          });
-          continue;
-        }
+        if (eventDate > now) continue;
 
         tournamentsPlayed++;
         wins += entrant.wins || 0;
         losses += entrant.losses || 0;
 
-        if (event.game) multiGameSet.add(event.game);
-        if (event.city) multiCitySet.add(event.city);
-        multiYearSet.add(eventDate.getFullYear());
-
         let placement = null;
-
         if (event.topcut?.players) {
           const idx = event.topcut.players.findIndex(p => p.toLowerCase() === playerName.toLowerCase());
           if (idx >= 0) placement = idx + 1;
         }
-
         if (!placement && Array.isArray(event.pools)) {
           for (const pool of event.pools) {
             const idx = pool.players.findIndex(p => p.toLowerCase() === playerName.toLowerCase());
@@ -141,42 +134,16 @@ async function collectPlayerData(playerName) {
             }
           }
         }
-
         if (!placement) placement = 0;
 
-        if (placement === 1) {
-          titles++;
-          firstPlaceCount++;
-        }
+        totalPoints += getPlacementPoints(placement);
+        if (placement === 1) { titles++; firstPlaceCount++; }
         if (placement > 0 && placement <= 3) top3Count++;
         if (placement > 0 && placement <= 4) top4Count++;
         if (placement > 0 && placement <= 8) top8Count++;
 
-        if (placement === 1) {
-          winStreak++;
-          maxWinStreak = Math.max(maxWinStreak, winStreak);
-          lossStreak = 0;
-        } else {
-          lossStreak++;
-          maxLossStreak = Math.max(maxLossStreak, lossStreak);
-          winStreak = 0;
-        }
-
         const chars = entrant.characters || [];
-        chars.forEach(c => {
-          charUsage[c] = (charUsage[c] || 0) + 1;
-          differentCharactersSet.add(c);
-        });
-
-        if (entrant.losses === 0 && placement === 1) perfectEvent = true;
-        if (entrant.seed && entrant.seed >= 10 && placement <= 3) seedTop3 = true;
-        if (entrant.wonLastMatch) lastMatchWin = true;
-        if (entrant.roundsLost === 0) roundSurvivor = true;
-        if (entrant.teamEvent) teamEvents++;
-        if (entrant.defeatedChampion) beatChampion = true;
-        if (entrant.defeatedSameOpponentStreak) {
-          defeatSameOpponentStreak = Math.max(defeatSameOpponentStreak, entrant.defeatedSameOpponentStreak);
-        }
+        chars.forEach(c => charUsage[c] = (charUsage[c] || 0) + 1);
 
         tournamentsList.push({
           event: event.name,
@@ -184,83 +151,48 @@ async function collectPlayerData(playerName) {
           date: event.startAt || tournament.startAt,
           slug: event.slug,
           notableWins: entrant.notableWins || "",
-          mainGame: event.game || "tekken 8"
+          mainGame: event.game || "tekken 8",
+          characters: entrant.characters || []
         });
       }
     }
 
-    let mainCharacter = null;
-    if (Object.keys(charUsage).length > 0) {
-      mainCharacter = Object.entries(charUsage).sort((a, b) => b[1] - a[1])[0][0];
-    }
+    const mainCharacter = Object.keys(charUsage).sort((a, b) => charUsage[b] - charUsage[a])[0] || null;
     const subCharacters = Object.keys(charUsage).filter(c => c !== mainCharacter);
-    mainCharacterEvents = charUsage[mainCharacter] || 0;
-
-    tournamentsList.sort((a, b) => new Date(b.date) - new Date(a.date));
-    upcomingEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
 
     return {
       stats: {
-        tournamentsPlayed,
-        wins,
-        losses,
-        winRate: wins + losses > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) + "%" : "0%",
-        titles,
-        firstPlace: firstPlaceCount,
-        top3: top3Count,
-        top4: top4Count,
-        top8: top8Count,
-        winStreak: maxWinStreak,
-        lossStreak: maxLossStreak,
-        differentCharacters: differentCharactersSet.size,
-        mainCharacterEvents,
-        teamEvents,
-        multiGame: multiGameSet.size > 1,
-        multiCity: multiCitySet.size,
-        multiYear: multiYearSet.size,
-        perfectEvent,
-        beatChampion,
-        seedTop3,
-        lastMatchWin,
-        roundSurvivor,
-        defeatSameOpponentStreak
+        tournamentsPlayed, wins, losses, winRate: wins + losses > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) + "%" : "0%",
+        titles, points: totalPoints, firstPlace: firstPlaceCount, top3: top3Count, top4: top4Count, top8: top8Count,
+        characterUsage: charUsage
       },
-      mainCharacter,
-      subCharacters,
-      tournamentsList,
-      upcomingEvents
+      mainCharacter, subCharacters, tournamentsList
     };
   } catch (err) {
     console.error("Failed to fetch tournaments:", err);
-    return { stats: {}, mainCharacter: null, subCharacters: [], tournamentsList: [], upcomingEvents: [] };
+    return { stats: {}, mainCharacter: null, subCharacters: [], tournamentsList: [] };
   }
 }
 
-// ---------------------------
-// Dynamic Achievement Checker
-// ---------------------------
+// ============================
+// ACHIEVEMENT CHECKER
+// ============================
 function getUnlockedAchievements(playerData) {
-  if (!allAchievements || !allAchievements.length) return [];
+  if (!allAchievements.length) return [];
   return allAchievements.filter(a => {
     const conditions = a.condition || {};
     const stats = playerData.stats || {};
-
     for (const [key, value] of Object.entries(conditions)) {
       const playerValue = stats[key];
-
-      if (typeof value === "boolean") {
-        if (playerValue !== value) return false;
-      } else if (typeof value === "number") {
-        if (!playerValue || playerValue < value) return false;
-      }
+      if (typeof value === "boolean" ? playerValue !== value : (playerValue < value)) return false;
     }
     return true;
   });
 }
 
-// ---------------------------
-// Populate profile
-// ---------------------------
+// ============================
+// POPULATE PLAYER PROFILE
+// ============================
 async function populatePlayerProfile(player) {
   if (!player) return;
 
@@ -268,38 +200,23 @@ async function populatePlayerProfile(player) {
   await loadAchievementIcons();
 
   document.getElementById("playerName").textContent = player.name;
-
-  const teamWrapper = document.getElementById("playerTeamWrapper");
-  if (player.team && player.team.trim() !== "") {
-    document.getElementById("playerTeam").textContent = player.team;
-    teamWrapper.style.display = "block";
-  } else {
-    teamWrapper.style.display = "none";
-  }
-
-  const countryWrapper = document.getElementById("playerCountryWrapper");
-  if (player.country && player.country.trim() !== "") {
-    document.getElementById("playerCountry").textContent = player.country;
-    countryWrapper.style.display = "block";
-  } else {
-    countryWrapper.style.display = "none";
-  }
+  document.getElementById("playerTeam").textContent = player.team || "-";
+  document.getElementById("playerCountry").textContent = player.country || "-";
 
   const avatarImg = document.querySelector(".player-avatar-modern");
   avatarImg.src = player.avatar || withBase("/images/placeholders/icons-profile/icon-pfp-player.png");
 
   const playerData = await collectPlayerData(player.name);
+  const stats = playerData.stats || {};
 
-  // Main character image (dynamic game folder)
+  // Main character display
   const mainCharImg = document.getElementById("playerMainCharacterImg");
   if (playerData.mainCharacter) {
-    const mainCharGame = getGameFolder(playerData.mainCharacter);
-    mainCharImg.src = withBase(`/images/games/${mainCharGame}/characters/characters_select/select_${playerData.mainCharacter.toLowerCase()}.png`);
-  } else {
-    mainCharImg.src = withBase("/images/games/default.png");
-  }
+    const gameFolder = getGameFolder(playerData.mainCharacter);
+    mainCharImg.src = withBase(`/images/games/${gameFolder}/characters/characters_select/select_${playerData.mainCharacter.toLowerCase()}.png`);
+  } else mainCharImg.src = withBase("/images/games/default.png");
 
-  // Sub-characters images (dynamic game folder)
+  // Sub characters
   const subContainer = document.getElementById("playerSubCharactersIcons");
   subContainer.innerHTML = "";
   playerData.subCharacters.forEach(char => {
@@ -312,72 +229,147 @@ async function populatePlayerProfile(player) {
     subContainer.appendChild(img);
   });
 
-  const stats = playerData.stats || {};
+  // Stats
   document.getElementById("tournamentsPlayed").textContent = stats.tournamentsPlayed || 0;
   document.getElementById("wins").textContent = stats.wins || 0;
   document.getElementById("losses").textContent = stats.losses || 0;
   document.getElementById("winRate").textContent = stats.winRate || "0%";
   document.getElementById("titles").textContent = stats.titles || 0;
+  if (document.getElementById("playerPoints"))
+    document.getElementById("playerPoints").textContent = stats.points || 0;
 
+  // Achievements
   const badges = document.querySelector(".badge-list");
   badges.innerHTML = "";
-  const unlocked = getUnlockedAchievements(playerData);
-  unlocked.forEach(a => {
+  getUnlockedAchievements(playerData).forEach(a => {
     const span = document.createElement("span");
     span.className = "badge";
-    const icon = achievementIcons[a.id] || "";
-    span.innerHTML = `${icon} <span class="badge-text">${a.title}</span>`;
+    span.innerHTML = (achievementIcons[a.id] || "") + ` <span class="badge-text">${a.title}</span>`;
     span.title = a.description;
     badges.appendChild(span);
   });
 
+  // Tournament history
   const historyBody = document.getElementById("tournamentHistory");
   historyBody.innerHTML = "";
   playerData.tournamentsList.forEach(t => {
     const tournamentLink = withBase(`/pages/tournaments/overview.html?slug=${encodeURIComponent(t.slug)}`);
     const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><a href="${tournamentLink}">${t.event}</a></td>
-      <td>${t.placement}</td>
-      <td>${new Date(t.date).toLocaleDateString()}</td>
-      <td>${t.notableWins}</td>
-    `;
+    tr.innerHTML = `<td><a href="${tournamentLink}">${t.event}</a></td><td>${t.placement}</td><td>${new Date(t.date).toLocaleDateString()}</td><td>${t.notableWins}</td>`;
     historyBody.appendChild(tr);
   });
 
-  const upcomingList = document.getElementById("upcomingEvents");
-  upcomingList.innerHTML = "";
-  playerData.upcomingEvents.forEach(e => {
-    const eventLink = withBase(`/pages/tournaments/events.html?slug=${encodeURIComponent(e.slug)}`);
-    const li = document.createElement("li");
-    li.innerHTML = `<a href="${eventLink}">${e.event}</a> – ${e.date}`;
-    upcomingList.appendChild(li);
+  // Win/Loss chart
+  const ctx = document.getElementById("winLossChart").getContext("2d");
+  if (winLossChart?.destroy) winLossChart.destroy();
+  winLossChart = new Chart(ctx, {
+    type: "doughnut",
+    data: { labels: ["Wins","Losses"], datasets: [{ data: [stats.wins||0, stats.losses||0], backgroundColor: ["#4CAF50","#F44336"] }] },
+    options: { responsive:true, cutout:"70%", plugins:{ legend:{ labels:{ color:"#fff" } } } }
   });
+
+  // Character Usage chart
+  const ctxChar = document.getElementById("charUsageChart").getContext("2d");
+  if (charUsageChart?.destroy) charUsageChart.destroy();
+  const charEntries = Object.entries(stats.characterUsage || {});
+  const labels = charEntries.map(([c]) => c);
+  const dataVals = charEntries.map(([_, v]) => v);
+  charUsageChart = new Chart(ctxChar, {
+    type:"doughnut",
+    data: { labels, datasets:[{ data: dataVals, backgroundColor: ["#4CAF50","#2196F3","#FFC107","#9C27B0","#FF5722","#03A9F4","#E91E63","#8BC34A","#FF9800","#607D8B"].slice(0, labels.length) }]},
+    options:{ responsive:true, cutout:"70%", plugins:{ legend:{ labels:{ color:"#fff" } } } }
+  });
+
+  // Render placement timeline
+  renderPlacementTimeline(playerData.tournamentsList);
 }
 
-// ---------------------------
-// Load players JSON and show profile
-// ---------------------------
+// ============================
+// UPDATED PLACEMENT TIMELINE
+// ============================
+function renderPlacementTimeline(tournamentsList) {
+  if (!Array.isArray(tournamentsList) || !tournamentsList.length) return;
+
+  const characterGroups = {};
+
+  tournamentsList.forEach(t => {
+    if (!t.placement || t.placement <= 0) return;
+    const chars = t.characters || [];
+    chars.forEach(char => {
+      if (!characterGroups[char]) characterGroups[char] = [];
+      characterGroups[char].push({
+        date: new Date(t.date),
+        placement: t.placement,
+        event: t.event,
+        points: getPlacementPoints(t.placement),
+        game: t.mainGame
+      });
+    });
+  });
+
+  const traces = [];
+  Object.entries(characterGroups).forEach(([char, entries]) => {
+    entries.sort((a, b) => a.date - b.date);
+    const colors = entries.map(e => {
+      if (e.placement === 1) return "#4CAF50";
+      if (e.placement <= 3) return "#FFEB3B";
+      if (e.placement <= 8) return "#FF9800";
+      return "#9E9E9E";
+    });
+
+    traces.push({
+      x: entries.map(e => e.date),
+      y: entries.map(e => e.placement),
+      name: char,
+      text: entries.map(e =>
+        `${e.event} (${e.game})<br><b>Placement:</b> ${e.placement}<br><b>Points:</b> ${e.points}<br><b>Character:</b> ${char}`
+      ),
+      type: "scatter",
+      mode: "lines+markers",
+      marker: { color: colors, size: 10, line: { width: 1, color: "#ffffffff" } },
+      line: { shape: "linear" },
+      hovertemplate: "%{text}<br>Date: %{x|%Y-%m-%d}<extra></extra>"
+    });
+  });
+
+  const layout = {
+    title: { text: "Tournament Placements by Character", font: { color: "#ffffffff", size: 18 } },
+    yaxis: { autorange: "reversed", title: "Placement", dtick: 1 },
+    xaxis: {
+      title: "Date",
+      rangeselector: { buttons: [
+        { count: 1, label: "1y", step: "year", stepmode: "backward" },
+        { count: 2, label: "2y", step: "year", stepmode: "backward" },
+        { step: "all" }
+      ]},
+      rangeslider: { visible: true },
+      type: "date"
+    },
+    margin: { t: 60, r: 30, l: 50, b: 50 },
+    hovermode: "closest",
+    plot_bgcolor: "#1b1b1bff",
+    paper_bgcolor: "#494949ff",
+    font: { color: "#ffffffff" },
+    legend: {
+      title: { text: "Characters Used", font: { color: "#fff" } },
+      orientation: "h",
+      y: -0.25
+    }
+  };
+
+  Plotly.newPlot("placementTimelineChart", traces, layout, { responsive: true });
+}
+
+// ============================
+// LOAD PLAYER PROFILE
+// ============================
 async function loadPlayerProfile() {
   try {
     const res = await fetch(withBase("/pages/player-profiles/players/players.json"));
     allPlayers = await res.json();
-
     const slug = getQueryParam("player");
-    let player;
-
-    if (!slug) {
-      console.warn("No player specified in query. Showing first player.");
-      player = allPlayers[0];
-    } else {
-      player = allPlayers.find(p => createSlug(p.name) === slug);
-      if (!player) {
-        console.error("Player not found:", slug);
-        showNotFound("Player not found.");
-        return;
-      }
-    }
-
+    const player = slug ? allPlayers.find(p => createSlug(p.name) === slug) : allPlayers[0];
+    if (!player) return showNotFound("Player not found.");
     await populatePlayerProfile(player);
   } catch (err) {
     console.error("Failed to load players JSON:", err);
@@ -385,11 +377,11 @@ async function loadPlayerProfile() {
   }
 }
 
-// ---------------------------
-// Init
-// ---------------------------
+// ============================
+// INIT
+// ============================
 document.addEventListener("DOMContentLoaded", () => {
-  loadNav();
-  loadFooter();
+  if (typeof loadNav === "function") loadNav();
+  if (typeof loadFooter === "function") loadFooter();
   loadPlayerProfile();
 });

@@ -5,57 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Top Cut Bracket</title>
 <link rel="stylesheet" href="../../styles.css">
-<link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/brackets-viewer.js/dist/brackets-viewer.min.css">
 <style>
-.overview-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
-.overview-header .overview-title{display:flex; gap:12px; align-items:baseline;}
-.overview-header h1{margin:0;}
-.overview-header h2{margin:0;font-weight:normal;color:var(--muted);font-size:20px;}
-.pool-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin-top:16px;}
-.pool-card{display:flex; align-items:center; justify-content:center; background:var(--card-bg); padding:12px; border-radius:8px; color:var(--text); text-decoration:none; font-weight:bold; transition:transform .1s;}
-.pool-card:hover{transform:scale(1.05); background:var(--highlight); color:#fff;}
+  body.dark { background: #111; color: #eee; }
+  .container { max-width: 900px; margin: 0 auto; padding: 16px; }
+  h1 { margin-bottom: 16px; }
+  .back-button { margin-bottom: 16px; display: inline-block; cursor: pointer; color: var(--highlight); }
 </style>
 </head>
+
+
 <body class="dark">
 
-<div id="nav-t-placeholder"></div>
-<script src="/tekkenball-brackets/shared/layout/header/nav/nav_t.js" defer></script>
-<script src="/shared/layout/header/nav/nav_t.js" defer></script>
-
-
 <div class="container">
-  <div class="overview-header">
-    <div class="overview-title">
-      <h1>Top Cut Bracket</h1>
-      <h2 id="standings-title"></h2>
-    </div>
-    <div id="back-to-events" class="back-button"></div>
-  </div>
-
-  <section class="top-cut">
-    <div id="topcutContainer" class="pool-grid"></div>
-
-  </section>
+  <div class="back-button" id="back-button">&larr; Back to Brackets</div>
+  <h1 id="topcut-title"></h1>
+  <div id="topcutContainer" class="bracket-container"></div>
 </div>
 
-<div id="footer-placeholder"></div>
-
 <script src="../../script.js"></script>
-<script src="tournaments.js"></script>
-<script src="standings.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/brackets-viewer.js/dist/brackets-viewer.min.js"></script>
-<script src="brackets.js" defer></script>
-
-
+<script src="brackets.js"></script>
 <script>
-loadNav(); loadFooter();
-const slug = new URLSearchParams(window.location.search).get("slug");
-if(slug) loadTopCut(slug);
-window.addEventListener("popstate", async () => {
-  const newSlug = new URLSearchParams(window.location.search).get("slug");
-  if(newSlug){ updateEventHeader(newSlug); await loadTopCut(newSlug); }
-});
+  document.getElementById("back-button").addEventListener("click", () => window.history.back());
+
+  (async () => {
+    const slug = new URLSearchParams(window.location.search).get("slug");
+    if (!slug) return alert("No event specified.");
+
+    const tournament = await fetchTournament(slug);
+    const event = tournament.events.find(ev => ev.slug === slug);
+    if (!event || !event.topcut) return alert("No top cut available.");
+
+    document.getElementById("topcut-title").textContent = `${event.tournamentName} - ${event.name} Top Cut`;
+
+    const players = event.topcut.players || [];
+    const matches = event.topcut.sets?.length ? event.topcut.sets.map(s => ({ player1:s.winner, player2:s.loser, winner:s.winner, score:s.score })) : generateDummySets(players);
+    const matchesWithRounds = assignRounds(matches, players.length);
+
+    new BracketsViewer(document.getElementById("topcutContainer"), {
+      teams: players,
+      matches: matchesWithRounds
+    }, { doubleElimination: true });
+  })();
 </script>
+
 </body>
 </html>

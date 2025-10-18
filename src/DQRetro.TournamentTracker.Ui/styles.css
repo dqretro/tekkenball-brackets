@@ -969,3 +969,10 @@ footer .social-icons a img:hover {
   color: #FFD700; /* gold on hover */
   text-decoration: underline;
 }
+
+.badge svg {
+  width: 24px;   /* Adjust width */
+  height: 24px;  /* Adjust height */
+  vertical-align: middle;
+  margin-right: 4px; /* space between icon and text */
+}
