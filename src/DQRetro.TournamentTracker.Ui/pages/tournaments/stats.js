@@ -115,7 +115,7 @@ function getPlayerAvatar(name) {
 // Get player profile URL
 // ---------------------------
 function getPlayerProfileUrl(name) {
-  return `/pages/players/players.html?player=${encodeURIComponent(playerSlugify(name))}`;
+  return `/pages/player-profiles/players/players.html?player=${encodeURIComponent(playerSlugify(name))}`;
 }
 
 // ---------------------------

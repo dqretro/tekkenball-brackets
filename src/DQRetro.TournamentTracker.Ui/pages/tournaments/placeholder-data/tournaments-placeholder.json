@@ -8,11 +8,11 @@
       "startAt": "2025-08-16"
     },
     {
-      "name": "Arcade Throwdown II",
-      "slug": "arcade-throwdown-ii",
-      "game": "Tekken 8",
+      "name": "VSFighting XI",
+      "slug": "tekken-ball-vsfighting-xi",
+      "game": "Tekken 3",
       "status": "completed",
-      "startAt": "2025-09-21"
+      "startAt": "2023-08-19"
     }
   ],
   "events": [
@@ -168,60 +168,93 @@
       ]
     },
     {
-      "slug": "arcade-throwdown-ii",
+      "slug": "tekken-ball-vsfighting-xi",
       "events": [
         {
-          "name": "Tekken Ball Clash",
-          "slug": "arcade-throwdown-ii-tekken-ball-clash",
-          "startAt": "2025-09-21",
-          "game": "Tekken 8",
+          "name": "Tekken 3 Ball (Double Elimination)",
+          "slug": "tekken-ball-vsfighting-xi-tekken-ball-double-eliminationh",
+          "startAt": "2025-08-19",
+          "game": "Tekken 3",
           "entrants": {
             "nodes": [
-              {"name":"ShadowReign","mainCharacter":"Steve","characters":["Steve","Paul"],"wins":7,"losses":1},
-              {"name":"Eclipse","mainCharacter":"Zafina","characters":["Zafina","Xiaoyu"],"wins":6,"losses":2},
-              {"name":"LoneWolf","mainCharacter":"Leo","characters":["Leo","Jun"],"wins":5,"losses":2},
-              {"name":"IronFist","mainCharacter":"Dragunov","characters":["Dragunov","Bryan"],"wins":5,"losses":2},
-              {"name":"Cobalt","mainCharacter":"Bryan","characters":["Bryan"],"wins":4,"losses":2},
-              {"name":"Mythril","mainCharacter":"Xiaoyu","characters":["Xiaoyu"],"wins":4,"losses":3},
-              {"name":"Ashen","mainCharacter":"Paul","characters":["Paul","Law"],"wins":3,"losses":2},
-              {"name":"Venomous","mainCharacter":"Lili","characters":["Lili","Jin"],"wins":3,"losses":3},
-              {"name":"ZeroBeat","mainCharacter":"Law","characters":["Law"],"wins":2,"losses":2},
-              {"name":"GhostFox","mainCharacter":"Feng","characters":["Feng","Claudio"],"wins":2,"losses":3},
-              {"name":"Ravenous","mainCharacter":"Raven","characters":["Raven"],"wins":1,"losses":2},
-              {"name":"Stormcry","mainCharacter":"Jun","characters":["Jun"],"wins":1,"losses":3},
-              {"name":"RandomJoe","mainCharacter":"Random","characters":["Steve","Zafina","Leo"],"wins":2,"losses":2},
-              {"name":"MysticFox","mainCharacter":"Random","characters":["Dragunov","Xiaoyu"],"wins":1,"losses":2},
-              {"name":"NightOwl","mainCharacter":"Random","characters":["Paul","Lili"],"wins":1,"losses":2},
-              {"name":"ShadowPaw","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
-              {"name":"BlazingStar","mainCharacter":"Random","characters":["Bryan","Raven"],"wins":0,"losses":2}
+              {"name":"BORT | Sauce | xxasomeaxx","mainCharacter":"Steve","characters":["Steve","Paul"],"wins":7,"losses":1},
+              {"name":"DQ | SlawPro","mainCharacter":"Zafina","characters":["Zafina","Xiaoyu"],"wins":6,"losses":2},
+              {"name":"DQ | ProtonicCobra","mainCharacter":"Leo","characters":["Leo","Jun"],"wins":5,"losses":2},
+              {"name":"XiT | Shirdel","mainCharacter":"Dragunov","characters":["Dragunov","Bryan"],"wins":5,"losses":2},
+              {"name":"CER | Sponchy","mainCharacter":"Bryan","characters":["Bryan"],"wins":4,"losses":2},
+              {"name":"TKC | Temphuibis","mainCharacter":"Xiaoyu","characters":["Xiaoyu"],"wins":4,"losses":3},
+              {"name":"PND | Strykie","mainCharacter":"Paul","characters":["Paul","Law"],"wins":3,"losses":2},
+              {"name":"King Jae","mainCharacter":"Lili","characters":["Lili","Jin"],"wins":3,"losses":3},
+              {"name":"Tahuru","mainCharacter":"Law","characters":["Law"],"wins":2,"losses":2},
+              {"name":"Orion | GPK","mainCharacter":"Feng","characters":["Feng","Claudio"],"wins":2,"losses":3},
+              {"name":"HarryCM01","mainCharacter":"Raven","characters":["Raven"],"wins":1,"losses":2},
+              {"name":"ToastyFujin","mainCharacter":"Jun","characters":["Jun"],"wins":1,"losses":3},
+              {"name":"MBA | Icarus","mainCharacter":"Random","characters":["Steve","Zafina","Leo"],"wins":2,"losses":2},
+              {"name":"SWT | AliceNoon","mainCharacter":"Random","characters":["Dragunov","Xiaoyu"],"wins":1,"losses":2},
+              {"name":"Nebbo","mainCharacter":"Random","characters":["Paul","Lili"],"wins":1,"losses":2},
+              {"name":"CER | Essophysics","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"VLP | Ellroy678","mainCharacter":"Random","characters":["Bryan","Raven"],"wins":0,"losses":2},
+              {"name":"Hampnon","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"AZYG4LYFE","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"TKC | DBA","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"Tezzaron","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"RIZE | SpiraNick","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"RIF | Geowesome","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"DG omega | Moku","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"SMBF | JoeyTCB","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"Acuras47","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"MBA | King of Bamboo","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"Tibetano","mainCharacter":"Random","characters":["Bryan","Raven"],"wins":0,"losses":2},
+              {"name":"MBA | SeanSymphony","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"SWFGC | Firestar7o7","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"WolfTV | Mathias Wolfbrok","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"MBA | Yingah","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"Ryan Hart","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"DM | Qlean","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"CFN | KingSpeedy","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"MFGC | Hex","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"MBA | Ocelus","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"MBA | Satyricon","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"MBA | JazdaBham","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"EmpressFGC","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"StiRik","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"RKS | UchihaJorg","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"RKS | SplicerGX","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"RIZE RX | Niam Raeb","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"ZBI | Kozmo_","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"KFGC | TKS","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"WW | Razzorblack","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"Xyoline","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"TDB | Draconis","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"girugamish","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"MDL | Hercullian","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"RIZE | NeonKay64","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"YourBoyZulu","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"Quinny","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"KS__BOSS","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"Paladin","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"SMBF | CRYSTAL_CITY_JAYNE$$","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"Redline","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"FizzyBreezy","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"LfG | Flyzo","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2},
+              {"name":"Evaangelos","mainCharacter":"Random","characters":["Law","Jun"],"wins":0,"losses":2}
             ]
           },
           "pools": [
             {
               "name": "Pool 1",
-              "players": ["ShadowReign","LoneWolf","Cobalt","Ashen","ZeroBeat","Ravenous","RandomJoe","MysticFox"],
+              "players": ["MBA | Satyricon","MBA | JazdaBham","EmpressFGC","StiRik","RKS | UchihaJorg","RKS | SplicerGX","RIZE RX | Niam Raeb","ZBI | Kozmo_","KFGC | TKS","WW | Razzorblack","Xyoline","TDB | Draconis","girugamish","MDL | Hercullian","RIZE | NeonKay64","YourBoyZulu","Quinny","KS__BOSS","Paladin","SMBF | CRYSTAL_CITY_JAYNE$$","Redline","FizzyBreezy","LfG | Flyzo","Evaangelos"],
               "sets": [
-                {"winner":"ShadowReign","loser":"LoneWolf","score":"2-0"},
+                {"winner":"RIF | Geowesome","loser":"KFGC | TKS","score":"2-0"},
                 {"winner":"Cobalt","loser":"ZeroBeat","score":"2-1"},
                 {"winner":"Ashen","loser":"Ravenous","score":"2-0"},
                 {"winner":"ShadowReign","loser":"Cobalt","score":"2-1"},
                 {"winner":"LoneWolf","loser":"Ashen","score":"2-1"}
               ]
-            },
-            {
-              "name": "Pool 2",
-              "players": ["Eclipse","IronFist","Mythril","Venomous","GhostFox","Stormcry","NightOwl","ShadowPaw","BlazingStar"],
-              "sets": [
-                {"winner":"Eclipse","loser":"Venomous","score":"2-0"},
-                {"winner":"IronFist","loser":"Stormcry","score":"2-0"},
-                {"winner":"Mythril","loser":"GhostFox","score":"2-1"},
-                {"winner":"Eclipse","loser":"IronFist","score":"2-1"},
-                {"winner":"Venomous","loser":"Mythril","score":"2-0"}
-              ]
             }
           ],
           "topcut": {
-            "size": 12,
+            "size": 8,
             "players": ["ShadowReign","Eclipse","LoneWolf","IronFist","Cobalt","Mythril","Ashen","Venomous","ZeroBeat","GhostFox","Ravenous","Stormcry"],
             "sets": [
               {"round":"Winners Semi","winner":"ShadowReign","loser":"IronFist","score":"3-1"},

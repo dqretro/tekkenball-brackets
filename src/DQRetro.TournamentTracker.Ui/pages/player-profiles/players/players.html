@@ -35,22 +35,37 @@
 
       <div id="playerTeamWrapper">Team: <span id="playerTeam"></span></div>
       <div id="playerCountryWrapper">Country: <span id="playerCountry"></span></div>
+      <div class="stat-card"><strong id="playerPoints">0</strong><span>Ranking Points</span></div>
+
     </div>
 
     <!-- Right Panel: Stats & Achievements -->
     <div class="profile-right-modern">
 
-      <!-- Stats Card -->
-      <div class="card stats-card">
-        <h3>Stats</h3>
-        <div class="stats-grid-modern">
-          <div class="stat-card"><strong id="tournamentsPlayed">0</strong><span>Tournaments Played</span></div>
-          <div class="stat-card"><strong id="wins">0</strong><span>Wins</span></div>
-          <div class="stat-card"><strong id="losses">0</strong><span>Losses</span></div>
-          <div class="stat-card"><strong id="winRate">0%</strong><span>Win Rate</span></div>
-          <div class="stat-card"><strong id="titles">0</strong><span>Titles Won</span></div>
-        </div>
-      </div>
+<!-- Stats Card -->
+<div class="card stats-card">
+  <h3>Stats</h3>
+
+  <div class="stats-grid-modern">
+    <div class="stat-card"><strong id="tournamentsPlayed">0</strong><span>Tournaments Played</span></div>
+    <div class="stat-card"><strong id="wins">0</strong><span>Wins</span></div>
+    <div class="stat-card"><strong id="losses">0</strong><span>Losses</span></div>
+    <div class="stat-card"><strong id="winRate">0%</strong><span>Win Rate</span></div>
+    <div class="stat-card"><strong id="titles">0</strong><span>Titles Won</span></div>
+  </div>
+
+  
+  <!-- Two chart containers side-by-side -->
+  <div class="charts-wrapper" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; margin-top: 1em;">
+    <div class="chart-container" style="max-width: 220px;">
+      <canvas id="winLossChart"></canvas>
+    </div>
+    <div class="chart-container" style="max-width: 220px;">
+      <canvas id="charUsageChart"></canvas>
+    </div>
+  </div>
+</div>
+
 
       <!-- Achievements Card -->
       <div class="card achievements-card">
@@ -60,6 +75,13 @@
 
     </div>
   </div>
+
+  <!-- Tournament Placement Timeline -->
+  <section class="placement-timeline">
+    <h2>Placement Timeline</h2>
+    <div id="placementTimelineChart" style="width:100%;height:400px;"></div>
+  </section>
+
 
   <!-- Tournament History -->
   <section class="tournament-history">
@@ -90,9 +112,12 @@
 
 <div id="footer-placeholder"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.25.2.min.js"></script>
 <script src="../../../script.js"></script>
 <script src="/shared/layout/header/nav/nav.js" defer></script>
 <script src="players.js" defer></script>
+
 
 </body>
 </html>

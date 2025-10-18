@@ -8,9 +8,21 @@
     },
     {
       "url": "../../images/socials/banners/banner_arcadepartsuk.png",
-      "title": "DQRetro #4 Coming Soon",
+      "title": "ArcadePartsUK",
       "link": "https://www.arcadepartsuk.com/",
+      "alt": "Promotional banner for ArcadePartsUK"
+    },
+    {
+      "url": "../../images/socials/banners/banner_tournament_25-10-26.png",
+      "title": "DQRetro #4 Coming Soon",
+      "link": "https://www.start.gg/tournament/dq-retro-tekken-8-ball-bi-monthly-tournament-2/details",
       "alt": "Promotional banner for DQRetro #4"
+    },
+    {
+      "url": "../../images/socials/banners/banner_tournament_25-10-26.png",
+      "title": "DQRetro Casual Online Sessions",
+      "link": "aa",
+      "alt": "Promotional banner for Casual Online Sessions"
     }
   ],
   "gallery": [
