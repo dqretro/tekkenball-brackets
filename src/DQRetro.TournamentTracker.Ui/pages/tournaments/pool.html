@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pool Bracket</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body.dark { background: #111; color: #eee; }
+  .container { max-width: 900px; margin: 0 auto; padding: 16px; }
+  h1 { margin-bottom: 12px; }
+  .back-button { margin-bottom: 16px; display: inline-block; cursor: pointer; color: var(--highlight); }
+</style>
+</head>
+<body class="dark">
+
+<div class="container">
+  <div class="back-button" id="back-button">&larr; Back to Brackets</div>
+  <h1 id="pool-title"></h1>
+  <div id="poolContainer" class="bracket-container"></div>
+</div>
+
+<script src="../../script.js"></script>
+<script src="brackets.js"></script>
+<script>
+  document.getElementById("back-button").addEventListener("click", () => window.history.back());
+
+  (async () => {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("slug");
+    const poolName = params.get("pool");
+    if (!slug || !poolName) return alert("Invalid pool or event.");
+
+    const tournament = await fetchTournament(slug);
+    const event = tournament.events.find(ev => ev.slug === slug);
+    const pool = event.pools.find(p => p.name === poolName);
+    if (!pool) return alert(`Pool "${poolName}" not found.`);
+
+    document.getElementById("pool-title").textContent = `${event.tournamentName} - ${event.name} - ${pool.name}`;
+
+    const players = pool.players || [];
+    const matches = pool.sets?.length ? pool.sets.map(s => ({ player1:s.winner, player2:s.loser, winner:s.winner, score:s.score })) : generateDummySets(players);
+    const matchesWithRounds = assignRounds(matches, players.length);
+
+    new BracketsViewer(document.getElementById("poolContainer"), {
+      teams: players,
+      matches: matchesWithRounds
+    }, { doubleElimination: false });
+  })();
+</script>
+
+</body>
+</html>
