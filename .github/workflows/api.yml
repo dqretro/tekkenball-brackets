@@ -19,6 +19,7 @@ jobs:
     runs-on: "ubuntu-latest"
     
     env:
+      API_BASE_DIR: src/DQRetro.TournamentTracker.Api
       API_CSPROJ_PATH: src/DQRetro.TournamentTracker.Api/DQRetro.TournamentTracker.Api.csproj
       API_OUTPUT_FOLDER: ./DQRetro.TournamentTracker.Api
       DOTNET_CONFIGURATION: Release
@@ -51,3 +52,19 @@ jobs:
           path: ${{ env.API_OUTPUT_FOLDER }}
           compression-level: 9 # Refers to ZLib compression levels (between 0(none) and 9(heavily compressed))
           if-no-files-found: error
+
+      # I'm using built-in .NET functionality to list basic dependency version info (list outdated, deprecated or vulnerable packages).
+      # Whilst using dependabot or snyk may be beneficial here, I'm trying to avoid using third party libraries or services here, and dependabot is overkill
+      # since I want to be in control of the dependencies, not having them auto-upgrade. There are valid reasons to remain on outdated versions, such as bugs.
+      # These 3 "dotnet list package" commands will not fail the build if values are returned. They are purely informational.
+      - name: "Change Directory: Api Base"
+        run: cd ${{ env.API_BASE_DIR }}
+
+      - name: ".NET: List Outdated Dependencies"
+        run: dotnet list package --outdated
+
+      - name: ".NET: List Deprecated Dependencies"
+        run: dotnet list package --deprecated
+
+      - name: ".NET: List Vulnerable Dependencies"
+        run: dotnet list package --vulnerable --include-transitive
