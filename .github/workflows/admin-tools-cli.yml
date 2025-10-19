@@ -44,6 +44,19 @@ jobs:
       - name: ".NET: Publish"
         run: dotnet publish ${{ env.CLI_CSPROJ_PATH }} --configuration ${{ env.DOTNET_CONFIGURATION }} --no-restore --no-build --runtime ${{ env.DOTNET_RUNTIME_ID }} --output ${{ env.CLI_OUTPUT_FOLDER }} /p:PublishSingleFile=${{ env.DOTNET_SINGLE_FILE }} /p:PublishTrimmed=${{ env.DOTNET_PUBLISH_TRIMMED }}
 
+      # I'm using built-in .NET functionality to list basic dependency version info (list outdated, deprecated or vulnerable packages).
+      # Whilst using dependabot or snyk may be beneficial here, I'm trying to avoid using third party libraries or services here, and dependabot is overkill
+      # since I want to be in control of the dependencies, not having them auto-upgrade. There are valid reasons to remain on outdated versions, such as bugs.
+      # These 3 "dotnet list package" commands will not fail the build if values are returned. They are purely informational.
+      - name: ".NET: List Outdated Dependencies"
+        run: dotnet list ${{ env.CLI_CSPROJ_PATH }} package --outdated
+
+      - name: ".NET: List Deprecated Dependencies"
+        run: dotnet list ${{ env.CLI_CSPROJ_PATH }} package --deprecated
+
+      - name: ".NET: List Vulnerable Dependencies"
+        run: dotnet list ${{ env.CLI_CSPROJ_PATH }} package --vulnerable --include-transitive
+
       - name: "Publish: CLI Artifact"
         if: ${{ env.IS_MAIN == 'true' }}
         uses: actions/upload-artifact@v4
