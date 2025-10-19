@@ -18,7 +18,6 @@ jobs:
     runs-on: "ubuntu-latest"
     
     env:
-      CLI_BASE_DIR: src/DQRetro.TournamentTracker.Admin.Tools
       CLI_CSPROJ_PATH: src/DQRetro.TournamentTracker.Admin.Tools/DQRetro.TournamentTracker.Admin.Tools.csproj
       CLI_OUTPUT_FOLDER: ./DQRetro.TournamentTracker.Admin.Tools
       DOTNET_CONFIGURATION: Release

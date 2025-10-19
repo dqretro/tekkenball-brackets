@@ -19,7 +19,6 @@ jobs:
     runs-on: "ubuntu-latest"
     
     env:
-      API_BASE_DIR: src/DQRetro.TournamentTracker.Api
       API_CSPROJ_PATH: src/DQRetro.TournamentTracker.Api/DQRetro.TournamentTracker.Api.csproj
       API_OUTPUT_FOLDER: ./DQRetro.TournamentTracker.Api
       DOTNET_CONFIGURATION: Release
