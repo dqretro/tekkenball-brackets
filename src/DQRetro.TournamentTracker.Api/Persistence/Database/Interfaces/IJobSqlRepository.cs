@@ -3,7 +3,7 @@
 namespace DQRetro.TournamentTracker.Api.Persistence.Database.Interfaces;
 
 /// <summary>
-/// Signatures for SQL Video Repository implementation.
+/// Signatures for SQL Job Repository implementation.
 /// </summary>
 public interface IJobSqlRepository
 {
@@ -22,6 +22,7 @@ public interface IJobSqlRepository
 
     /// <summary>
     /// Gets updated information for the requested JobId.
+    /// <param name="jobId">The JobId to retrieve Job details for.</param>
     /// </summary>
     /// <returns>Job information for the requested JobId.</returns>
     Task<UpdatedJobDetails> GetJobDetailsByIdAsync(byte jobId);
@@ -29,12 +30,15 @@ public interface IJobSqlRepository
     /// <summary>
     /// Inserts a row into JobExecutionLog for the current job run, returning the Id of the inserted Id.
     /// </summary>
+    /// <param name="jobId">The JobId to insert a JobExecutionLog entry for.</param>
     /// <returns>The Id of the inserted row within JobExecutionLog.</returns>
     Task<int> LogJobExecutionStartedAsync(byte jobId);
 
     /// <summary>
     /// Updates the JobExecutionLog row, setting the EndedAtUtc and Exception values.
     /// </summary>
+    /// <param name="jobExecutionLogId">The Id to update.</param>
+    /// <param name="exception">The exception, if one occurred.</param>
     /// <returns></returns>
-    Task LogJobExecutionEndedAsync(int jobExecutionLogId, DateTime endedAtUtc, string exception);
+    Task LogJobExecutionEndedAsync(int jobExecutionLogId, string exception);
 }
