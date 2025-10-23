@@ -285,7 +285,7 @@
     <Build Include="dbo\Stored Procedures\GetEnabledJobs.sql" />
     <Build Include="dbo\Stored Procedures\GetJobDetailsById.sql" />
     <Build Include="dbo\Stored Procedures\LogJobStarted.sql" />
-    <Build Include="dbo\Stored Procedures\LogRequestEnded.sql" />
+    <Build Include="dbo\Stored Procedures\LogJobEnded.sql" />
     <Build Include="Migrations\Script0004 - Add Job Management.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
