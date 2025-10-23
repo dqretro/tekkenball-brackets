@@ -1,4 +1,5 @@
 CREATE PROCEDURE GetJobDetailsById
+    @JobId TINYINT
 AS
 BEGIN
     SET NOCOUNT ON;
