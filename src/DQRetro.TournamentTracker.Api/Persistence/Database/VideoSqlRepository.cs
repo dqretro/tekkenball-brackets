@@ -12,18 +12,13 @@ namespace DQRetro.TournamentTracker.Api.Persistence.Database;
 /// <summary>
 /// Concrete implementation of SQL Video Repository.
 /// </summary>
-public sealed class VideoSqlRepository : IVideoSqlRepository
+public sealed class VideoSqlRepository : BaseSqlRepository, IVideoSqlRepository
 {
-    private readonly string _connectionString;
-
     /// <summary>
     /// Ctor.
     /// </summary>
     /// <param name="keyOptions">KeyOptions containing the SQL connection string.</param>
-    public VideoSqlRepository(IOptions<KeysConfiguration> keyOptions)
-    {
-        _connectionString = keyOptions.Value.SqlConnectionString;
-    }
+    public VideoSqlRepository(IOptions<KeysConfiguration> keyOptions) : base(keyOptions) { }
 
     /// <inheritdoc />
     public async Task<List<EventVideo>> GetEventVideosAsync()
@@ -60,12 +55,5 @@ public sealed class VideoSqlRepository : IVideoSqlRepository
 
             return await connection.QueryAsync<UpsertEventVideoResponse>(procName, parameters, commandType: CommandType.StoredProcedure);
         }
-    }
-
-    private async Task<SqlConnection> OpenConnectionAsync()
-    {
-        SqlConnection connection = new(_connectionString);
-        await connection.OpenAsync();
-        return connection;
     }
 }
