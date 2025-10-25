@@ -126,6 +126,22 @@ GO
 
 
 -- Start of inserting data:
+--      Set Tekken 8 Armor King StartGgCharacterId value to 2804:
+UPDATE vgcm
+   SET vgcm.[StartGgCharacterId] = 2804
+  FROM [dbo].[VideoGameCharacterMap] vgcm
+ WHERE EXISTS (
+    SELECT TOP 1 1
+      FROM [dbo].[VideoGame] vg
+     WHERE vg.[Id] = vgcm.[VideoGameId]
+       AND vg.[Name] = 'TEKKEN 8'
+ ) AND EXISTS (
+    SELECT TOP 1 1
+      FROM [dbo].[Character] c
+     WHERE c.[Id] = vgcm.[CharacterId]
+       AND c.[Name] = 'Armor King'
+ );
+
 --      Adding ArmorKing to Tekken 8:
 -- TODO: StartGg doesn't currently have a character for 'ArmorKing', and I want to avoid setting this to King.
 -- This should be updated from NULL, when ArmorKing is added within StartGg.
