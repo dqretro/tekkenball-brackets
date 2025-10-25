@@ -42,7 +42,8 @@ public class Program
                         .AddCustomCors(builder.Configuration)
                         .AddTokenBucketRateLimiter()
                         .AddCustomSwagger(builder.Configuration, isDevelopment)
-                        .AddControllersWithCustomSerialization();
+                        .AddControllersWithCustomSerialization()
+                        .AddCustomOpenTelemetry(builder.Configuration);
 
 
         WebApplication app = builder.Build();

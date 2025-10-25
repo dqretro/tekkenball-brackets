@@ -12,6 +12,9 @@ using DQRetro.TournamentTracker.Api.Services.Video;
 using DQRetro.TournamentTracker.Api.Services.Video.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 namespace DQRetro.TournamentTracker.Api.Extensions;
 
@@ -95,6 +98,7 @@ public static class ServiceCollectionExtensions
 
         if (!isDevelopment)
         {
+            Console.WriteLine("Swagger is disabled in production mode...");
             return services;
         }
 
@@ -216,6 +220,35 @@ public static class ServiceCollectionExtensions
         {
             Console.WriteLine("DB Migrations are disabled in development mode...");
         }
+
+        return services;
+    }
+
+    // TODO: ADD XML COMMENTS, LOGGING AND METRICS!
+    public static IServiceCollection AddCustomOpenTelemetry(this IServiceCollection services, IConfiguration configuration)
+    {
+        bool isEnabled = configuration.GetValue<bool>("OpenTelemetry:Enabled");
+        string otlpEndpoint = configuration.GetValue<string>("OtlpEndpoint");
+
+        if (!isEnabled || string.IsNullOrEmpty(otlpEndpoint))
+        {
+            Console.WriteLine("OpenTelemetry is disabled...");
+            return services;
+        }
+
+        services.AddOpenTelemetry()
+                .ConfigureResource(resource => resource.AddService("DQRetro.TournamentTracker.Api"))
+                .WithTracing(traceBuilder =>
+                {
+                    traceBuilder.AddAspNetCoreInstrumentation()
+                                .AddHttpClientInstrumentation()
+                                .AddSqlClientInstrumentation(sqlClientInstrumentationOptions => sqlClientInstrumentationOptions.RecordException = true)
+                                .AddOtlpExporter(otlpOptions =>
+                                {
+                                    otlpOptions.Endpoint = new Uri(otlpEndpoint);
+                                    otlpOptions.Protocol = OtlpExportProtocol.Grpc;
+                                });
+                });
 
         return services;
     }
