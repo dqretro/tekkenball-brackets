@@ -1,4 +1,5 @@
-﻿using DQRetro.TournamentTracker.Api.Models.Configuration;
+﻿using System.Diagnostics;
+using DQRetro.TournamentTracker.Api.Models.Configuration;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 
@@ -15,7 +16,7 @@ public class BaseSqlRepository
     /// Ctor.
     /// </summary>
     /// <param name="keyOptions">KeyOptions containing the SQL connection string.</param>
-    public BaseSqlRepository(IOptions<KeysConfiguration> keyOptions)
+    protected BaseSqlRepository(IOptions<KeysConfiguration> keyOptions)
     {
         _connectionString = keyOptions.Value.SqlConnectionString;
     }
@@ -27,8 +28,11 @@ public class BaseSqlRepository
     /// <returns>An opened SQL connection.</returns>
     protected async Task<SqlConnection> OpenConnectionAsync()
     {
-        SqlConnection connection = new(_connectionString);
-        await connection.OpenAsync();
-        return connection;
+        using (Activity.Current?.Source?.StartActivity(ActivityKind.Server))
+        {
+            SqlConnection connection = new(_connectionString);
+            await connection.OpenAsync();
+            return connection;
+        }
     }
 }
