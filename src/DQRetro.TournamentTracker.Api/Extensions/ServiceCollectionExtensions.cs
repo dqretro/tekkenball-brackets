@@ -13,6 +13,7 @@ using DQRetro.TournamentTracker.Api.Services.Video.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -229,15 +230,13 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCustomOpenTelemetry(this IServiceCollection services, IConfiguration configuration, string hostname)
     {
         bool isEnabled = configuration.GetValue<bool>("OpenTelemetry:Enabled");
-        string otlpEndpoint = configuration.GetValue<string>("OtlpEndpoint");
+        string otlpEndpoint = configuration.GetValue<string>("OpenTelemetry:ExporterEndpoint");
 
         if (!isEnabled || string.IsNullOrEmpty(otlpEndpoint))
         {
             Console.WriteLine("OpenTelemetry is disabled...");
             return services;
         }
-
-        // AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
         services.AddOpenTelemetry()
                 .ConfigureResource(resource => resource.AddService("DQRetro.TournamentTracker.Api")
@@ -257,6 +256,16 @@ public static class ServiceCollectionExtensions
                                     otlpOptions.Endpoint = new Uri(otlpEndpoint);
                                     otlpOptions.Protocol = OtlpExportProtocol.Grpc;
                                 });
+                })
+                .WithMetrics(metricsBuilder =>
+                {
+                    metricsBuilder.AddRuntimeInstrumentation()
+                                  .AddProcessInstrumentation()
+                                  .AddOtlpExporter(otlpOptions =>
+                                  {
+                                      otlpOptions.Endpoint = new Uri(otlpEndpoint);
+                                      otlpOptions.Protocol = OtlpExportProtocol.Grpc;
+                                  });
                 });
 
         return services;

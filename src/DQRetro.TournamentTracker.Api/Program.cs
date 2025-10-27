@@ -1,6 +1,8 @@
 using System.Runtime;
 using DQRetro.TournamentTracker.Api.Extensions;
 using DQRetro.TournamentTracker.Api.Middleware;
+using NLog;
+using NLog.Web;
 
 namespace DQRetro.TournamentTracker.Api;
 
@@ -23,6 +25,10 @@ public class Program
 
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+        builder.Logging.ClearProviders();
+        LogManager.Setup().LoadConfigurationFromFile("NLog.config");
+        builder.Host.UseNLog();
 
         builder.WebHost.ConfigureKestrel(kestrelServerOptions =>
         {
@@ -59,17 +65,17 @@ public class Program
         app.UseCustomSwagger(isDevelopment);
 
         app.Services.GetRequiredService<ILogger<Program>>()
-                    .LogInformation("Startup complete\n" +
-                                    "ServerGc: {IsServerGc}\n" +
-                                    "LohCompationMode: {LohCompactionMode}\n" +
-                                    "IsDevelopment: {IsDevelopment}\n" +
-                                    "ProcessId: {ProcessId}\n" +
-                                    "Hostname: {Hostname}",
-                                    GCSettings.IsServerGC,
-                                    GCSettings.LargeObjectHeapCompactionMode,
-                                    isDevelopment,
-                                    Environment.ProcessId,
-                                    hostname);
+                    .LogWarning("Startup complete\n" +
+                                "ServerGc: {IsServerGc}\n" +
+                                "LohCompationMode: {LohCompactionMode}\n" +
+                                "IsDevelopment: {IsDevelopment}\n" +
+                                "ProcessId: {ProcessId}\n" +
+                                "Hostname: {Hostname}",
+                                GCSettings.IsServerGC,
+                                GCSettings.LargeObjectHeapCompactionMode,
+                                isDevelopment,
+                                Environment.ProcessId,
+                                hostname);
         await app.RunAsync();
     }
 }
