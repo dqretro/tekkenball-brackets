@@ -1,0 +1,66 @@
+version: "3.9"
+
+name: "observability-stack"
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 4g
+    volumes:
+      - "./data:/usr/share/elasticsearch/data"
+    ports:
+      - 9200:9200
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.2.0
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    mem_limit: 4g
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:9.2.0
+    container_name: apm-server
+    command: >
+      -e
+      -E output.elasticsearch.hosts=["http://elasticsearch:9200"]
+      -E setup.kibana.host=http://kibana:5601
+      -E apm-server.host=0.0.0.0:8200
+      -E apm-server.auth.anonymous.enabled=true
+      -E apm-server.auth.anonymous.allow_agent=otlp
+      -E apm-server.auth.anonymous.allow_service=*
+      -E apm-server.otlp.resource_attributes.allow=*
+      -E apm-server.otlp.resource_attributes.include=service.environment,service.name,service.version,host.name,host.hostname
+    mem_limit: 4g
+    ports:
+      - 8200:8200
+    depends_on:
+      - elasticsearch
+      - kibana
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.138.0
+    container_name: otel-collector
+    volumes:
+      - "./otel-config.yml:/etc/otel-config.yml"
+    command: ["--config", "/etc/otel-config.yml"]
+    mem_limit: 4g
+    ports:
+      - 4317:4317
+      - 4318:4318
+      - 55681:55681
+    depends_on:
+      - apm-server
