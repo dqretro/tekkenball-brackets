@@ -225,7 +225,8 @@ public static class ServiceCollectionExtensions
     }
 
     // TODO: ADD XML COMMENTS, LOGGING AND METRICS!
-    public static IServiceCollection AddCustomOpenTelemetry(this IServiceCollection services, IConfiguration configuration)
+    // TODO: ENSURE APPSETTINGS.SECRETS.JSON CONTAINS THE OTLPENDPOINT!
+    public static IServiceCollection AddCustomOpenTelemetry(this IServiceCollection services, IConfiguration configuration, string hostname)
     {
         bool isEnabled = configuration.GetValue<bool>("OpenTelemetry:Enabled");
         string otlpEndpoint = configuration.GetValue<string>("OtlpEndpoint");
@@ -236,8 +237,16 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
+        // AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
         services.AddOpenTelemetry()
-                .ConfigureResource(resource => resource.AddService("DQRetro.TournamentTracker.Api"))
+                .ConfigureResource(resource => resource.AddService("DQRetro.TournamentTracker.Api")
+                                                       .AddAttributes([
+                                                           new KeyValuePair<string, object>("service.environment", hostname),
+                                                           new KeyValuePair<string, object>("host.name", hostname),
+                                                           new KeyValuePair<string, object>("deployment.environment", hostname),
+                                                           new KeyValuePair<string, object>("host.hostname", hostname)
+                                                       ]))
                 .WithTracing(traceBuilder =>
                 {
                     traceBuilder.AddAspNetCoreInstrumentation()

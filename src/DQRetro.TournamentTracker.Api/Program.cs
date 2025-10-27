@@ -31,6 +31,7 @@ public class Program
         });
 
         bool isDevelopment = builder.Environment.IsDevelopment();
+        string hostname = Environment.MachineName;
 
         builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
         builder.Configuration.AddJsonFile("appsettings.Secrets.json", optional: false, reloadOnChange: false);
@@ -43,7 +44,7 @@ public class Program
                         .AddTokenBucketRateLimiter()
                         .AddCustomSwagger(builder.Configuration, isDevelopment)
                         .AddControllersWithCustomSerialization()
-                        .AddCustomOpenTelemetry(builder.Configuration);
+                        .AddCustomOpenTelemetry(builder.Configuration, hostname);
 
 
         WebApplication app = builder.Build();
@@ -62,12 +63,13 @@ public class Program
                                     "ServerGc: {IsServerGc}\n" +
                                     "LohCompationMode: {LohCompactionMode}\n" +
                                     "IsDevelopment: {IsDevelopment}\n" +
-                                    "ProcessId: {ProcessId}",
+                                    "ProcessId: {ProcessId}\n" +
+                                    "Hostname: {Hostname}",
                                     GCSettings.IsServerGC,
                                     GCSettings.LargeObjectHeapCompactionMode,
                                     isDevelopment,
-                                    Environment.ProcessId);
+                                    Environment.ProcessId,
+                                    hostname);
         await app.RunAsync();
     }
-
 }
