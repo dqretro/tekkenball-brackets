@@ -225,8 +225,14 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    // TODO: ADD XML COMMENTS, LOGGING AND METRICS!
-    // TODO: ENSURE APPSETTINGS.SECRETS.JSON CONTAINS THE OTLPENDPOINT! - THIS HAS BEEN OVERWRITTEN CURRENTLY!
+    /// <summary>
+    /// Adds OpenTelemetry Metrics and Traces and sets some default attributes.
+    /// Only runs if OpenTelemetry:Enabled is true and OpenTelemetry:ExporterEndpoint is not null or empty in appsettings.json.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    /// <param name="hostname"></param>
+    /// <returns></returns>
     public static IServiceCollection AddCustomOpenTelemetry(this IServiceCollection services, IConfiguration configuration, string hostname)
     {
         bool isEnabled = configuration.GetValue<bool>("OpenTelemetry:Enabled");
