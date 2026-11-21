@@ -13,6 +13,14 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
+  # Called by refresh-data.yml after it commits new data. Commits made with
+  # GITHUB_TOKEN don't trigger "push" workflows, so the refresh deploys explicitly.
+  workflow_call:
+    inputs:
+      ref:
+        description: "Commit to deploy (defaults to the triggering commit)"
+        type: string
+        required: false
 
 permissions:
   contents: read
@@ -36,7 +44,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
+          ref: ${{ inputs.ref || github.sha }}
           persist-credentials: false   # job never pushes; generated files can't be committed
+
+      - name: Validate data
+        run: node .github/scripts/validate-data.js
 
       # Writes config.json into the Pages artifact only (inside the runner).
       # It is gitignored and the job has read-only repo access, so it is never committed.

@@ -2,11 +2,11 @@
 #
 #  - hygiene: fails if secrets, generated config or oversized design files are
 #             ever tracked in git, or if key-shaped strings appear in tracked files.
-#  - sync-tool: builds the start.gg sync tool (no secrets needed, nothing published).
+#  - sync-tool: builds the start.gg sync tool and smoke-tests it offline
+#               (no secrets needed, nothing published).
+#  - data:      validates brackets.json / players.json.
 #
-# Future: a scheduled data-refresh job can run the sync tool with
-#   env: STARTGG_API_KEY: ${{ secrets.STARTGG_API_KEY }}
-# (same name the tool reads locally via user-secrets / env var).
+# Live data refresh (uses the STARTGG_API_KEY secret) lives in refresh-data.yml.
 name: CI
 
 on:
@@ -88,3 +88,24 @@ jobs:
 
       - name: Build
         run: dotnet build "$PROJECT" --configuration Release --no-restore
+
+      # End-to-end check without an API key: reprocess the committed data offline
+      # (dedupe + player slugs) and validate the result.
+      - name: Offline reprocess smoke test
+        run: |
+          out="$RUNNER_TEMP/data-smoke"
+          dotnet run --project "$PROJECT" --configuration Release --no-build -- \
+            --from-file src/DQRetro.TournamentTracker.Ui/public/data/brackets.json --out "$out"
+          node .github/scripts/validate-data.js "$out"
+
+  data:
+    name: Validate site data
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Validate brackets.json / players.json
+        run: node .github/scripts/validate-data.js
