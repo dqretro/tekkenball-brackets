@@ -30,15 +30,15 @@
   {
     "name": "A F0xy Grampa",
     "slug": "a-f0xy-grampa",
-    "userId": null,
-    "team": "",
+    "userId": "166732",
+    "team": "Panther",
     "country": "",
-    "avatar": "",
+    "avatar": "https://images.start.gg/images/user/166732/image-8b3faa5310d65e966e8bab34b51a5ebf.jpg?ehk=Rdo%2BVpxFRPNFFVTfnUgvkZyQj7jUGExtj8JT15PKRws%3D\u0026ehkOptimized=hYJFJusG2%2B2nwIdpEuohDHz1Qq5K%2F82nSL4YHr%2Bfpks%3D",
     "socials": {
       "twitter": null,
       "twitch": null,
       "youtube": null,
-      "discord": null
+      "discord": "af0xygrampa"
     }
   },
   {
@@ -112,6 +112,20 @@
     }
   },
   {
+    "name": "AidenNortha",
+    "slug": "aidennortha",
+    "userId": "2631425",
+    "team": "",
+    "country": "Birmingham, United Kingdom",
+    "avatar": "",
+    "socials": {
+      "twitter": null,
+      "twitch": null,
+      "youtube": null,
+      "discord": "aidennortha"
+    }
+  },
+  {
     "name": "AlexSouls",
     "slug": "alexsouls",
     "userId": "1887248",
@@ -154,20 +168,6 @@
     }
   },
   {
-    "name": "ArcadeStriker",
-    "slug": "arcadestriker",
-    "userId": null,
-    "team": "",
-    "country": "",
-    "avatar": "",
-    "socials": {
-      "twitter": null,
-      "twitch": null,
-      "youtube": null,
-      "discord": null
-    }
-  },
-  {
     "name": "arfrix",
     "slug": "arfrix",
     "userId": "2387157",
@@ -179,6 +179,34 @@
       "twitch": null,
       "youtube": null,
       "discord": "arfrix"
+    }
+  },
+  {
+    "name": "Atem",
+    "slug": "atem",
+    "userId": "474820",
+    "team": "PF",
+    "country": "",
+    "avatar": "",
+    "socials": {
+      "twitter": null,
+      "twitch": "atem9000",
+      "youtube": null,
+      "discord": "atem9000"
+    }
+  },
+  {
+    "name": "Azalima",
+    "slug": "azalima",
+    "userId": "2595600",
+    "team": "",
+    "country": "Birmingham, United Kingdom",
+    "avatar": "",
+    "socials": {
+      "twitter": null,
+      "twitch": null,
+      "youtube": null,
+      "discord": null
     }
   },
   {
@@ -294,9 +322,23 @@
     }
   },
   {
+    "name": "Bkbhoenix",
+    "slug": "bkbhoenix",
+    "userId": "454964",
+    "team": "",
+    "country": "Limerick, Ireland",
+    "avatar": "",
+    "socials": {
+      "twitter": "Phoenix__Rise",
+      "twitch": null,
+      "youtube": null,
+      "discord": null
+    }
+  },
+  {
     "name": "BlackFlashDandy",
     "slug": "blackflashdandy",
-    "userId": null,
+    "userId": "523949",
     "team": "",
     "country": "",
     "avatar": "",
@@ -338,15 +380,15 @@
   {
     "name": "Boxty",
     "slug": "boxty",
-    "userId": null,
-    "team": "",
-    "country": "",
+    "userId": "878733",
+    "team": "LaGggy",
+    "country": "London, United Kingdom",
     "avatar": "",
     "socials": {
-      "twitter": null,
-      "twitch": null,
+      "twitter": "MartinBoxty",
+      "twitch": "MartinBoxty",
       "youtube": null,
-      "discord": null
+      "discord": "martinboxty"
     }
   },
   {
@@ -462,6 +504,20 @@
     }
   },
   {
+    "name": "CRIMZO",
+    "slug": "crimzo",
+    "userId": "1211020",
+    "team": "",
+    "country": "London, United Kingdom",
+    "avatar": "https://images.start.gg/images/user/1211020/image-097cf826a3931b9b2e243f1db86aa97f.jpg",
+    "socials": {
+      "twitter": "KingCrimzo",
+      "twitch": "CrimzoTK",
+      "youtube": null,
+      "discord": "_crimzo"
+    }
+  },
+  {
     "name": "Cringe Lord",
     "slug": "cringe-lord",
     "userId": "2637210",
@@ -520,9 +576,9 @@
   {
     "name": "D-Tech",
     "slug": "d-tech",
-    "userId": null,
+    "userId": "304197",
     "team": "",
-    "country": "",
+    "country": "Wolverhampton, United Kingdom",
     "avatar": "",
     "socials": {
       "twitter": null,
@@ -548,9 +604,9 @@
   {
     "name": "DaCakemix",
     "slug": "dacakemix",
-    "userId": null,
+    "userId": "2282645",
     "team": "",
-    "country": "",
+    "country": "Ipswich, United Kingdom",
     "avatar": "",
     "socials": {
       "twitter": null,
@@ -738,7 +794,21 @@
       "twitter": "Draconis_Y",
       "twitch": "draconis3838",
       "youtube": null,
-      "discord": "TB | Draconis#0144"
+      "discord": "draconis3838"
+    }
+  },
+  {
+    "name": "Drebin",
+    "slug": "drebin",
+    "userId": "2267529",
+    "team": "RST",
+    "country": "Aberdeen, United Kingdom",
+    "avatar": "",
+    "socials": {
+      "twitter": null,
+      "twitch": null,
+      "youtube": null,
+      "discord": null
     }
   },
   {
@@ -772,9 +842,9 @@
   {
     "name": "EagleBird",
     "slug": "eaglebird",
-    "userId": null,
+    "userId": "458886",
     "team": "",
-    "country": "",
+    "country": "London, United Kingdom",
     "avatar": "",
     "socials": {
       "twitter": null,
@@ -865,20 +935,6 @@
       "twitch": null,
       "youtube": null,
       "discord": "essophysics"
-    }
-  },
-  {
-    "name": "Evaangelos",
-    "slug": "evaangelos",
-    "userId": null,
-    "team": "",
-    "country": "",
-    "avatar": "",
-    "socials": {
-      "twitter": null,
-      "twitch": null,
-      "youtube": null,
-      "discord": null
     }
   },
   {
@@ -1046,7 +1102,7 @@
       "twitter": null,
       "twitch": null,
       "youtube": null,
-      "discord": null
+      "discord": "thrynity"
     }
   },
   {
@@ -1066,13 +1122,13 @@
   {
     "name": "GenieStorm",
     "slug": "geniestorm",
-    "userId": null,
+    "userId": "1023918",
     "team": "",
-    "country": "",
+    "country": "Solihull, United Kingdom",
     "avatar": "",
     "socials": {
-      "twitter": null,
-      "twitch": null,
+      "twitter": "TheGenieStorm",
+      "twitch": "GenieStorm",
       "youtube": null,
       "discord": null
     }
@@ -1222,7 +1278,7 @@
     "slug": "guac",
     "userId": "2847424",
     "team": "",
-    "country": "Ryde, United Kingdom",
+    "country": "Muntinlupa, Philippines",
     "avatar": "https://images.start.gg/images/user/2847424/image-9e562316bf1f9fd52ff255f436b83961.jpg",
     "socials": {
       "twitter": null,
@@ -1290,15 +1346,15 @@
   {
     "name": "henway",
     "slug": "henway",
-    "userId": null,
-    "team": "",
-    "country": "",
-    "avatar": "",
+    "userId": "2087263",
+    "team": "4Kids",
+    "country": "London, United Kingdom",
+    "avatar": "https://images.start.gg/images/user/2087263/image-8a39194c67cc2f484c350196d3cafc3d.jpg?ehk=0J75gfVMQd8%2B0LDeX1iZjKxqXnIXf%2FhUgwxgfWg9Ev0%3D\u0026ehkOptimized=tprkh0QNnKtdSrt3W3NVl9kyb%2BnKkdIonzW0uAWRt0g%3D",
     "socials": {
-      "twitter": null,
+      "twitter": "henway2U",
       "twitch": null,
       "youtube": null,
-      "discord": null
+      "discord": "henway#2774"
     }
   },
   {
@@ -1351,7 +1407,7 @@
     "country": "Manchester, United Kingdom",
     "avatar": "",
     "socials": {
-      "twitter": "EatBagelsAllDay",
+      "twitter": null,
       "twitch": null,
       "youtube": null,
       "discord": "HQ#5775"
@@ -1380,7 +1436,7 @@
     "avatar": "https://images.start.gg/images/user/97322/image-8edaa2d695c7b778e3eb3084d1369e06.jpg",
     "socials": {
       "twitter": "InfernoKong",
-      "twitch": null,
+      "twitch": "InfernoKong",
       "youtube": null,
       "discord": null
     }
@@ -1396,7 +1452,7 @@
       "twitter": null,
       "twitch": null,
       "youtube": null,
-      "discord": null
+      "discord": "ingvarr_ossan"
     }
   },
   {
@@ -1410,21 +1466,21 @@
       "twitter": "IronFuryITA",
       "twitch": "tr_ironfury",
       "youtube": null,
-      "discord": "cicciocampisi00"
+      "discord": "ironfuryita"
     }
   },
   {
-    "name": "JAYNE$$",
-    "slug": "jayne",
-    "userId": null,
+    "name": "JakeyBaby",
+    "slug": "jakeybaby",
+    "userId": "2465059",
     "team": "",
-    "country": "",
-    "avatar": "",
+    "country": "London, United Kingdom",
+    "avatar": "https://images.start.gg/images/user/2465059/image-7939c18163a877f75da10309863137ff.jpg?ehk=abNJHi88TF8%2FiGEHqhetPRfVLRin%2Fxk%2B1s%2FKKZFRxjc%3D\u0026ehkOptimized=SafUUNXMRoS%2FnA171AbGR%2BMJPfDcCVEJj9eFg1p2it8%3D",
     "socials": {
-      "twitter": null,
-      "twitch": null,
+      "twitter": "thejacobmosha",
+      "twitch": "thejacobmosha",
       "youtube": null,
-      "discord": null
+      "discord": "thejacobm"
     }
   },
   {
@@ -1453,6 +1509,20 @@
       "twitch": null,
       "youtube": null,
       "discord": "jei1426"
+    }
+  },
+  {
+    "name": "JGA Truth",
+    "slug": "jga-truth",
+    "userId": "1273930",
+    "team": "TFK",
+    "country": "San Antonio, United States",
+    "avatar": "https://images.start.gg/images/user/1273930/image-d03fbe884482d99999aedfe7ce80f437.png",
+    "socials": {
+      "twitter": null,
+      "twitch": "jgatruth",
+      "youtube": null,
+      "discord": "jgatruth"
     }
   },
   {
@@ -1498,6 +1568,20 @@
     }
   },
   {
+    "name": "juliandxvid",
+    "slug": "juliandxvid",
+    "userId": "2804378",
+    "team": "",
+    "country": "United Kingdom",
+    "avatar": "https://images.start.gg/images/user/2804378/image-b3dab9807d6de92631de274aca2f89ea.png",
+    "socials": {
+      "twitter": null,
+      "twitch": null,
+      "youtube": null,
+      "discord": "iturtlez"
+    }
+  },
+  {
     "name": "Just Monika",
     "slug": "just-monika",
     "userId": "2105195",
@@ -1540,6 +1624,20 @@
     }
   },
   {
+    "name": "Kamen",
+    "slug": "kamen",
+    "userId": "2598545",
+    "team": "",
+    "country": "manchester, United Kingdom",
+    "avatar": "",
+    "socials": {
+      "twitter": null,
+      "twitch": null,
+      "youtube": null,
+      "discord": null
+    }
+  },
+  {
     "name": "Kaneandtrench",
     "slug": "kaneandtrench",
     "userId": "224225",
@@ -1578,7 +1676,7 @@
       "twitter": "KingJae",
       "twitch": "KingJae",
       "youtube": null,
-      "discord": "kingjae_58710"
+      "discord": "Kingjae#3901"
     }
   },
   {
@@ -1671,7 +1769,7 @@
     "userId": "3128032",
     "team": "",
     "country": "Birmingham, United Kingdom",
-    "avatar": "",
+    "avatar": "https://images.start.gg/images/user/3128032/image-ead394b90b767384b11462333698ffe4.png",
     "socials": {
       "twitter": null,
       "twitch": null,
@@ -1713,7 +1811,7 @@
     "userId": "1802230",
     "team": "",
     "country": "Birmingham, United Kingdom",
-    "avatar": "https://images.start.gg/images/user/1802230/image-9705034c0b6c05df9038b6f066687528.webp",
+    "avatar": "https://images.start.gg/images/user/1802230/image-4f47376975d232fb18ab4eeb0c7d4478.jpg",
     "socials": {
       "twitter": "KS__BOSS1",
       "twitch": "ks__bosss",
@@ -1736,6 +1834,20 @@
     }
   },
   {
+    "name": "Kudels",
+    "slug": "kudels",
+    "userId": "2698980",
+    "team": "",
+    "country": "Gothenburg, Sweden",
+    "avatar": "",
+    "socials": {
+      "twitter": null,
+      "twitch": null,
+      "youtube": null,
+      "discord": null
+    }
+  },
+  {
     "name": "Kuinteru",
     "slug": "kuinteru",
     "userId": "2613837",
@@ -1747,6 +1859,20 @@
       "twitch": null,
       "youtube": null,
       "discord": "kuinteru"
+    }
+  },
+  {
+    "name": "Last Train Home",
+    "slug": "last-train-home",
+    "userId": "2691000",
+    "team": "",
+    "country": "",
+    "avatar": "",
+    "socials": {
+      "twitter": null,
+      "twitch": null,
+      "youtube": null,
+      "discord": null
     }
   },
   {
@@ -1876,20 +2002,6 @@
     }
   },
   {
-    "name": "Martian Stache",
-    "slug": "martian-stache",
-    "userId": null,
-    "team": "",
-    "country": "",
-    "avatar": "",
-    "socials": {
-      "twitter": null,
-      "twitch": null,
-      "youtube": null,
-      "discord": null
-    }
-  },
-  {
     "name": "Mathias Wolfbrok",
     "slug": "mathias-wolfbrok",
     "userId": "155824",
@@ -1990,15 +2102,15 @@
   {
     "name": "Moo",
     "slug": "moo",
-    "userId": null,
-    "team": "",
-    "country": "",
-    "avatar": "",
+    "userId": "2378479",
+    "team": "MDL",
+    "country": "London, United Kingdom",
+    "avatar": "https://images.start.gg/images/user/2378479/image-112853f3623abb601f12cd60d6cc9332.jpg",
     "socials": {
       "twitter": null,
-      "twitch": null,
+      "twitch": "moomoomoocowmoocowcowmoo",
       "youtube": null,
-      "discord": null
+      "discord": "moo.dev"
     }
   },
   {
@@ -2041,6 +2153,20 @@
       "twitch": null,
       "youtube": null,
       "discord": "mrjwaffles"
+    }
+  },
+  {
+    "name": "Mr Mugen",
+    "slug": "mr-mugen",
+    "userId": "2450716",
+    "team": "",
+    "country": "London, United Kingdom",
+    "avatar": "https://images.start.gg/images/user/2450716/image-f4cb02c3a31cd772beef9ae057bcd8be.png?ehk=a8X99MOSzhIA0ieVJZZpFB%2BhDuaimc4yfJHq1mIL8no%3D\u0026ehkOptimized=r7CCM4JuSv6cZH%2FGZgFEw3Oz8H%2FFcAG9R8b9oHv%2Folk%3D",
+    "socials": {
+      "twitter": "MrGoats_Sauce",
+      "twitch": "mrmugenviii",
+      "youtube": null,
+      "discord": "mugenviii"
     }
   },
   {
@@ -2093,7 +2219,7 @@
     "country": "",
     "avatar": "https://images.start.gg/images/user/2717979/image-35b7eb78b75650662d5309b2e3125631.jpg",
     "socials": {
-      "twitter": null,
+      "twitter": "Neartaich",
       "twitch": null,
       "youtube": null,
       "discord": "crashkorso"
@@ -2172,10 +2298,10 @@
   {
     "name": "Noeko",
     "slug": "noeko",
-    "userId": null,
+    "userId": "2615407",
     "team": "",
-    "country": "",
-    "avatar": "",
+    "country": "Birmingham, United Kingdom",
+    "avatar": "https://images.start.gg/images/user/2615407/image-877256f878ca1a13ba462de1ad7ceacc.jpg?ehk=BOjzUqbO7SffB1SihnsaFY4LASuwaN7dfenHMs5SbMs%3D\u0026ehkOptimized=EC%2FILln%2BrovVxvymCawthpSYB7KNXX0Fmh%2F%2BOk3vhpA%3D",
     "socials": {
       "twitter": null,
       "twitch": null,
@@ -2228,10 +2354,10 @@
   {
     "name": "nvyyd",
     "slug": "nvyyd",
-    "userId": null,
+    "userId": "2716654",
     "team": "",
-    "country": "",
-    "avatar": "",
+    "country": "Birmingham, United Kingdom",
+    "avatar": "https://images.start.gg/images/user/2716654/image-ae0ae7e46309a1fee2c24840067e2cf0.jpg?ehk=ww7ClyCytdlviu1vtHyfv%2Fq9VBg%2FNPhyff%2Fucy15l2w%3D\u0026ehkOptimized=MFa6fqYACanQdGyErSG5SYEKP7wmxB%2FfYjv%2B2qjXAsk%3D",
     "socials": {
       "twitter": null,
       "twitch": null,
@@ -2307,6 +2433,20 @@
       "twitch": null,
       "youtube": null,
       "discord": ".owenm3"
+    }
+  },
+  {
+    "name": "Paddone",
+    "slug": "paddone",
+    "userId": "2194716",
+    "team": "",
+    "country": "Scalea, Italy",
+    "avatar": "https://images.start.gg/images/user/2194716/image-ba3bfc802a813d5f43a618935627317c.jpg?ehk=ldpGmun9qkDIM%2FC9LXz%2FxCfDOmlyAVCxAncEs0PMdQo%3D\u0026ehkOptimized=THLMZyeiwirtyPaiuUKYdWWiDkJxXEnoEe8bmCye7wo%3D",
+    "socials": {
+      "twitter": null,
+      "twitch": null,
+      "youtube": null,
+      "discord": "Prometeo08#7578"
     }
   },
   {
@@ -2432,7 +2572,7 @@
       "twitter": null,
       "twitch": null,
       "youtube": null,
-      "discord": "prayforcupid"
+      "discord": "optictherapper2812"
     }
   },
   {
@@ -2634,7 +2774,7 @@
   {
     "name": "RiceBowl",
     "slug": "ricebowl",
-    "userId": null,
+    "userId": "1918204",
     "team": "",
     "country": "",
     "avatar": "",
@@ -2730,6 +2870,20 @@
     }
   },
   {
+    "name": "SamHalen",
+    "slug": "samhalen",
+    "userId": "1795970",
+    "team": "SenranSam",
+    "country": "Wales",
+    "avatar": "https://images.start.gg/images/user/1795970/image-a245a30bb649a10290e2bb359031f641.jpg?ehk=hCqBM9UYHcWHeS7o2MBb5nsYiATciEEgteV56hU1YwM%3D\u0026ehkOptimized=3Vs169rc23Nj8WnYZnfPPXaXBWyEjCy6bTa0e22GRc8%3D",
+    "socials": {
+      "twitter": "SenranSam",
+      "twitch": "SenranSam",
+      "youtube": null,
+      "discord": "senransam"
+    }
+  },
+  {
     "name": "Sargeras",
     "slug": "sargeras",
     "userId": "2844096",
@@ -2790,7 +2944,7 @@
     "slug": "schizophrenic69",
     "userId": "2154059",
     "team": "",
-    "country": "NO, United Kingdom",
+    "country": "Weston-Super-Mare, United Kingdom",
     "avatar": "https://images.start.gg/images/user/2154059/image-d132d7a62e97545b87677e2415fa0c3f.jpg?ehk=6kD96H2iaeo48iTrdIin2mK4lWgYBkUZPRPOXPg1RbU%3D\u0026ehkOptimized=8PvI9BYJkZqbwLtcs%2BSaOhfbhH%2Fwf%2B1%2Bz2hro3CK97c%3D",
     "socials": {
       "twitter": null,
@@ -2852,7 +3006,7 @@
       "twitter": "Sereph98",
       "twitch": "sereph03",
       "youtube": null,
-      "discord": "_sereph"
+      "discord": "sereph05"
     }
   },
   {
@@ -2884,6 +3038,20 @@
     }
   },
   {
+    "name": "ShinDarkShadow",
+    "slug": "shindarkshadow",
+    "userId": "184640",
+    "team": "",
+    "country": "Ede, Netherlands",
+    "avatar": "https://images.start.gg/images/user/184640/image-8344c2dec73d8ec0bcd30a07e8ca15e6.jpg?ehk=PJDAnWUnAfcwjyMZbdrxoBrPnOYSwlPdIsaxCenfvsM%3D\u0026ehkOptimized=rsRrHvGgWhLQYOGUw7%2F32Hl5da1irMJpwrsgwQ%2ByEHY%3D",
+    "socials": {
+      "twitter": null,
+      "twitch": null,
+      "youtube": null,
+      "discord": null
+    }
+  },
+  {
     "name": "Shirdel",
     "slug": "shirdel",
     "userId": "277626",
@@ -2909,6 +3077,20 @@
       "twitch": null,
       "youtube": null,
       "discord": null
+    }
+  },
+  {
+    "name": "Shubwub",
+    "slug": "shubwub",
+    "userId": "2293696",
+    "team": "",
+    "country": "United Kingdom",
+    "avatar": "https://images.start.gg/images/user/2293696/image-237576121e7dc147c8e915cbf8675e19.png?ehk=rjD2h8QC88xz6Je15FSJL4LOdqoa1usB5zPmU1M7iE4%3D\u0026ehkOptimized=Yqkv%2BFX7llvl90kVKRjgYBBooV5GYKNMtF774ymEF%2FE%3D",
+    "socials": {
+      "twitter": "shubwub",
+      "twitch": "Shubwub",
+      "youtube": null,
+      "discord": "shubwub"
     }
   },
   {
@@ -2954,6 +3136,20 @@
     }
   },
   {
+    "name": "SMBF|Marcus",
+    "slug": "marcus",
+    "userId": "1997150",
+    "team": "SMBF",
+    "country": "Bristol, United Kingdom",
+    "avatar": "https://images.start.gg/images/user/1997150/image-97b701f14e64d94d1c55d925798b9abb.jpg?ehk=02npVBWLs2dxq65fGYMWWDrW2dFSv%2BRFaY%2BK5b%2F%2B1bo%3D\u0026ehkOptimized=dALQCObsDsIBg16fITmyVdJ8ccleWS6vMtUQxK24rrE%3D",
+    "socials": {
+      "twitter": "OchaiMarcus",
+      "twitch": null,
+      "youtube": null,
+      "discord": "megamindmarcus"
+    }
+  },
+  {
     "name": "SNMTango",
     "slug": "snmtango",
     "userId": "3056030",
@@ -2964,7 +3160,7 @@
       "twitter": null,
       "twitch": null,
       "youtube": null,
-      "discord": null
+      "discord": "tr3cho"
     }
   },
   {
@@ -3082,9 +3278,9 @@
   {
     "name": "Squally",
     "slug": "squally",
-    "userId": null,
+    "userId": "2282539",
     "team": "",
-    "country": "",
+    "country": "Ipswich, United Kingdom",
     "avatar": "",
     "socials": {
       "twitter": null,
@@ -3133,6 +3329,34 @@
       "twitch": null,
       "youtube": null,
       "discord": null
+    }
+  },
+  {
+    "name": "Subsoniik",
+    "slug": "subsoniik",
+    "userId": "330663",
+    "team": "",
+    "country": "Wolverhampton, United Kingdom",
+    "avatar": "",
+    "socials": {
+      "twitter": null,
+      "twitch": null,
+      "youtube": null,
+      "discord": null
+    }
+  },
+  {
+    "name": "SuperBrineTK",
+    "slug": "superbrinetk",
+    "userId": "2768600",
+    "team": "",
+    "country": "Maadi, Egypt",
+    "avatar": "https://images.start.gg/images/user/2768600/image-47ece74c6de50e07da9f006eddb18f38.jpg",
+    "socials": {
+      "twitter": "SuperBrineTK",
+      "twitch": "SuperBrineTK_",
+      "youtube": null,
+      "discord": "superbrine"
     }
   },
   {
@@ -3208,10 +3432,10 @@
   {
     "name": "TG CoopStar",
     "slug": "tg-coopstar",
-    "userId": null,
-    "team": "",
-    "country": "",
-    "avatar": "",
+    "userId": "208517",
+    "team": "ED",
+    "country": "Wolverhampton, United Kingdom",
+    "avatar": "https://images.start.gg/images/user/208517/image-f3fd4f55a1cba83537e549c62960f9bb.jpg?ehk=mfJicaK5KRi4wVcrp9BlZlnYm11z56Kto%2BEydcTsLgk%3D\u0026ehkOptimized=tqWm7E04VTlvCY0tu9zQnlpFlsvfy56uJdRdVbhcrKY%3D",
     "socials": {
       "twitter": null,
       "twitch": null,
@@ -3348,10 +3572,10 @@
   {
     "name": "Thrasher",
     "slug": "thrasher",
-    "userId": null,
+    "userId": "2453550",
     "team": "",
-    "country": "",
-    "avatar": "",
+    "country": "London, United Kingdom",
+    "avatar": "https://images.start.gg/images/user/2453550/image-63864fe32c7e33f76ce614b9b0c976be.jpg?ehk=1Pza3a8e8KFK8ro2aXT3ayt1SgEVF8kD3KQPpAYJiSw%3D\u0026ehkOptimized=DLkD7BNWgS5hP8urvusOXRKVQhxhHYzuaImFNMW9XYU%3D",
     "socials": {
       "twitter": null,
       "twitch": null,
@@ -3542,20 +3766,6 @@
     }
   },
   {
-    "name": "Vampire Bat",
-    "slug": "vampire-bat",
-    "userId": null,
-    "team": "",
-    "country": "",
-    "avatar": "",
-    "socials": {
-      "twitter": null,
-      "twitch": null,
-      "youtube": null,
-      "discord": null
-    }
-  },
-  {
     "name": "Vizual Complex",
     "slug": "vizual-complex",
     "userId": "2071567",
@@ -3567,6 +3777,34 @@
       "twitch": "VizualComplex",
       "youtube": null,
       "discord": "vizualcomplex"
+    }
+  },
+  {
+    "name": "wagboy919",
+    "slug": "wagboy919",
+    "userId": "997451",
+    "team": "",
+    "country": "London, United Kingdom",
+    "avatar": "https://images.start.gg/images/user/997451/image-00f06b84ec5b015416ec320940346ba5.jpg?ehk=7okfO5QMJfIf3qpZ6uds7B8w1wu1AbWuuKT2az%2BdyfQ%3D\u0026ehkOptimized=WB85UklO%2FoN7UsPNMGiwcyU%2FJq2nCqi6IjNsiYxk2wU%3D",
+    "socials": {
+      "twitter": "wagboy919",
+      "twitch": "wagboy919",
+      "youtube": null,
+      "discord": null
+    }
+  },
+  {
+    "name": "Wezerz",
+    "slug": "wezerz",
+    "userId": "530123",
+    "team": "SCO",
+    "country": "Denny, Scotland",
+    "avatar": "https://images.start.gg/images/user/530123/image-60a609fb2e34d79508156f8db1151918.png?ehk=Tn0AVexmwwqizquNZwv0Lcvd8UbCVJ%2BZK5m6Eh7wsTY%3D\u0026ehkOptimized=72y6IYGEdWVzC39yf77ddkOpeNL7J4UEV0QbiTYcMqI%3D",
+    "socials": {
+      "twitter": "WezerzSCO",
+      "twitch": "Wezerz",
+      "youtube": null,
+      "discord": "wezerz"
     }
   },
   {
@@ -3673,7 +3911,7 @@
     "userId": "2266364",
     "team": "RDE",
     "country": "Edinburgh, Scotland",
-    "avatar": "https://images.start.gg/images/user/2266364/image-6f8f7639a2af217932805c03bc44a21e.png?ehk=Edi%2FzZbM8a9CxDPkIrtOUucQ7w1%2BK7KplxFvg%2B5%2B5co%3D\u0026ehkOptimized=qW5Bd5HMAvCBLDm541MNlYP5Qfm8ZNiLjZVpRnQDCBo%3D",
+    "avatar": "https://images.start.gg/images/user/2266364/image-3b8ec83f7adf89df888220570d86906d.jpg",
     "socials": {
       "twitter": null,
       "twitch": "xnopyt_aaajjj",
@@ -3866,9 +4104,9 @@
   {
     "name": "ZatannaJLD",
     "slug": "zatannajld",
-    "userId": null,
+    "userId": "2717085",
     "team": "",
-    "country": "",
+    "country": "Salisbury, United Kingdom",
     "avatar": "",
     "socials": {
       "twitter": null,
