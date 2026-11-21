@@ -1,70 +1,72 @@
-# tekkenball-brackets
+# DQRetro's Tekkenball-Brackets
 
-DQRetro tournament hub with brackets, standings, player profiles and stats for Tekken Ball and other retro fighting game events, built from [start.gg](https://start.gg) data.
+[![Build & Publish API](https://github.com/dqretro/tekkenball-brackets/actions/workflows/api.yml/badge.svg)](https://github.com/dqretro/tekkenball-brackets/actions/workflows/api.yml)
+[![Deploy static content to Pages](https://github.com/dqretro/tekkenball-brackets/actions/workflows/static.yml/badge.svg?branch=main)](https://github.com/dqretro/tekkenball-brackets/actions/workflows/static.yml)
+[![pages-build-deployment](https://github.com/dqretro/tekkenball-brackets/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/dqretro/tekkenball-brackets/actions/workflows/pages/pages-build-deployment)
 
-**Live site:** https://dqretro.github.io/tekkenball-brackets/
+🌐 Live site: [dqretro.github.io/tekkenball-brackets](https://dqretro.github.io/tekkenball-brackets/)
+---
+![Global Players Screenshot](screenshot_globalplayers.png)
+---
 
-## Repository layout
+## Features & Pages
+This project provides a full front-end for **Tekken Ball tournaments, statistics, and media**.  
 
-| Path | What it is |
-|---|---|
-| `src/DQRetro.TournamentTracker.Ui/public/` | The static website (HTML/CSS/JS). This folder is what gets published to GitHub Pages. |
-| `src/DQRetro.TournamentTracker.Ui/public/data/` | Generated data: `brackets.json`, `players.json`. Hand-edited overrides go in `brackets-local.json`. |
-| `src/DQRetro.TournamentTracker.Ui/server.js` | Small Express server for local preview. |
-| `src/DQRetro.TournamentTracker.Startgg/` | .NET 8 console app that pulls tournament data from start.gg and writes the data files. |
-| `.github/workflows/` | CI, data refresh and Pages deployment (see below). |
+- **Tournaments** – brackets, matches, standings, players, and event overviews.  
+- **Global Statistics** – most used characters, leaderboards, and resettable filters.  
+- **Leaderboards** – sortable results across all tracked events.  
+- **Player Profiles** – track individual performance and match history.  
+- **Video Gallery** – curated YouTube videos dynamically loaded from the Tournament Tracker API.  
+- **Updates & Integration** – API-driven content with seamless navigation and UI consistency.  
 
-## Run the site locally
+---
 
-```bash
-cd src/DQRetro.TournamentTracker.Ui
-npm install
-npm start            # http://localhost:3000
-```
+## start.gg API Integration
+Tournament data is powered by **start.gg API integration**.  
 
-On Windows you can also double-click `start-admin.bat`. The server listens on `127.0.0.1` only. Set `HOST=0.0.0.0` to preview it from other devices on your network.
+- Pulls live tournament data directly from **start.gg**.  
+- Provides details for **events, brackets, players, standings, and matches**.  
+- Keeps the tournament pages synced with official start.gg records.  
+- Ensures accuracy and automation for DQRetro’s Tekken Ball tournament coverage.  
+- 🔗 Reference: [start.gg API Documentation](https://developer.start.gg/)  
 
-**Gallery videos (optional):** copy `public/pages/gallery/config.example.json` to `config.json` and add a YouTube key. `config.json` is gitignored. Without it, the gallery falls back to `gallery-videos.json`.
+---
 
-## Refresh the data (sync tool)
+## Video Gallery Integration
+The **Gallery** page directly integrates with the Tournament Tracker API.  
 
-You need the .NET 8 SDK and a start.gg API key.
+- `gallery.js` fetches videos directly from the API.  
+- Videos are dynamically filtered by **year** and displayed with thumbnails linking to YouTube.  
+- Fully synced with DQRetro's content.  
 
-```bash
-# one-time: store the key outside the repo
-dotnet user-secrets set STARTGG_API_KEY "<your key>" --project src/DQRetro.TournamentTracker.Startgg
+---
 
-# fetch everything from start.gg and rewrite public/data/*.json
-dotnet run --project src/DQRetro.TournamentTracker.Startgg
-```
+## Contributors
+- **Sky Williamson** – [GitHub Profile](https://github.com/SlawSimulation)  
+- **Harry Mather** – [GitHub Profile](https://github.com/HarryCMather)  
 
-| Option | Effect |
-|---|---|
-| `--out <dir>` | Write the JSON somewhere else (useful for comparing against the current data). |
-| `--from-file <brackets.json>` | Offline: rebuild `players.json`, deduplicate tournaments and add player slugs to an existing file. No key or network needed. |
-| `--force` | Allow the tournament count to drop by more than 50%. |
+---
 
-Exit codes: `0` ok, `1` no key, `2` nothing fetched, `3` suspicious drop in tournaments, `4` key rejected, `5` unexpected error. The data files are only overwritten on success.
+## Data Updates & Deployment
+The site is fully static and runs on **GitHub Pages**. Everything is automated with **GitHub Actions**, so no server or database is needed.
 
-To add a tournament, add its slug to `TargetTournamentSlugs` in `Program.cs`. Anything matching "DQRetro" or "SRKade" on start.gg is picked up automatically.
+- **Daily data refresh:** the start.gg sync tool (`src/DQRetro.TournamentTracker.Startgg`) pulls every DQRetro and SRKade tournament and rewrites `brackets.json` and `players.json` in `src/DQRetro.TournamentTracker.Ui/public/data/`.
+- **Safe by default:** the data is validated before it is committed or published. A rejected key, an empty fetch or a sudden large drop in tournaments never overwrites the existing data.
+- **Automatic deploy:** when the data changes, the site is republished to GitHub Pages.
 
-## Secrets
-
-Never commit keys. The same names are used locally and on GitHub. In the repo, go to Settings, then Secrets and variables, then Actions.
-
-| Name | Used by | Local equivalent |
+| Workflow | Runs on | What it does |
 |---|---|---|
-| `STARTGG_API_KEY` | `refresh-data.yml` (sync tool) | `dotnet user-secrets` (above) or an environment variable |
-| `YOUTUBE_API_KEY` | `static.yml`, which writes the gallery `config.json` at deploy time | `public/pages/gallery/config.json` (gitignored) |
+| `ci.yml` | Pushes and pull requests | Checks no secrets or build files are committed, builds the sync tool and validates the data. |
+| `refresh-data.yml` | Daily at 05:17 UTC, or **Actions → Refresh start.gg data → Run workflow** | Fetches fresh start.gg data and commits only the two data files if they changed, then deploys. |
+| `static.yml` | Pushes to `main`, or manually | Validates the data and publishes the site to GitHub Pages. |
 
-Restrict the YouTube key in Google Cloud to the HTTP referrers `https://dqretro.github.io/*` and `http://localhost:3000/*`, and to the YouTube Data API v3 only. It's a browser key, so visitors can see it.
+### Repository settings (maintainers)
+- **Settings → Pages → Source:** GitHub Actions.
+- **Settings → Secrets and variables → Actions:**
 
-## GitHub Actions
+| Secret | Purpose |
+|---|---|
+| `STARTGG_API_KEY` | start.gg API token used by the data refresh. Paste only the key itself. |
+| `YOUTUBE_API_KEY` | YouTube Data API key for the Video Gallery, written into the site at deploy time. Restrict it in Google Cloud to the referrer `https://dqretro.github.io/*` and to the YouTube Data API v3. Without it, the gallery uses `gallery-videos.json`. |
 
-| Workflow | Trigger | What it does |
-|---|---|---|
-| `ci.yml` | Push to `main` / `feat/**`, PRs | Repo hygiene (no secrets, PSDs or build output committed), builds the sync tool plus an offline smoke test, validates the data files. |
-| `refresh-data.yml` | Daily 05:17 UTC, or manually | Runs the sync tool with `STARTGG_API_KEY`, validates, commits only the two data files if they changed, then deploys. |
-| `static.yml` | Push to `main`, manually, or called by the refresh | Validates the data and publishes `public/` to GitHub Pages. |
-
-Scheduled runs and the "Run workflow" button only appear once a workflow file is on `main`.
+To track a new tournament that isn't found automatically, add its start.gg slug to `TargetTournamentSlugs` in `src/DQRetro.TournamentTracker.Startgg/Program.cs`.
