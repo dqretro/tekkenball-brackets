@@ -50,7 +50,7 @@ The **Gallery** page directly integrates with the Tournament Tracker API.
 ## Data Updates & Deployment
 The site is fully static and runs on **GitHub Pages**. Everything is automated with **GitHub Actions**, so no server or database is needed.
 
-- **Daily data refresh:** the start.gg sync tool (`src/DQRetro.TournamentTracker.Startgg`) pulls every DQRetro and SRKade tournament and rewrites `brackets.json` and `players.json` in `src/DQRetro.TournamentTracker.Ui/public/data/`.
+- **Daily data refresh:** the start.gg sync tool (`src/DQRetro.TournamentTracker.Startgg`) finds DQRetro and SRKade tournaments plus DQRetro events at VSFighting (see below) and rewrites `brackets.json` and `players.json` in `src/DQRetro.TournamentTracker.Ui/public/data/`.
 - **Safe by default:** the data is validated before it is committed or published. A rejected key, an empty fetch or a sudden large drop in tournaments never overwrites the existing data.
 - **Automatic deploy:** when the data changes, the site is republished to GitHub Pages.
 
@@ -69,4 +69,17 @@ The site is fully static and runs on **GitHub Pages**. Everything is automated w
 | `STARTGG_API_KEY` | start.gg API token used by the data refresh. Paste only the key itself. |
 | `YOUTUBE_API_KEY` | YouTube Data API key for the Video Gallery, written into the site at deploy time. Restrict it in Google Cloud to the referrer `https://dqretro.github.io/*` and to the YouTube Data API v3. Without it, the gallery uses `gallery-videos.json`. |
 
-To track a new tournament that isn't found automatically, add its start.gg slug to `TargetTournamentSlugs` in `src/DQRetro.TournamentTracker.Startgg/Program.cs`.
+### How tournaments are found
+The sync tool (`src/DQRetro.TournamentTracker.Startgg/Program.cs`) fetches a tournament if any of these finds it:
+
+| Source | Setting in `Program.cs` | Current value |
+|---|---|---|
+| Tournament name search | `NameSearchTerms` | DQRetro, SRKade, VSFighting, VSF |
+| Tournaments owned by organiser accounts | `OrganizerOwnerIds` | ProtonicCobra, SlawPro |
+| Fixed list (third-party events with other names) | `TargetTournamentSlugs` | e.g. Drowning Pools 2024, Iron Pride, ELFM |
+
+Which events are kept:
+- **DQRetro / SRKade tournaments** (owned by an organiser above, or with DQRetro/SRKade in the name): every event.
+- **Other tournaments** (e.g. VSFighting): only events whose name matches `AllowedEventKeywords` (Tekken Ball, Def Jam, "hosted by DQRetro", …) **and** whose game is in `SupportedGameKeywords`. Their other brackets, such as VSFighting's main Tekken 8 event, are not imported.
+
+To track a tournament that isn't found automatically, add its start.gg slug to `TargetTournamentSlugs`.

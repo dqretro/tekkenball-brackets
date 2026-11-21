@@ -73,6 +73,15 @@ namespace StartGgFetcher
         private static readonly HttpClient HttpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
         private const string StartGgApiUrl = "https://api.start.gg/gql/alpha";
 
+        // ---------------------------------------------------------------------
+        // Tournament discovery. A tournament is fetched if it is found by ANY of:
+        //   1. TargetTournamentSlugs  - fixed list, for third-party events whose names
+        //                               contain none of the search terms (e.g. Drowning Pools)
+        //   2. NameSearchTerms        - start.gg tournament-name search (every page)
+        //   3. OrganizerOwnerIds      - every tournament owned by these start.gg accounts
+        // Which events are kept is decided by IsCommunityTournament / ShouldKeepEvent.
+        // ---------------------------------------------------------------------
+
         private static readonly string[] TargetTournamentSlugs = new[]
         {
             "tournament/vsfighting-xiv",
@@ -87,12 +96,30 @@ namespace StartGgFetcher
             "tournament/dq-retro-tekken-ball-bi-monthly-tournament-2",
         };
 
-        private static readonly string[] BrandSearchTerms = new[]
+        // start.gg matches these against tournament names. Avoid spaced variants such as
+        // "DQ Retro" or "VS Fighting": start.gg matches them per word and returns
+        // thousands of unrelated tournaments ("retro", "fighting").
+        private static readonly string[] NameSearchTerms = new[]
         {
             "DQRetro",
-            "SRKade"
+            "SRKade",
+            "VSFighting",
+            "VSF",
         };
 
+        // start.gg owner ids of DQRetro / SRKade organisers. Finds their events even when
+        // the tournament name has no search term in it.
+        private static readonly Dictionary<string, string> OrganizerOwnerIds = new()
+        {
+            ["1711391"] = "ProtonicCobra",
+            ["404585"] = "SlawPro",
+        };
+
+        // Tournament names/slugs that mark a DQRetro / SRKade tournament.
+        private static readonly string[] CommunityBrandKeywords = new[] { "dqretro", "srkade" };
+
+        // At third-party tournaments (VSFighting, locals) only events whose name matches
+        // one of these AND whose game the site supports are kept.
         private static readonly string[] AllowedEventKeywords = new[]
         {
             "dqretro",
@@ -102,6 +129,20 @@ namespace StartGgFetcher
             "tekken tag",
             "tekken ball",
             "def jam"
+        };
+
+        // start.gg videogame names the site has assets for (see game-config.js).
+        // Matched case-insensitively as substrings of the event's videogame name.
+        private static readonly string[] SupportedGameKeywords = new[]
+        {
+            "tekken",              // Tekken 1-8, Tekken Tag Tournament 1/2, Tekken 5: DR
+            "def jam",             // Def Jam: Fight for NY
+            "bloody roar 2",
+            "dead or alive 5",
+            "dead or alive 6",
+            "virtua fighter 2",
+            "virtua fighter 5",
+            "virtua fighter 6",
         };
 
         // Players keyed by "user_<id>" when linked to a start.gg account, else by slug.
@@ -152,19 +193,31 @@ namespace StartGgFetcher
                 Console.WriteLine($"Output folder: {uiDataPath}");
 
                 Console.WriteLine("Step 1: Collecting tournament slugs...");
-                var slugsToFetch = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-                foreach (var slug in TargetTournamentSlugs)
-                    slugsToFetch.Add(slug);
-
-                foreach (var term in BrandSearchTerms)
+                // slug -> how it was found (for the log)
+                var discovered = new Dictionary<string, SortedSet<string>>(StringComparer.OrdinalIgnoreCase);
+                void AddFound(string slug, string source)
                 {
-                    Console.WriteLine($"  Searching for \"{term}\" tournaments...");
-                    var found = await SearchTournamentsByNameAsync(term);
-                    foreach (var s in found) slugsToFetch.Add(s);
+                    if (!discovered.TryGetValue(slug, out var set)) discovered[slug] = set = new SortedSet<string>();
+                    set.Add(source);
                 }
 
-                Console.WriteLine($"  Total unique slugs to fetch: {slugsToFetch.Count}");
+                foreach (var slug in TargetTournamentSlugs)
+                    AddFound(slug, "list");
+
+                foreach (var term in NameSearchTerms)
+                {
+                    Console.WriteLine($"  Searching tournament names for \"{term}\"...");
+                    foreach (var s in await SearchTournamentsAsync("name", term)) AddFound(s, $"name:{term}");
+                }
+
+                foreach (var (ownerId, ownerName) in OrganizerOwnerIds)
+                {
+                    Console.WriteLine($"  Listing tournaments owned by {ownerName} ({ownerId})...");
+                    foreach (var s in await SearchTournamentsAsync("owner", ownerId)) AddFound(s, $"owner:{ownerName}");
+                }
+
+                Console.WriteLine($"  Total unique slugs to fetch: {discovered.Count}");
+                var slugsToFetch = discovered.Keys.ToList();
 
                 Console.WriteLine("\nStep 2: Fetching tournament details...");
                 var hydratedTournaments = new List<JsonElement>();
@@ -174,7 +227,7 @@ namespace StartGgFetcher
                 foreach (var slug in slugsToFetch)
                 {
                     idx++;
-                    Console.WriteLine($"  [{idx}/{slugsToFetch.Count}] {slug}");
+                    Console.WriteLine($"  [{idx}/{slugsToFetch.Count}] {slug}  (found by {string.Join(", ", discovered[slug])})");
 
                     var tourneyData = await FetchTournamentDetailsAsync(slug, seenTournamentIds);
                     if (!tourneyData.HasValue)
@@ -305,48 +358,77 @@ namespace StartGgFetcher
         // start.gg queries
         // -------------------------------------------------------------------
 
-        private static async Task<List<string>> SearchTournamentsByNameAsync(string brandName)
+        /// <summary>
+        /// Lists tournament slugs from start.gg, following every page.
+        /// kind "name": filter by tournament name; kind "owner": filter by owner (user) id.
+        /// </summary>
+        private static async Task<List<string>> SearchTournamentsAsync(string kind, string value)
         {
+            const int perPage = 50;
+            const int maxPages = 10; // safety cap: 500 tournaments per search
             var slugs = new List<string>();
 
-            var query = @"
-            query SearchTournaments($name: String!) {
-              tournaments(query: {
-                perPage: 50
-                filter: { name: $name }
-              }) {
-                nodes {
-                  slug
-                  name
-                  hasOfflineEvents
-                  numAttendees
-                }
-              }
-            }";
+            string filter = kind == "owner" ? "ownerId: $value" : "name: $value";
+            string valueType = kind == "owner" ? "ID!" : "String!";
+            var query = $@"
+            query SearchTournaments($value: {valueType}, $page: Int!, $perPage: Int!) {{
+              tournaments(query: {{
+                page: $page
+                perPage: $perPage
+                sortBy: ""startAt desc""
+                filter: {{ {filter} }}
+              }}) {{
+                pageInfo {{ total totalPages }}
+                nodes {{ slug name }}
+              }}
+            }}";
 
-            using var doc = await SendGraphQLQueryAsync(query, new { name = brandName });
-            if (doc == null) return slugs;
-
-            if (doc.RootElement.TryGetProperty("data", out var data) &&
-                data.ValueKind == JsonValueKind.Object &&
-                data.TryGetProperty("tournaments", out var tournaments) &&
-                tournaments.ValueKind == JsonValueKind.Object &&
-                tournaments.TryGetProperty("nodes", out var nodes) &&
-                nodes.ValueKind == JsonValueKind.Array)
+            for (int page = 1; page <= maxPages; page++)
             {
+                using var doc = await SendGraphQLQueryAsync(query, new { value, page, perPage });
+                if (doc == null) break;
+                if (!doc.RootElement.TryGetProperty("data", out var data) || data.ValueKind != JsonValueKind.Object ||
+                    !data.TryGetProperty("tournaments", out var tournaments) || tournaments.ValueKind != JsonValueKind.Object ||
+                    !tournaments.TryGetProperty("nodes", out var nodes) || nodes.ValueKind != JsonValueKind.Array)
+                    break;
+
                 foreach (var node in nodes.EnumerateArray())
                 {
                     var slug = GetString(node, "slug");
-                    if (!string.IsNullOrEmpty(slug))
-                    {
-                        slugs.Add(slug);
-                        Console.WriteLine($"    Found: {GetString(node, "name")} ({slug})");
-                    }
+                    if (string.IsNullOrEmpty(slug)) continue;
+                    slugs.Add(slug);
+                    Console.WriteLine($"    Found: {GetString(node, "name")} ({slug})");
                 }
+
+                int totalPages = tournaments.TryGetProperty("pageInfo", out var pi) && pi.ValueKind == JsonValueKind.Object &&
+                                 pi.TryGetProperty("totalPages", out var tp) && tp.ValueKind == JsonValueKind.Number ? tp.GetInt32() : page;
+                if (page >= totalPages) break;
+                if (page == maxPages)
+                    Console.WriteLine($"    ⚠️  More than {maxPages * perPage} results for {kind} \"{value}\" — only the newest {maxPages * perPage} were used.");
+                await Task.Delay(500);
             }
 
             return slugs;
         }
+
+        /// <summary>DQRetro / SRKade tournament: owned by a known organiser, or branded in its name/slug.</summary>
+        private static bool IsCommunityTournament(string? ownerId, string name, string slug) =>
+            (ownerId != null && OrganizerOwnerIds.ContainsKey(ownerId)) ||
+            CommunityBrandKeywords.Any(k => name.Contains(k, StringComparison.OrdinalIgnoreCase) ||
+                                            slug.Contains(k, StringComparison.OrdinalIgnoreCase));
+
+        private static bool IsSupportedGame(string? videogameName) =>
+            !string.IsNullOrEmpty(videogameName) &&
+            SupportedGameKeywords.Any(k => videogameName.Contains(k, StringComparison.OrdinalIgnoreCase));
+
+        /// <summary>
+        /// Community tournaments keep every event. At third-party tournaments only
+        /// DQRetro-style events (AllowedEventKeywords) in a supported game are kept, so e.g. the
+        /// main Tekken 8 bracket at VSFighting is not imported.
+        /// </summary>
+        private static bool ShouldKeepEvent(bool communityTournament, string eventName, string? videogameName) =>
+            communityTournament ||
+            (AllowedEventKeywords.Any(k => eventName.Contains(k, StringComparison.OrdinalIgnoreCase)) && IsSupportedGame(videogameName));
 
         private static async Task<JsonElement?> FetchTournamentDetailsAsync(string slug, HashSet<string> seenTournamentIds)
         {
@@ -360,6 +442,7 @@ namespace StartGgFetcher
                 startAt
                 hasOfflineEvents
                 numAttendees
+                owner { id }
                 images { url type }
                 events {
                   id
@@ -389,33 +472,25 @@ namespace StartGgFetcher
             }
 
             var tournamentDict = JsonElementToDict(tournament);
+            tournamentDict.Remove("owner"); // only used for the event filter; keeps the output format unchanged
             string tournamentName = GetString(tournament, "name") ?? "";
             string canonicalSlug = GetString(tournament, "slug") ?? slug;
-            bool isMajor = TargetTournamentSlugs.Contains(slug, StringComparer.OrdinalIgnoreCase) ||
-                           TargetTournamentSlugs.Contains(canonicalSlug, StringComparer.OrdinalIgnoreCase);
+            string? ownerId = tournament.TryGetProperty("owner", out var ownerEl) && ownerEl.ValueKind == JsonValueKind.Object
+                ? GetString(ownerEl, "id") : null;
+            bool community = IsCommunityTournament(ownerId, tournamentName, canonicalSlug);
 
             if (tournament.TryGetProperty("events", out var eventsEl) && eventsEl.ValueKind == JsonValueKind.Array)
             {
                 var eventsToProcess = eventsEl.EnumerateArray().Where(ev =>
                 {
                     string eventName = GetString(ev, "name") ?? "";
-
-                    if (isMajor)
-                    {
-                        bool isDedicatedCommunityTournament =
-                            canonicalSlug.Contains("srkade", StringComparison.OrdinalIgnoreCase) ||
-                            canonicalSlug.Contains("dqretro", StringComparison.OrdinalIgnoreCase) ||
-                            tournamentName.Contains("srkade", StringComparison.OrdinalIgnoreCase) ||
-                            tournamentName.Contains("dqretro", StringComparison.OrdinalIgnoreCase);
-
-                        if (isDedicatedCommunityTournament) return true;
-
-                        return AllowedEventKeywords.Any(keyword =>
-                            eventName.Contains(keyword, StringComparison.OrdinalIgnoreCase));
-                    }
-
-                    return true;
+                    string? game = ev.TryGetProperty("videogame", out var vg) && vg.ValueKind == JsonValueKind.Object
+                        ? GetString(vg, "name") : null;
+                    return ShouldKeepEvent(community, eventName, game);
                 }).ToList();
+
+                if (!community)
+                    Console.WriteLine($"    Third-party tournament: keeping {eventsToProcess.Count} of {eventsEl.GetArrayLength()} events (DQRetro-style, supported game).");
 
                 var hydratedEvents = new List<Dictionary<string, object?>>();
                 foreach (var ev in eventsToProcess)
