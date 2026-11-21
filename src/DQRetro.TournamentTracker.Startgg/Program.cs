@@ -89,7 +89,11 @@ namespace StartGgFetcher
                 if (string.IsNullOrWhiteSpace(apiKey))
                 {
                     Console.WriteLine("❌ Error: Start.gg API key could not be located.");
-                    Console.WriteLine("   Make sure appsettings.Development.json has a \"StartGg:ApiKey\" value.");
+                    Console.WriteLine("   Set STARTGG_API_KEY using one of:");
+                    Console.WriteLine("     - .NET user-secrets (local):  dotnet user-secrets set STARTGG_API_KEY \"<key>\" --project src/DQRetro.TournamentTracker.Startgg");
+                    Console.WriteLine("     - Environment variable:       $env:STARTGG_API_KEY = \"<key>\"");
+                    Console.WriteLine("     - GitHub Actions secret:      STARTGG_API_KEY (exposed to the job as an env var)");
+                    Environment.ExitCode = 1;
                     return;
                 }
 
@@ -663,6 +667,13 @@ namespace StartGgFetcher
             return Directory.GetCurrentDirectory();
         }
 
+        /// <summary>
+        /// Resolves the start.gg key. Canonical name everywhere is STARTGG_API_KEY
+        /// (env var locally, .NET user-secrets locally, GitHub Actions secret in CI).
+        /// Later sources win: appsettings files -> user-secrets -> environment variables.
+        /// The legacy "StartGg:ApiKey" name (env: StartGg__ApiKey) is still accepted.
+        /// Never put a real key in appsettings*.json; those files are for non-secret settings.
+        /// </summary>
         private static string? ResolveApiKey(string projectFolder)
         {
             var builder = new ConfigurationBuilder()
@@ -671,11 +682,17 @@ namespace StartGgFetcher
                 .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false)
                 .AddJsonFile(Path.Combine(projectFolder, "appsettings.json"), optional: true, reloadOnChange: false)
                 .AddJsonFile(Path.Combine(projectFolder, "appsettings.Development.json"), optional: true, reloadOnChange: false)
+                .AddUserSecrets(typeof(Program).Assembly, optional: true)
                 .AddEnvironmentVariables();
 
             IConfiguration config = builder.Build();
 
-            return config["StartGg:ApiKey"] ?? config["STARTGG_API_KEY"];
+            foreach (var name in new[] { "STARTGG_API_KEY", "StartGg:ApiKey" })
+            {
+                var value = config[name];
+                if (!string.IsNullOrWhiteSpace(value)) return value;
+            }
+            return null;
         }
 
         private static void SafeWriteFile(string filePath, string content)
