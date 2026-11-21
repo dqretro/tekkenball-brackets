@@ -85,45 +85,39 @@ async function fetchEventData(targetSlug) {
   } catch (e) {
     decoded = decodeURIComponent(targetSlug);
   }
-  decoded = decoded.trim().toLowerCase().replace(/\/+$|^\/+/g, "");
+  const norm = (s) => (s || "").trim().toLowerCase().replace(/\/+$|^\/+/g, "");
+  decoded = norm(decoded);
+  if (!decoded) return null;
 
   const tournaments = await fetchBracketsData();
 
-  // Helper to extract the core event path/name after '/event/'
-  const extractEventName = (slugStr) => {
-    if (slugStr.includes("/event/")) {
-      return slugStr.split("/event/")[1].trim().replace(/\/+$|^\/+/g, "");
-    }
-    return slugStr.replace(/\/+$|^\/+/g, "");
-  };
-
-  const targetEventName = extractEventName(decoded);
-
+  // Flatten once so each matching rule is applied across ALL events before
+  // falling back to a looser rule. Many events share a suffix such as
+  // "tekken-8-ball-double-elimination", so the first loose hit is often
+  // the wrong tournament.
+  const all = [];
   for (const t of tournaments) {
-    for (const ev of t.events || []) {
-      const s = (ev.slug || "").trim().toLowerCase().replace(/\/+$|^\/+/g, "");
-      const currentEventName = extractEventName(s);
+    for (const ev of t.events || []) all.push({ event: ev, tournament: t, slug: norm(ev.slug) });
+  }
 
-      // 1. Direct exact match
-      if (s === decoded) {
-        return { event: ev, tournament: t };
-      }
+  const eventPart = (s) => (s.includes("/event/") ? s.split("/event/")[1] : s);
+  // Returns the match only if every candidate is the same event slug
+  // (duplicate tournament entries in brackets.json count as one).
+  const unique = (list) => (list.length && list.every(x => x.slug === list[0].slug) ? list[0] : null);
 
-      // 2. EndsWith match (handles missing leading slash or prefix variations)
-      if (s.endsWith(decoded) || decoded.endsWith(s)) {
-        return { event: ev, tournament: t };
-      }
+  // 1. Exact full-slug match ("tournament/<t>/event/<e>")
+  const exact = all.find(x => x.slug === decoded);
+  if (exact) return exact;
 
-      // 3. Suffix fallback: Match by event slug suffix (e.g. "tekken-ball-double-elimination")
-      if (targetEventName && currentEventName === targetEventName) {
-        return { event: ev, tournament: t };
-      }
+  // 2. Path-boundary suffix match, e.g. "<t>/event/<e>" without the "tournament/" prefix
+  const suffix = unique(all.filter(x => x.slug.endsWith("/" + decoded)));
+  if (suffix) return suffix;
 
-      // 4. Fuzzy / Partial slug match fallback
-      if (decoded.includes(currentEventName) || currentEventName.includes(targetEventName)) {
-        return { event: ev, tournament: t };
-      }
-    }
+  // 3. Bare event slug ("<e>"), accepted only if it is unambiguous
+  if (!decoded.includes("/") || decoded.includes("/event/")) {
+    const target = eventPart(decoded);
+    const byEvent = unique(all.filter(x => eventPart(x.slug) === target));
+    if (byEvent) return byEvent;
   }
 
   return null;
