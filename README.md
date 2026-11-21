@@ -1,6 +1,6 @@
 # DQRetro's Tekkenball-Brackets
 
-[![Build & Publish API](https://github.com/dqretro/tekkenball-brackets/actions/workflows/api.yml/badge.svg)](https://github.com/dqretro/tekkenball-brackets/actions/workflows/api.yml)
+[![CI](https://github.com/dqretro/tekkenball-brackets/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/dqretro/tekkenball-brackets/actions/workflows/ci.yml)
 [![Deploy static content to Pages](https://github.com/dqretro/tekkenball-brackets/actions/workflows/static.yml/badge.svg?branch=main)](https://github.com/dqretro/tekkenball-brackets/actions/workflows/static.yml)
 [![pages-build-deployment](https://github.com/dqretro/tekkenball-brackets/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/dqretro/tekkenball-brackets/actions/workflows/pages/pages-build-deployment)
 
