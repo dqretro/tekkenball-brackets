@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -15,21 +17,13 @@ namespace StartGgFetcher
     public class ExtractedPlayer
     {
         public string name { get; set; } = "";
-        public string slug => CreateSlug(name);
+        public string slug { get; set; } = "";
+        /// <summary>start.gg user id, when the entrant has a linked account.</summary>
+        public string? userId { get; set; }
         public string team { get; set; } = "";
         public string country { get; set; } = "";
         public string avatar { get; set; } = "";
         public PlayerSocials socials { get; set; } = new PlayerSocials();
-
-        public static string CreateSlug(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name)) return "";
-            string cleaned = name.ToLower();
-            cleaned = Regex.Replace(cleaned, @"[^\w\s-]", ""); // Remove symbols (], [, ., etc.)
-            cleaned = Regex.Replace(cleaned, @"\s+", "-");     // Convert spaces to hyphens
-            cleaned = Regex.Replace(cleaned, @"-+", "-");      // Collapse multiple hyphens
-            return cleaned.Trim('-');                         // Trim leading/trailing hyphens
-        }
     }
 
     public class PlayerSocials
@@ -40,9 +34,43 @@ namespace StartGgFetcher
         public string? discord { get; set; }
     }
 
+    /// <summary>Thrown when start.gg rejects the API key; aborts the run without writing files.</summary>
+    public class AuthException : Exception
+    {
+        public AuthException(string message) : base(message) { }
+    }
+
+    public static class Slugs
+    {
+        /// <summary>
+        /// The ONE slug rule for players. The UI never computes its own slug when one
+        /// is present in the data (players.json "slug", entrant "playerSlug").
+        /// Strips the sponsor prefix ("PND | Strykie" -> "Strykie"), removes accents,
+        /// keeps a-z 0-9 _ -, collapses spaces/dashes. Mirrored in shared/utils/player-slug.js.
+        /// </summary>
+        public static string ForPlayer(string? name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return "";
+            string tag = name.Contains('|') ? name.Split('|').Last() : name;
+            string folded = RemoveDiacritics(tag.Trim().ToLowerInvariant());
+            string cleaned = Regex.Replace(folded, @"[^a-z0-9_\s-]", "");
+            cleaned = Regex.Replace(cleaned, @"\s+", "-");
+            cleaned = Regex.Replace(cleaned, @"-+", "-");
+            return cleaned.Trim('-');
+        }
+
+        private static string RemoveDiacritics(string s)
+        {
+            var sb = new StringBuilder(s.Length);
+            foreach (var c in s.Normalize(NormalizationForm.FormD))
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark) sb.Append(c);
+            return sb.ToString().Normalize(NormalizationForm.FormC);
+        }
+    }
+
     class Program
     {
-        private static readonly HttpClient HttpClient = new HttpClient();
+        private static readonly HttpClient HttpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
         private const string StartGgApiUrl = "https://api.start.gg/gql/alpha";
 
         private static readonly string[] TargetTournamentSlugs = new[]
@@ -76,14 +104,25 @@ namespace StartGgFetcher
             "def jam"
         };
 
+        // Players keyed by "user_<id>" when linked to a start.gg account, else by slug.
         private static readonly Dictionary<string, ExtractedPlayer> TrackedPlayers = new(StringComparer.OrdinalIgnoreCase);
 
-        static async Task Main(string[] args)
+        // entrant id -> player lookup key (filled while reading standings/entrants)
+        private static readonly Dictionary<string, string> EntrantToPlayerKey = new();
+
+        static async Task<int> Main(string[] args)
         {
             try
             {
                 string rootPath = FindRepositoryRoot();
                 string projectFolder = Path.Combine(rootPath, "src", "DQRetro.TournamentTracker.Startgg");
+
+                int fromIdx = Array.FindIndex(args, a => a.Equals("--from-file", StringComparison.OrdinalIgnoreCase));
+                if (fromIdx >= 0)
+                {
+                    if (fromIdx + 1 >= args.Length) { Console.WriteLine("❌ --from-file needs a path to brackets.json"); return 1; }
+                    return ReprocessFromFile(Path.GetFullPath(args[fromIdx + 1]), ResolveOutputDir(args, rootPath));
+                }
 
                 string? apiKey = ResolveApiKey(projectFolder);
                 if (string.IsNullOrWhiteSpace(apiKey))
@@ -93,13 +132,16 @@ namespace StartGgFetcher
                     Console.WriteLine("     - .NET user-secrets (local):  dotnet user-secrets set STARTGG_API_KEY \"<key>\" --project src/DQRetro.TournamentTracker.Startgg");
                     Console.WriteLine("     - Environment variable:       $env:STARTGG_API_KEY = \"<key>\"");
                     Console.WriteLine("     - GitHub Actions secret:      STARTGG_API_KEY (exposed to the job as an env var)");
-                    Environment.ExitCode = 1;
-                    return;
+                    return 1;
                 }
 
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey.Trim());
                 HttpClient.DefaultRequestHeaders.UserAgent.Clear();
-                HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("DQRetroBracketsFetcher/1.0");
+                HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("DQRetroBracketsFetcher/1.1");
+
+                string uiDataPath = ResolveOutputDir(args, rootPath);
+                bool force = args.Contains("--force", StringComparer.OrdinalIgnoreCase);
+                Console.WriteLine($"Output folder: {uiDataPath}");
 
                 Console.WriteLine("Step 1: Collecting tournament slugs...");
                 var slugsToFetch = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -114,10 +156,11 @@ namespace StartGgFetcher
                     foreach (var s in found) slugsToFetch.Add(s);
                 }
 
-                Console.WriteLine($"  Total unique tournaments to fetch: {slugsToFetch.Count}");
+                Console.WriteLine($"  Total unique slugs to fetch: {slugsToFetch.Count}");
 
                 Console.WriteLine("\nStep 2: Fetching tournament details...");
                 var hydratedTournaments = new List<JsonElement>();
+                var seenTournamentIds = new HashSet<string>();
                 int idx = 0;
 
                 foreach (var slug in slugsToFetch)
@@ -125,12 +168,9 @@ namespace StartGgFetcher
                     idx++;
                     Console.WriteLine($"  [{idx}/{slugsToFetch.Count}] {slug}");
 
-                    var tourneyData = await FetchTournamentDetailsAsync(slug);
+                    var tourneyData = await FetchTournamentDetailsAsync(slug, seenTournamentIds);
                     if (!tourneyData.HasValue)
-                    {
-                        Console.WriteLine($"    ⚠️  No data returned — skipping.");
                         continue;
-                    }
 
                     var element = tourneyData.Value;
 
@@ -145,6 +185,26 @@ namespace StartGgFetcher
                     await Task.Delay(500);
                 }
 
+                // Safety net for automation: never replace good data with an empty/broken fetch.
+                string bracketsFilePath = Path.Combine(uiDataPath, "brackets.json");
+                int previousCount = CountExistingTournaments(bracketsFilePath);
+                if (hydratedTournaments.Count == 0)
+                {
+                    Console.WriteLine("❌ No tournaments fetched — refusing to overwrite existing data.");
+                    return 2;
+                }
+                if (!force && previousCount > 0 && hydratedTournaments.Count < previousCount / 2)
+                {
+                    Console.WriteLine($"❌ Fetched {hydratedTournaments.Count} tournaments vs {previousCount} previously — looks like a partial outage.");
+                    Console.WriteLine("   Refusing to overwrite. Re-run with --force if this drop is expected.");
+                    return 3;
+                }
+
+                // Players: merge duplicates, assign unique slugs, then stamp slugs onto entrants.
+                var playerList = FinalizePlayers();
+                var slugByKey = TrackedPlayers.ToDictionary(kv => kv.Key, kv => kv.Value.slug, StringComparer.OrdinalIgnoreCase);
+                var finalTournaments = hydratedTournaments.Select(t => StampPlayerSlugs(t, slugByKey)).ToList();
+
                 var outputBrackets = new
                 {
                     data = new
@@ -153,37 +213,89 @@ namespace StartGgFetcher
                         {
                             tournaments = new
                             {
-                                nodes = hydratedTournaments
+                                nodes = finalTournaments
                             }
                         }
                     }
                 };
 
-                string uiDataPath = Path.Combine(rootPath, "src", "DQRetro.TournamentTracker.Ui", "public", "data");
-                if (!Directory.Exists(uiDataPath))
-                {
-                    string altPath = Path.Combine(rootPath, "DQRetro.TournamentTracker.Ui", "public", "data");
-                    if (Directory.Exists(altPath)) uiDataPath = altPath;
-                }
+                var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+                SafeWriteFile(bracketsFilePath, JsonSerializer.Serialize(outputBrackets, jsonOptions));
 
-                string bracketsJson = JsonSerializer.Serialize(outputBrackets, new JsonSerializerOptions { WriteIndented = true });
-                string bracketsFilePath = Path.Combine(uiDataPath, "brackets.json");
-                SafeWriteFile(bracketsFilePath, bracketsJson);
-
-                var playerList = TrackedPlayers.Values.OrderBy(p => p.name).ToList();
-                string playersJson = JsonSerializer.Serialize(playerList, new JsonSerializerOptions { WriteIndented = true });
                 string playersFilePath = Path.Combine(uiDataPath, "players.json");
-                SafeWriteFile(playersFilePath, playersJson);
+                SafeWriteFile(playersFilePath, JsonSerializer.Serialize(playerList, jsonOptions));
 
                 Console.WriteLine($"\n✅ Done! Fetched {hydratedTournaments.Count} tournaments.");
                 Console.WriteLine($"   Brackets Output: {bracketsFilePath}");
                 Console.WriteLine($"   Players Output:  {playersFilePath} ({playerList.Count} players exported)");
+                return 0;
+            }
+            catch (AuthException ex)
+            {
+                Console.WriteLine($"❌ {ex.Message}");
+                return 4;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"💥 Fatal Exception: {ex.Message}\n{ex.StackTrace}");
+                return 5;
             }
         }
+
+        /// <summary>
+        /// Offline mode (no API key / no network): re-derives players.json, de-duplicates
+        /// tournaments by id and stamps player slugs onto an existing brackets.json.
+        /// Usage: --from-file &lt;brackets.json&gt; [--out &lt;dir&gt;]
+        /// </summary>
+        private static int ReprocessFromFile(string inputPath, string outDir)
+        {
+            Console.WriteLine($"Offline reprocess: {inputPath} -> {outDir}");
+            using var doc = JsonDocument.Parse(File.ReadAllText(inputPath));
+            var nodes = doc.RootElement.GetProperty("data").GetProperty("currentUser")
+                           .GetProperty("tournaments").GetProperty("nodes");
+
+            var seen = new HashSet<string>();
+            var kept = new List<JsonElement>();
+            foreach (var t in nodes.EnumerateArray())
+            {
+                string id = GetString(t, "id") ?? "";
+                if (!string.IsNullOrEmpty(id) && !seen.Add(id))
+                {
+                    Console.WriteLine($"  Duplicate tournament id {id} ({GetString(t, "slug")}) removed.");
+                    continue;
+                }
+                if (t.TryGetProperty("events", out var evs) && evs.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var ev in evs.EnumerateArray())
+                    {
+                        if (ev.TryGetProperty("standings", out var st) && st.ValueKind == JsonValueKind.Object &&
+                            st.TryGetProperty("nodes", out var sn) && sn.ValueKind == JsonValueKind.Array)
+                            foreach (var n in sn.EnumerateArray())
+                                if (n.TryGetProperty("entrant", out var ent)) RegisterPlayerFromEntrant(ent);
+
+                        if (ev.TryGetProperty("entrants", out var en) && en.ValueKind == JsonValueKind.Object &&
+                            en.TryGetProperty("nodes", out var enn) && enn.ValueKind == JsonValueKind.Array)
+                            foreach (var n in enn.EnumerateArray()) RegisterPlayerFromEntrant(n);
+                    }
+                }
+                kept.Add(t.Clone());
+            }
+
+            var playerList = FinalizePlayers();
+            var slugByKey = TrackedPlayers.ToDictionary(kv => kv.Key, kv => kv.Value.slug, StringComparer.OrdinalIgnoreCase);
+            var finalTournaments = kept.Select(t => StampPlayerSlugs(t, slugByKey)).ToList();
+
+            var output = new { data = new { currentUser = new { tournaments = new { nodes = finalTournaments } } } };
+            var opts = new JsonSerializerOptions { WriteIndented = true };
+            SafeWriteFile(Path.Combine(outDir, "brackets.json"), JsonSerializer.Serialize(output, opts));
+            SafeWriteFile(Path.Combine(outDir, "players.json"), JsonSerializer.Serialize(playerList, opts));
+            Console.WriteLine($"✅ {kept.Count} tournaments, {playerList.Count} players written to {outDir}");
+            return 0;
+        }
+
+        // -------------------------------------------------------------------
+        // start.gg queries
+        // -------------------------------------------------------------------
 
         private static async Task<List<string>> SearchTournamentsByNameAsync(string brandName)
         {
@@ -208,7 +320,9 @@ namespace StartGgFetcher
             if (doc == null) return slugs;
 
             if (doc.RootElement.TryGetProperty("data", out var data) &&
+                data.ValueKind == JsonValueKind.Object &&
                 data.TryGetProperty("tournaments", out var tournaments) &&
+                tournaments.ValueKind == JsonValueKind.Object &&
                 tournaments.TryGetProperty("nodes", out var nodes) &&
                 nodes.ValueKind == JsonValueKind.Array)
             {
@@ -226,7 +340,7 @@ namespace StartGgFetcher
             return slugs;
         }
 
-        private static async Task<JsonElement?> FetchTournamentDetailsAsync(string slug)
+        private static async Task<JsonElement?> FetchTournamentDetailsAsync(string slug, HashSet<string> seenTournamentIds)
         {
             var query = @"
             query GetTournament($slug: String!) {
@@ -252,36 +366,46 @@ namespace StartGgFetcher
             }";
 
             using var doc = await SendGraphQLQueryAsync(query, new { slug });
-            if (doc == null) return null;
+            if (doc == null) { Console.WriteLine("    ⚠️  No data returned — skipping."); return null; }
 
-            if (!doc.RootElement.TryGetProperty("data", out var data)) return null;
+            if (!doc.RootElement.TryGetProperty("data", out var data) || data.ValueKind != JsonValueKind.Object) return null;
             if (!data.TryGetProperty("tournament", out var tournament)) return null;
-            if (tournament.ValueKind != JsonValueKind.Object) return null;
+            if (tournament.ValueKind != JsonValueKind.Object) { Console.WriteLine("    ⚠️  Tournament not found — skipping."); return null; }
+
+            // De-duplicate: different slugs (aliases/redirects) can resolve to the same tournament.
+            string tournamentId = GetString(tournament, "id") ?? "";
+            if (!string.IsNullOrEmpty(tournamentId) && !seenTournamentIds.Add(tournamentId))
+            {
+                Console.WriteLine($"    ℹ️  Duplicate of tournament id {tournamentId} ({GetString(tournament, "slug")}) — skipping.");
+                return null;
+            }
 
             var tournamentDict = JsonElementToDict(tournament);
             string tournamentName = GetString(tournament, "name") ?? "";
+            string canonicalSlug = GetString(tournament, "slug") ?? slug;
+            bool isMajor = TargetTournamentSlugs.Contains(slug, StringComparer.OrdinalIgnoreCase) ||
+                           TargetTournamentSlugs.Contains(canonicalSlug, StringComparer.OrdinalIgnoreCase);
 
             if (tournament.TryGetProperty("events", out var eventsEl) && eventsEl.ValueKind == JsonValueKind.Array)
             {
-                var eventsToProcess = eventsEl.EnumerateArray().Where(ev => 
+                var eventsToProcess = eventsEl.EnumerateArray().Where(ev =>
                 {
                     string eventName = GetString(ev, "name") ?? "";
-                    bool isMajor = TargetTournamentSlugs.Contains(slug, StringComparer.OrdinalIgnoreCase);
-                    
+
                     if (isMajor)
                     {
-                        bool isDedicatedCommunityTournament = 
-                            slug.Contains("srkade", StringComparison.OrdinalIgnoreCase) ||
-                            slug.Contains("dqretro", StringComparison.OrdinalIgnoreCase) ||
+                        bool isDedicatedCommunityTournament =
+                            canonicalSlug.Contains("srkade", StringComparison.OrdinalIgnoreCase) ||
+                            canonicalSlug.Contains("dqretro", StringComparison.OrdinalIgnoreCase) ||
                             tournamentName.Contains("srkade", StringComparison.OrdinalIgnoreCase) ||
                             tournamentName.Contains("dqretro", StringComparison.OrdinalIgnoreCase);
 
                         if (isDedicatedCommunityTournament) return true;
 
-                        return AllowedEventKeywords.Any(keyword => 
+                        return AllowedEventKeywords.Any(keyword =>
                             eventName.Contains(keyword, StringComparison.OrdinalIgnoreCase));
                     }
-                    
+
                     return true;
                 }).ToList();
 
@@ -305,17 +429,20 @@ namespace StartGgFetcher
             }
 
             string json = JsonSerializer.Serialize(tournamentDict);
-            return JsonDocument.Parse(json).RootElement.Clone();
+            using var outDoc = JsonDocument.Parse(json);
+            return outDoc.RootElement.Clone();
         }
 
         private static async Task<Dictionary<string, object?>> FetchEventDetailsAsync(string eventId, JsonElement baseEvent)
         {
             var eventDict = JsonElementToDict(baseEvent);
 
+            // ---- Standings (paginated; rich player data) ----
             var standingsQuery = @"
-            query GetEventStandings($eventId: ID!) {
+            query GetEventStandings($eventId: ID!, $page: Int!, $perPage: Int!) {
               event(id: $eventId) {
-                standings(query: { perPage: 64, page: 1 }) {
+                standings(query: { perPage: $perPage, page: $page }) {
+                  pageInfo { total totalPages }
                   nodes {
                     placement
                     isFinal
@@ -342,234 +469,400 @@ namespace StartGgFetcher
               }
             }";
 
-            using var standingsDoc = await SendGraphQLQueryAsync(standingsQuery, new { eventId });
-            if (standingsDoc != null &&
-                standingsDoc.RootElement.TryGetProperty("data", out var sData) &&
-                sData.TryGetProperty("event", out var sEvent) &&
-                sEvent.ValueKind == JsonValueKind.Object)
+            var standings = await FetchAllPagesAsync(standingsQuery, eventId, "standings", 40, "standings");
+            if (standings != null)
             {
-                if (sEvent.TryGetProperty("standings", out var standings))
-                {
-                    eventDict["standings"] = JsonElementToObject(standings);
-                    ExtractPlayersFromStandings(standings);
-                }
+                foreach (var node in standings.Value.Nodes)
+                    if (node.TryGetProperty("entrant", out var ent)) RegisterPlayerFromEntrant(ent);
+                eventDict["standings"] = standings.Value.ToOutput();
             }
 
             await Task.Delay(300);
 
+            // ---- Entrants (paginated; catches players in events without standings) ----
             var entrantsQuery = @"
-            query GetEventEntrants($eventId: ID!) {
+            query GetEventEntrants($eventId: ID!, $page: Int!, $perPage: Int!) {
               event(id: $eventId) {
-                entrants(query: { perPage: 50, page: 1 }) {
+                entrants(query: { perPage: $perPage, page: $page }) {
+                  pageInfo { total totalPages }
                   nodes {
                     id
                     name
                     participants {
                       id
                       gamerTag
+                      prefix
+                      user { id }
                     }
                   }
                 }
               }
             }";
 
-            using var entrantsDoc = await SendGraphQLQueryAsync(entrantsQuery, new { eventId });
-            if (entrantsDoc != null &&
-                entrantsDoc.RootElement.TryGetProperty("data", out var eData) &&
-                eData.TryGetProperty("event", out var eEvent) &&
-                eEvent.ValueKind == JsonValueKind.Object)
+            var entrants = await FetchAllPagesAsync(entrantsQuery, eventId, "entrants", 60, "entrants");
+            if (entrants != null)
             {
-                if (eEvent.TryGetProperty("entrants", out var entrants))
-                    eventDict["entrants"] = JsonElementToObject(entrants);
+                foreach (var node in entrants.Value.Nodes) RegisterPlayerFromEntrant(node);
+                eventDict["entrants"] = entrants.Value.ToOutput();
             }
 
             await Task.Delay(300);
 
-            var allSetNodes = new List<object?>();
-            int setsPage = 1;
-            bool moreSets = true;
+            // ---- Phases and phase groups (pools / top cut) ----
+            var phasesQuery = @"
+            query GetEventPhases($eventId: ID!) {
+              event(id: $eventId) {
+                phases {
+                  id
+                  name
+                  state
+                  bracketType
+                  groupCount
+                  numSeeds
+                  phaseOrder
+                  phaseGroups(query: { page: 1, perPage: 100 }) {
+                    pageInfo { total totalPages }
+                    nodes {
+                      id
+                      displayIdentifier
+                      bracketType
+                      state
+                    }
+                  }
+                }
+              }
+            }";
 
-            while (moreSets)
+            using (var phasesDoc = await SendGraphQLQueryAsync(phasesQuery, new { eventId }))
             {
-                var setsQuery = @"
-                query GetEventSets($eventId: ID!, $page: Int!) {
-                  event(id: $eventId) {
-                    sets(perPage: 25, page: $page) {
-                      pageInfo { total totalPages }
-                      nodes {
-                        id
-                        fullRoundText
-                        state
-                        winnerId
-                        slots {
-                          slotIndex
-                          entrant { id name }
-                          standing { stats { score { value } } }
-                        }
-                        games {
-                          id
-                          selections {
-                            selectionType
-                            selectionValue
-                            entrant { id name }
-                          }
-                        }
+                if (phasesDoc != null &&
+                    phasesDoc.RootElement.TryGetProperty("data", out var pData) && pData.ValueKind == JsonValueKind.Object &&
+                    pData.TryGetProperty("event", out var pEvent) && pEvent.ValueKind == JsonValueKind.Object &&
+                    pEvent.TryGetProperty("phases", out var phases) && phases.ValueKind == JsonValueKind.Array)
+                {
+                    eventDict["phases"] = JsonElementToObject(phases);
+                    Console.WriteLine($"      Phases: {phases.GetArrayLength()}");
+                }
+            }
+
+            await Task.Delay(300);
+
+            // ---- Sets (paginated; with round + phase group) ----
+            var setsQuery = @"
+            query GetEventSets($eventId: ID!, $page: Int!, $perPage: Int!) {
+              event(id: $eventId) {
+                sets(perPage: $perPage, page: $page) {
+                  pageInfo { total totalPages }
+                  nodes {
+                    id
+                    fullRoundText
+                    round
+                    identifier
+                    state
+                    winnerId
+                    phaseGroup {
+                      id
+                      displayIdentifier
+                      phase { id name }
+                    }
+                    slots {
+                      slotIndex
+                      entrant { id name }
+                      standing { stats { score { value } } }
+                    }
+                    games {
+                      id
+                      selections {
+                        selectionType
+                        selectionValue
+                        entrant { id name }
                       }
                     }
                   }
-                }";
-
-                using var setsDoc = await SendGraphQLQueryAsync(setsQuery, new { eventId, page = setsPage });
-                if (setsDoc == null) break;
-
-                if (setsDoc.RootElement.TryGetProperty("data", out var setData) &&
-                    setData.TryGetProperty("event", out var setEvent) &&
-                    setEvent.ValueKind == JsonValueKind.Object &&
-                    setEvent.TryGetProperty("sets", out var setsEl))
-                {
-                    if (setsEl.TryGetProperty("nodes", out var nodes) && nodes.ValueKind == JsonValueKind.Array)
-                    {
-                        foreach (var node in nodes.EnumerateArray())
-                            allSetNodes.Add(JsonElementToObject(node));
-                    }
-
-                    int totalPages = 1;
-                    if (setsEl.TryGetProperty("pageInfo", out var pageInfo) &&
-                        pageInfo.TryGetProperty("totalPages", out var tp))
-                        totalPages = tp.ValueKind == JsonValueKind.Number ? tp.GetInt32() : 1;
-
-                    Console.WriteLine($"      Sets page {setsPage}/{totalPages} — {allSetNodes.Count} sets so far");
-                    moreSets = setsPage < totalPages;
-                    setsPage++;
                 }
-                else
-                {
-                    break;
-                }
+              }
+            }";
 
-                if (moreSets) await Task.Delay(700);
+            var sets = await FetchAllPagesAsync(setsQuery, eventId, "sets", 25, "sets");
+            var setNodes = new List<object?>();
+            if (sets != null)
+            {
+                foreach (var node in sets.Value.Nodes)
+                {
+                    var setDict = JsonElementToDict(node);
+                    // Flat id for the bracket viewer (bracket/script.js reads set.phaseGroupId)
+                    if (node.TryGetProperty("phaseGroup", out var pg) && pg.ValueKind == JsonValueKind.Object)
+                        setDict["phaseGroupId"] = GetString(pg, "id");
+                    setNodes.Add(setDict);
+                }
             }
-
-            eventDict["sets"] = new Dictionary<string, object?> { ["nodes"] = allSetNodes };
-            Console.WriteLine($"      Total sets fetched: {allSetNodes.Count}");
+            eventDict["sets"] = new Dictionary<string, object?> { ["nodes"] = setNodes };
+            Console.WriteLine($"      Total sets fetched: {setNodes.Count}");
 
             return eventDict;
         }
 
-        private static void ExtractPlayersFromStandings(JsonElement standings)
+        private readonly struct PagedResult
         {
-            if (!standings.TryGetProperty("nodes", out var nodes) || nodes.ValueKind != JsonValueKind.Array)
-                return;
-
-            foreach (var node in nodes.EnumerateArray())
+            public PagedResult(List<JsonElement> nodes, int total) { Nodes = nodes; Total = total; }
+            public List<JsonElement> Nodes { get; }
+            public int Total { get; }
+            public Dictionary<string, object?> ToOutput() => new()
             {
-                if (!node.TryGetProperty("entrant", out var entrant) || entrant.ValueKind != JsonValueKind.Object)
+                ["pageInfo"] = new Dictionary<string, object?> { ["total"] = Total },
+                ["nodes"] = Nodes.Select(JsonElementToObject).ToList()
+            };
+        }
+
+        /// <summary>
+        /// Fetches every page of event.{field}. Halves perPage and retries the same page if
+        /// start.gg reports the query is too complex (1000-object limit). Returns null only
+        /// if the very first page fails.
+        /// </summary>
+        private static async Task<PagedResult?> FetchAllPagesAsync(string query, string eventId, string field, int perPage, string label)
+        {
+            var all = new List<JsonElement>();
+            int page = 1, totalPages = 1, total = 0;
+            // Pages are numbered by perPage; once we shrink perPage we restart from page 1 at the new size.
+            while (page <= totalPages)
+            {
+                using var doc = await SendGraphQLQueryAsync(query, new { eventId, page, perPage });
+                if (doc == null) return page == 1 && all.Count == 0 ? null : new PagedResult(all, Math.Max(total, all.Count));
+
+                if (IsComplexityError(doc) && perPage > 5)
+                {
+                    perPage = Math.Max(5, perPage / 2);
+                    Console.WriteLine($"      ↘ {label}: query too complex, retrying with perPage={perPage}");
+                    all.Clear(); page = 1; totalPages = 1;
+                    await Task.Delay(700);
                     continue;
-
-                string entrantName = GetString(entrant, "name") ?? "";
-                if (string.IsNullOrWhiteSpace(entrantName)) continue;
-
-                string gamerTag = "";
-                string prefix = "";
-                string userId = "";
-                JsonElement? userObj = null;
-
-                if (entrant.TryGetProperty("participants", out var pArr) && pArr.ValueKind == JsonValueKind.Array)
-                {
-                    foreach (var p in pArr.EnumerateArray())
-                    {
-                        string tag = GetString(p, "gamerTag") ?? "";
-                        if (!string.IsNullOrWhiteSpace(tag)) gamerTag = tag.Trim();
-
-                        string pre = GetString(p, "prefix") ?? "";
-                        if (!string.IsNullOrWhiteSpace(pre)) prefix = pre.Trim();
-
-                        if (p.TryGetProperty("user", out var usr) && usr.ValueKind == JsonValueKind.Object)
-                        {
-                            userId = GetString(usr, "id") ?? "";
-                            userObj = usr;
-                        }
-                    }
                 }
 
-                // Canonical gamer tag or cleaned entrant name
-                string canonicalName = !string.IsNullOrWhiteSpace(gamerTag) 
-                    ? gamerTag 
-                    : CleanEntrantName(entrantName);
+                if (!(doc.RootElement.TryGetProperty("data", out var data) && data.ValueKind == JsonValueKind.Object &&
+                      data.TryGetProperty("event", out var ev) && ev.ValueKind == JsonValueKind.Object &&
+                      ev.TryGetProperty(field, out var conn) && conn.ValueKind == JsonValueKind.Object))
+                    break;
 
-                if (string.IsNullOrWhiteSpace(canonicalName)) continue;
+                if (conn.TryGetProperty("nodes", out var nodes) && nodes.ValueKind == JsonValueKind.Array)
+                    foreach (var n in nodes.EnumerateArray()) all.Add(n.Clone());
 
-                // Key by Start.gg user ID if available, otherwise fallback to canonical name
-                string lookupKey = !string.IsNullOrWhiteSpace(userId) 
-                    ? $"user_{userId}" 
-                    : canonicalName;
-
-                var player = TrackedPlayers.TryGetValue(lookupKey, out var existing)
-                    ? existing
-                    : new ExtractedPlayer { name = canonicalName };
-
-                player.name = canonicalName;
-                if (!string.IsNullOrEmpty(prefix)) player.team = prefix;
-
-                if (userObj.HasValue)
+                if (conn.TryGetProperty("pageInfo", out var pi) && pi.ValueKind == JsonValueKind.Object)
                 {
-                    var usr = userObj.Value;
-                    if (usr.TryGetProperty("images", out var imgs) && imgs.ValueKind == JsonValueKind.Array)
-                    {
-                        foreach (var img in imgs.EnumerateArray())
-                        {
-                            if (GetString(img, "type") == "profile")
-                            {
-                                player.avatar = GetString(img, "url") ?? player.avatar;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (usr.TryGetProperty("location", out var loc) && loc.ValueKind == JsonValueKind.Object)
-                    {
-                        string city = GetString(loc, "city") ?? "";
-                        string country = GetString(loc, "country") ?? "";
-                        List<string> locParts = new List<string>();
-                        if (!string.IsNullOrEmpty(city)) locParts.Add(city);
-                        if (!string.IsNullOrEmpty(country)) locParts.Add(country);
-                        if (locParts.Count > 0) player.country = string.Join(", ", locParts);
-                    }
-
-                    if (usr.TryGetProperty("authorizations", out var auths) && auths.ValueKind == JsonValueKind.Array)
-                    {
-                        foreach (var auth in auths.EnumerateArray())
-                        {
-                            string type = (GetString(auth, "type") ?? "").ToUpper();
-                            string handle = GetString(auth, "externalUsername") ?? "";
-                            if (string.IsNullOrEmpty(handle)) continue;
-
-                            if (type.Contains("TWITTER")) player.socials.twitter = handle;
-                            if (type.Contains("TWITCH")) player.socials.twitch = handle;
-                            if (type.Contains("YOUTUBE")) player.socials.youtube = handle;
-                            if (type.Contains("DISCORD")) player.socials.discord = handle;
-                        }
-                    }
+                    if (pi.TryGetProperty("totalPages", out var tp) && tp.ValueKind == JsonValueKind.Number) totalPages = tp.GetInt32();
+                    if (pi.TryGetProperty("total", out var tt) && tt.ValueKind == JsonValueKind.Number) total = tt.GetInt32();
                 }
 
+                if (totalPages > 1) Console.WriteLine($"      {label} page {page}/{totalPages} — {all.Count}/{total}");
+                page++;
+                if (page <= totalPages) await Task.Delay(700);
+            }
+
+            if (total > 0 && all.Count < total)
+                Console.WriteLine($"      ⚠️  {label}: got {all.Count} of {total}");
+            return new PagedResult(all, Math.Max(total, all.Count));
+        }
+
+        private static bool IsComplexityError(JsonDocument doc)
+        {
+            if (!doc.RootElement.TryGetProperty("errors", out var errors) || errors.ValueKind != JsonValueKind.Array) return false;
+            foreach (var e in errors.EnumerateArray())
+            {
+                var msg = GetString(e, "message") ?? "";
+                if (msg.Contains("complexity", StringComparison.OrdinalIgnoreCase) ||
+                    msg.Contains("1000 objects", StringComparison.OrdinalIgnoreCase)) return true;
+            }
+            return false;
+        }
+
+        // -------------------------------------------------------------------
+        // Players
+        // -------------------------------------------------------------------
+
+        /// <summary>Records/updates a player from an entrant object (standings or entrants node).</summary>
+        private static void RegisterPlayerFromEntrant(JsonElement entrant)
+        {
+            if (entrant.ValueKind != JsonValueKind.Object) return;
+
+            string entrantId = GetString(entrant, "id") ?? "";
+            string entrantName = GetString(entrant, "name") ?? "";
+            if (string.IsNullOrWhiteSpace(entrantName)) return;
+
+            string gamerTag = "", prefix = "", userId = "";
+            JsonElement? userObj = null;
+
+            if (entrant.TryGetProperty("participants", out var pArr) && pArr.ValueKind == JsonValueKind.Array)
+            {
+                // Singles events: one participant. (Doubles would need per-participant players.)
+                foreach (var p in pArr.EnumerateArray())
+                {
+                    string tag = GetString(p, "gamerTag") ?? "";
+                    if (!string.IsNullOrWhiteSpace(tag)) gamerTag = tag.Trim();
+
+                    string pre = GetString(p, "prefix") ?? "";
+                    if (!string.IsNullOrWhiteSpace(pre)) prefix = pre.Trim();
+
+                    if (p.TryGetProperty("user", out var usr) && usr.ValueKind == JsonValueKind.Object)
+                    {
+                        userId = GetString(usr, "id") ?? "";
+                        userObj = usr;
+                    }
+                }
+            }
+
+            string canonicalName = !string.IsNullOrWhiteSpace(gamerTag) ? gamerTag : CleanEntrantName(entrantName);
+            if (string.IsNullOrWhiteSpace(canonicalName)) return;
+
+            string baseSlug = Slugs.ForPlayer(canonicalName);
+            if (string.IsNullOrEmpty(baseSlug)) baseSlug = "player";
+            string lookupKey = !string.IsNullOrWhiteSpace(userId) ? $"user_{userId}" : $"name_{baseSlug}";
+
+            if (!TrackedPlayers.TryGetValue(lookupKey, out var player))
+            {
+                player = new ExtractedPlayer { name = canonicalName, slug = baseSlug };
                 TrackedPlayers[lookupKey] = player;
             }
+
+            player.name = canonicalName;
+            player.slug = baseSlug;
+            if (!string.IsNullOrWhiteSpace(userId)) player.userId = userId;
+            if (!string.IsNullOrEmpty(prefix)) player.team = prefix;
+            if (!string.IsNullOrEmpty(entrantId)) EntrantToPlayerKey[entrantId] = lookupKey;
+
+            if (userObj.HasValue)
+            {
+                var usr = userObj.Value;
+                if (usr.TryGetProperty("images", out var imgs) && imgs.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var img in imgs.EnumerateArray())
+                    {
+                        if (GetString(img, "type") == "profile")
+                        {
+                            player.avatar = GetString(img, "url") ?? player.avatar;
+                            break;
+                        }
+                    }
+                }
+
+                if (usr.TryGetProperty("location", out var loc) && loc.ValueKind == JsonValueKind.Object)
+                {
+                    var locParts = new List<string>();
+                    string city = GetString(loc, "city") ?? "";
+                    string country = GetString(loc, "country") ?? "";
+                    if (!string.IsNullOrEmpty(city)) locParts.Add(city);
+                    if (!string.IsNullOrEmpty(country)) locParts.Add(country);
+                    if (locParts.Count > 0) player.country = string.Join(", ", locParts);
+                }
+
+                if (usr.TryGetProperty("authorizations", out var auths) && auths.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var auth in auths.EnumerateArray())
+                    {
+                        string type = (GetString(auth, "type") ?? "").ToUpperInvariant();
+                        string handle = GetString(auth, "externalUsername") ?? "";
+                        if (string.IsNullOrEmpty(handle)) continue;
+
+                        if (type.Contains("TWITTER")) player.socials.twitter = handle;
+                        if (type.Contains("TWITCH")) player.socials.twitch = handle;
+                        if (type.Contains("YOUTUBE")) player.socials.youtube = handle;
+                        if (type.Contains("DISCORD")) player.socials.discord = handle;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Merges name-only players into the account with the same slug, then makes slugs
+        /// unique: if two different start.gg accounts share a slug, the lowest user id keeps
+        /// it and the others get "-2", "-3"... (stable across runs).
+        /// </summary>
+        private static List<ExtractedPlayer> FinalizePlayers()
+        {
+            // 1. Merge name-only entries into an account player with the same slug.
+            var accountBySlug = TrackedPlayers
+                .Where(kv => kv.Key.StartsWith("user_"))
+                .GroupBy(kv => kv.Value.slug)
+                .ToDictionary(g => g.Key, g => g.OrderBy(kv => NumericId(kv.Value.userId)).First().Key);
+
+            foreach (var key in TrackedPlayers.Keys.Where(k => k.StartsWith("name_")).ToList())
+            {
+                var namePlayer = TrackedPlayers[key];
+                if (!accountBySlug.TryGetValue(namePlayer.slug, out var accountKey)) continue;
+
+                var target = TrackedPlayers[accountKey];
+                if (string.IsNullOrEmpty(target.team)) target.team = namePlayer.team;
+                if (string.IsNullOrEmpty(target.country)) target.country = namePlayer.country;
+                if (string.IsNullOrEmpty(target.avatar)) target.avatar = namePlayer.avatar;
+
+                foreach (var e in EntrantToPlayerKey.Where(e => e.Value == key).Select(e => e.Key).ToList())
+                    EntrantToPlayerKey[e] = accountKey;
+                TrackedPlayers.Remove(key);
+            }
+
+            // 2. Disambiguate remaining slug collisions deterministically.
+            foreach (var group in TrackedPlayers.GroupBy(kv => kv.Value.slug).Where(g => g.Count() > 1))
+            {
+                int n = 1;
+                foreach (var kv in group.OrderBy(kv => kv.Value.userId == null ? 1 : 0).ThenBy(kv => NumericId(kv.Value.userId)))
+                {
+                    if (n > 1) kv.Value.slug = $"{group.Key}-{n}";
+                    n++;
+                }
+            }
+
+            return TrackedPlayers.Values.OrderBy(p => p.name, StringComparer.OrdinalIgnoreCase).ThenBy(p => p.slug).ToList();
+        }
+
+        private static long NumericId(string? id) => long.TryParse(id, out var v) ? v : long.MaxValue;
+
+        /// <summary>Adds "playerSlug" to every entrant object (standings, entrants, set slots, selections).</summary>
+        private static JsonElement StampPlayerSlugs(JsonElement tournament, Dictionary<string, string> slugByKey)
+        {
+            var obj = JsonElementToObject(tournament);
+            Stamp(obj, slugByKey);
+            var json = JsonSerializer.Serialize(obj);
+            using var doc = JsonDocument.Parse(json);
+            return doc.RootElement.Clone();
+        }
+
+        private static void Stamp(object? node, Dictionary<string, string> slugByKey)
+        {
+            if (node is Dictionary<string, object?> dict)
+            {
+                if (dict.TryGetValue("entrant", out var ent) && ent is Dictionary<string, object?> entDict)
+                    StampEntrant(entDict, slugByKey);
+                foreach (var v in dict.Values) Stamp(v, slugByKey);
+                // entrants.nodes are entrant objects themselves
+                if (dict.TryGetValue("participants", out _) && dict.ContainsKey("id") && dict.ContainsKey("name"))
+                    StampEntrant(dict, slugByKey);
+            }
+            else if (node is List<object?> list)
+            {
+                foreach (var v in list) Stamp(v, slugByKey);
+            }
+        }
+
+        private static void StampEntrant(Dictionary<string, object?> ent, Dictionary<string, string> slugByKey)
+        {
+            var id = ent.TryGetValue("id", out var v) ? v?.ToString() : null;
+            if (id != null && EntrantToPlayerKey.TryGetValue(id, out var key) && slugByKey.TryGetValue(key, out var slug))
+                ent["playerSlug"] = slug;
         }
 
         private static string CleanEntrantName(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return "";
             var parts = name.Split('|', StringSplitOptions.RemoveEmptyEntries);
-            return parts.Last().Trim();
+            return parts.Length == 0 ? "" : parts.Last().Trim();
         }
+
+        // -------------------------------------------------------------------
+        // Helpers
+        // -------------------------------------------------------------------
 
         private static bool HasEvents(JsonElement element)
         {
-            if (element.TryGetProperty("events", out var ev))
-            {
-                if (ev.ValueKind == JsonValueKind.Array)
-                    return ev.GetArrayLength() > 0;
-            }
+            if (element.TryGetProperty("events", out var ev) && ev.ValueKind == JsonValueKind.Array)
+                return ev.GetArrayLength() > 0;
             return false;
         }
 
@@ -582,7 +875,10 @@ namespace StartGgFetcher
                 try
                 {
                     using var content = new StringContent(payload, Encoding.UTF8, "application/json");
-                    var response = await HttpClient.PostAsync(StartGgApiUrl, content);
+                    using var response = await HttpClient.PostAsync(StartGgApiUrl, content);
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        throw new AuthException($"start.gg rejected the API key (HTTP {(int)response.StatusCode}). Check STARTGG_API_KEY.");
 
                     if ((int)response.StatusCode == 429)
                     {
@@ -597,15 +893,14 @@ namespace StartGgFetcher
                         var doc = JsonDocument.Parse(body);
 
                         if (doc.RootElement.TryGetProperty("errors", out var errors))
-                        {
                             Console.WriteLine($"    ⚠️  GraphQL errors: {errors}");
-                        }
 
                         return doc;
                     }
 
                     Console.WriteLine($"    ⚠️  HTTP {(int)response.StatusCode} on attempt {attempt}/{maxRetries}");
                 }
+                catch (AuthException) { throw; }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"    ⚠️  Exception on attempt {attempt}/{maxRetries}: {ex.Message}");
@@ -642,16 +937,42 @@ namespace StartGgFetcher
 
         private static string? GetString(JsonElement el, string prop)
         {
-            if (!el.TryGetProperty(prop, out var v)) return null;
+            if (el.ValueKind != JsonValueKind.Object || !el.TryGetProperty(prop, out var v)) return null;
             return v.ValueKind switch
             {
                 JsonValueKind.String => v.GetString(),
                 JsonValueKind.Number => v.GetRawText(),
                 JsonValueKind.True   => "true",
                 JsonValueKind.False  => "false",
-                JsonValueKind.Null   => null,
                 _                    => null
             };
+        }
+
+        private static int CountExistingTournaments(string bracketsFilePath)
+        {
+            try
+            {
+                if (!File.Exists(bracketsFilePath)) return 0;
+                using var doc = JsonDocument.Parse(File.ReadAllText(bracketsFilePath));
+                return doc.RootElement.GetProperty("data").GetProperty("currentUser")
+                          .GetProperty("tournaments").GetProperty("nodes").GetArrayLength();
+            }
+            catch { return 0; }
+        }
+
+        /// <summary>--out &lt;dir&gt; overrides the default src/DQRetro.TournamentTracker.Ui/public/data.</summary>
+        private static string ResolveOutputDir(string[] args, string rootPath)
+        {
+            int i = Array.FindIndex(args, a => a.Equals("--out", StringComparison.OrdinalIgnoreCase));
+            if (i >= 0 && i + 1 < args.Length) return Path.GetFullPath(args[i + 1]);
+
+            string uiDataPath = Path.Combine(rootPath, "src", "DQRetro.TournamentTracker.Ui", "public", "data");
+            if (!Directory.Exists(uiDataPath))
+            {
+                string altPath = Path.Combine(rootPath, "DQRetro.TournamentTracker.Ui", "public", "data");
+                if (Directory.Exists(altPath)) uiDataPath = altPath;
+            }
+            return uiDataPath;
         }
 
         private static string FindRepositoryRoot()
@@ -702,9 +1023,8 @@ namespace StartGgFetcher
                 Directory.CreateDirectory(dir);
 
             var temp = filePath + ".tmp";
-            File.WriteAllText(temp, content);
-            if (File.Exists(filePath)) File.Delete(filePath);
-            File.Move(temp, filePath);
+            File.WriteAllText(temp, content, new UTF8Encoding(false));
+            File.Move(temp, filePath, overwrite: true);
         }
     }
 }
