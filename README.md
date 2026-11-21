@@ -80,6 +80,7 @@ The sync tool (`src/DQRetro.TournamentTracker.Startgg/Program.cs`) fetches a tou
 
 Which events are kept:
 - **DQRetro / SRKade tournaments** (owned by an organiser above, or with DQRetro/SRKade in the name): every event.
-- **Other tournaments** (e.g. VSFighting): only events whose name matches `AllowedEventKeywords` (Tekken Ball, Def Jam, "hosted by DQRetro", …) **and** whose game is in `SupportedGameKeywords`. Their other brackets, such as VSFighting's main Tekken 8 event, are not imported.
+- **VSF / VSFighting**, and any other tournament found only by search: only events whose **name or rules text mentions DQRetro or SRKade** (e.g. "TEKKEN BALL (hosted by DQRetro)") **and** whose game is in `SupportedGameKeywords`. Brackets run by other organisers, such as VSFighting's main Tekken 8 event, are never imported. start.gg has no per-event host field, so the event name or rules text is the only place hosting is recorded.
+- **Hand-listed third-party locals** in `TargetTournamentSlugs` (Drowning Pools, Iron Pride, ELFM): events whose name matches `AllowedEventKeywords` (Tekken Ball, Def Jam, …) in a supported game, because those events are named without a host.
 
 To track a tournament that isn't found automatically, add its start.gg slug to `TargetTournamentSlugs`.

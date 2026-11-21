@@ -115,11 +115,18 @@ namespace StartGgFetcher
             ["404585"] = "SlawPro",
         };
 
-        // Tournament names/slugs that mark a DQRetro / SRKade tournament.
+        // Names that mark DQRetro / SRKade: in a tournament name/slug (community tournament)
+        // or in an event's name or rules text (event hosted by DQRetro / SRKade).
         private static readonly string[] CommunityBrandKeywords = new[] { "dqretro", "srkade" };
 
-        // At third-party tournaments (VSFighting, locals) only events whose name matches
-        // one of these AND whose game the site supports are kept.
+        // Tournament name/slug fragments that identify VSFighting (and VSF-branded events).
+        // Matched with spaces, dashes and underscores removed.
+        private static readonly string[] VsFightingKeywords = new[] { "vsf", "vsfighting" };
+
+        // Looser rule for the hand-listed third-party locals in TargetTournamentSlugs (their
+        // events are named e.g. "Tekken Ball" with no host): event name matches one of these
+        // AND the game is supported. Never used for VSF / VSFighting or for tournaments found
+        // only by search.
         private static readonly string[] AllowedEventKeywords = new[]
         {
             "dqretro",
@@ -421,14 +428,52 @@ namespace StartGgFetcher
             !string.IsNullOrEmpty(videogameName) &&
             SupportedGameKeywords.Any(k => videogameName.Contains(k, StringComparison.OrdinalIgnoreCase));
 
+        private static bool IsVsFightingTournament(string name, string slug)
+        {
+            static string Squash(string s) => new string(s.Where(char.IsLetterOrDigit).ToArray());
+            string n = Squash(name), sl = Squash(slug);
+            return VsFightingKeywords.Any(k => n.Contains(k, StringComparison.OrdinalIgnoreCase) ||
+                                               sl.Contains(k, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static bool MentionsCommunity(string? text) =>
+            !string.IsNullOrEmpty(text) &&
+            CommunityBrandKeywords.Any(k => text.Contains(k, StringComparison.OrdinalIgnoreCase));
+
+        /// <summary>How a tournament's events are filtered.</summary>
+        private enum EventRule
+        {
+            /// <summary>DQRetro / SRKade tournament: keep every event.</summary>
+            All,
+            /// <summary>VSF / VSFighting, or found only by search: event name or rules text must
+            /// mention DQRetro / SRKade, and the game must be supported.</summary>
+            CommunityHostedOnly,
+            /// <summary>Hand-listed third-party local: event name matches AllowedEventKeywords,
+            /// and the game must be supported.</summary>
+            Keywords,
+        }
+
+        private static EventRule GetEventRule(bool community, string name, string slug, string requestedSlug)
+        {
+            if (community) return EventRule.All;
+            if (IsVsFightingTournament(name, slug)) return EventRule.CommunityHostedOnly;
+            bool handListed = TargetTournamentSlugs.Contains(requestedSlug, StringComparer.OrdinalIgnoreCase) ||
+                              TargetTournamentSlugs.Contains(slug, StringComparer.OrdinalIgnoreCase);
+            return handListed ? EventRule.Keywords : EventRule.CommunityHostedOnly;
+        }
+
         /// <summary>
-        /// Community tournaments keep every event. At third-party tournaments only
-        /// DQRetro-style events (AllowedEventKeywords) in a supported game are kept, so e.g. the
-        /// main Tekken 8 bracket at VSFighting is not imported.
+        /// Decides whether an event is imported. Outside DQRetro / SRKade's own tournaments the
+        /// game must be supported, and at VSF / VSFighting the event itself must name DQRetro or
+        /// SRKade, so other organisers' brackets (e.g. VSFighting's main Tekken 8 event) are skipped.
         /// </summary>
-        private static bool ShouldKeepEvent(bool communityTournament, string eventName, string? videogameName) =>
-            communityTournament ||
-            (AllowedEventKeywords.Any(k => eventName.Contains(k, StringComparison.OrdinalIgnoreCase)) && IsSupportedGame(videogameName));
+        private static bool ShouldKeepEvent(EventRule rule, string eventName, string? rulesText, string? videogameName) => rule switch
+        {
+            EventRule.All => true,
+            EventRule.CommunityHostedOnly =>
+                (MentionsCommunity(eventName) || MentionsCommunity(rulesText)) && IsSupportedGame(videogameName),
+            _ => AllowedEventKeywords.Any(k => eventName.Contains(k, StringComparison.OrdinalIgnoreCase)) && IsSupportedGame(videogameName),
+        };
 
         private static async Task<JsonElement?> FetchTournamentDetailsAsync(string slug, HashSet<string> seenTournamentIds)
         {
@@ -450,6 +495,7 @@ namespace StartGgFetcher
                   slug
                   state
                   numEntrants
+                  rulesMarkdown
                   videogame { id name }
                   images { url type }
                 }
@@ -478,34 +524,44 @@ namespace StartGgFetcher
             string? ownerId = tournament.TryGetProperty("owner", out var ownerEl) && ownerEl.ValueKind == JsonValueKind.Object
                 ? GetString(ownerEl, "id") : null;
             bool community = IsCommunityTournament(ownerId, tournamentName, canonicalSlug);
+            EventRule rule = GetEventRule(community, tournamentName, canonicalSlug, slug);
 
             if (tournament.TryGetProperty("events", out var eventsEl) && eventsEl.ValueKind == JsonValueKind.Array)
             {
                 var eventsToProcess = eventsEl.EnumerateArray().Where(ev =>
                 {
                     string eventName = GetString(ev, "name") ?? "";
+                    string? rulesText = GetString(ev, "rulesMarkdown");
                     string? game = ev.TryGetProperty("videogame", out var vg) && vg.ValueKind == JsonValueKind.Object
                         ? GetString(vg, "name") : null;
-                    return ShouldKeepEvent(community, eventName, game);
+                    return ShouldKeepEvent(rule, eventName, rulesText, game);
                 }).ToList();
 
-                if (!community)
-                    Console.WriteLine($"    Third-party tournament: keeping {eventsToProcess.Count} of {eventsEl.GetArrayLength()} events (DQRetro-style, supported game).");
+                if (rule != EventRule.All)
+                {
+                    string why = rule == EventRule.CommunityHostedOnly
+                        ? "event name/rules mention DQRetro or SRKade, supported game"
+                        : "hand-listed local: Tekken Ball / Def Jam style event, supported game";
+                    Console.WriteLine($"    Third-party tournament: keeping {eventsToProcess.Count} of {eventsEl.GetArrayLength()} events ({why}).");
+                }
 
                 var hydratedEvents = new List<Dictionary<string, object?>>();
                 foreach (var ev in eventsToProcess)
                 {
                     var eventId = GetString(ev, "id");
+                    Dictionary<string, object?> eventDict;
                     if (string.IsNullOrEmpty(eventId))
                     {
-                        hydratedEvents.Add(JsonElementToDict(ev));
-                        continue;
+                        eventDict = JsonElementToDict(ev);
                     }
-
-                    Console.WriteLine($"    Fetching details for event: {GetString(ev, "name")}...");
-                    var hydratedEvent = await FetchEventDetailsAsync(eventId, ev);
-                    hydratedEvents.Add(hydratedEvent);
-                    await Task.Delay(700);
+                    else
+                    {
+                        Console.WriteLine($"    Fetching details for event: {GetString(ev, "name")}...");
+                        eventDict = await FetchEventDetailsAsync(eventId, ev);
+                        await Task.Delay(700);
+                    }
+                    eventDict.Remove("rulesMarkdown"); // only used for the event filter; keeps the output format unchanged
+                    hydratedEvents.Add(eventDict);
                 }
 
                 tournamentDict["events"] = hydratedEvents;
