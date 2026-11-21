@@ -65,6 +65,12 @@ function activateNavLinks(holder) {
     }
   });
 
+  // Section links (data-section="pages/assets/") stay active on every page in that folder.
+  if (!chosen) {
+    chosen = [...holder.querySelectorAll("nav a[data-section]")]
+      .find(link => currentPath.startsWith(withBase(link.getAttribute("data-section")))) || null;
+  }
+
   if (chosen) chosen.classList.add("active");
 }
 

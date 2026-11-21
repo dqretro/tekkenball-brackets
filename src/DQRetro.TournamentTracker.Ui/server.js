@@ -17,9 +17,6 @@ app.use(express.static(PUBLIC_DIR, { dotfiles: 'ignore' }));
 app.get('/', (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
 });
-app.get('/admin', (req, res) => {
-  res.redirect('/pages/admin/tournament-tracker/admin-dashboard.html');
-});
 
 // ------------------------------
 // Start server
