@@ -4,6 +4,7 @@
 #             ever tracked in git, or if key-shaped strings appear in tracked files.
 #  - sync-tool: builds the start.gg sync tool and smoke-tests it offline
 #               (no secrets needed, nothing published).
+#  - twitch-worker: syntax check + offline tests for workers/twitch-live.
 #  - data:      validates brackets.json / players.json and checks that every
 #               file path the site uses exists with exact case.
 #
@@ -36,6 +37,7 @@ jobs:
             -e '(^|/)\.env(\..*)?$' \
             -e '(^|/)secrets\.json$' \
             -e '(^|/)pages/gallery/config\.json$' \
+            -e '(^|/)shared/live/live-config\.json$' \
             -e '\.psd$' \
             -e '(^|/)(bin|obj)/' \
             | grep -v -E '(^|/)(appsettings\.example\.json|\.env\.example)$' || true)
@@ -98,6 +100,30 @@ jobs:
           dotnet run --project "$PROJECT" --configuration Release --no-build -- \
             --from-file src/DQRetro.TournamentTracker.Ui/public/data/brackets.json --out "$out"
           node .github/scripts/validate-data.js "$out"
+
+  twitch-worker:
+    name: Twitch live-status Worker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Syntax check
+        run: |
+          cp workers/twitch-live/worker.js "$RUNNER_TEMP/worker.mjs"
+          node --check "$RUNNER_TEMP/worker.mjs"
+          node --check src/DQRetro.TournamentTracker.Ui/public/shared/live/twitch-live.js
+
+      # Runs the Worker against fake Twitch responses (no network, no secrets).
+      - name: Worker tests
+        run: node .github/scripts/test-twitch-worker.mjs
 
   data:
     name: Validate site data

@@ -1,0 +1,125 @@
+# Deploys the Twitch live-status Worker (workers/twitch-live) to Cloudflare.
+#
+# Secrets (Settings -> Secrets and variables -> Actions -> Secrets):
+#   CLOUDFLARE_API_TOKEN   API token with "Workers Scripts: Edit" on the account
+#   CLOUDFLARE_ACCOUNT_ID  Cloudflare account id
+#   TWITCH_CLIENT_ID       Twitch developer app client id
+#   TWITCH_CLIENT_SECRET   Twitch developer app client secret
+# The Twitch values are stored as Worker secrets; they are never sent to the site.
+#
+# After the first deploy, copy the status URL from the run summary into the repository
+# VARIABLE TWITCH_LIVE_STATUS_URL (Secrets and variables -> Actions -> Variables) and
+# redeploy the site. static.yml writes it into the site's live-config.json.
+name: Deploy Twitch live-status Worker
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "workers/twitch-live/**"
+      - ".github/workflows/deploy-twitch-worker.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: twitch-worker
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy Worker
+    runs-on: ubuntu-latest
+    env:
+      WRANGLER_VERSION: "4.158.0"
+    defaults:
+      run:
+        working-directory: workers/twitch-live
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Check secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+        run: |
+          missing=""
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID TWITCH_CLIENT_ID TWITCH_CLIENT_SECRET; do
+            if [ -z "${!name}" ]; then missing="$missing $name"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secrets:$missing"
+            exit 1
+          fi
+          echo "All four secrets are set."
+
+      - name: Deploy
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx --yes "wrangler@$WRANGLER_VERSION" deploy 2>&1 | tee deploy.log
+          url=$(grep -oE 'https://[A-Za-z0-9.-]+\.workers\.dev' deploy.log | head -n 1 || true)
+          if [ -z "$url" ]; then
+            echo "::warning::No workers.dev URL in the deploy output. Make sure a workers.dev subdomain is set up in the Cloudflare dashboard (Workers & Pages -> your subdomain)."
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      # Values go through stdin as JSON (never on the command line or in logs).
+      - name: Set Worker secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+        run: |
+          node -e 'process.stdout.write(JSON.stringify({ TWITCH_CLIENT_ID: process.env.TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET: process.env.TWITCH_CLIENT_SECRET }))' \
+            | npx --yes "wrangler@$WRANGLER_VERSION" secret bulk
+
+      - name: Smoke test
+        if: steps.deploy.outputs.url != ''
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if curl -fsS -D headers.txt -H "Origin: https://dqretro.github.io" "$URL/" -o status.json; then
+              node -e '
+                const s = JSON.parse(require("fs").readFileSync("status.json", "utf8"));
+                if (typeof s.live !== "boolean") { console.log("Unexpected response:", s); process.exit(1); }
+                console.log(`OK: ${s.channel} live=${s.live}${s.live ? ` (${s.viewers} viewers, ${s.game})` : ""}`);'
+              grep -qi '^access-control-allow-origin: https://dqretro.github.io' headers.txt \
+                || { echo "::error::CORS header for https://dqretro.github.io missing"; exit 1; }
+              exit 0
+            fi
+            echo "Attempt $attempt failed; retrying in 10s (new deploys and secrets can take a moment)..."
+            sleep 10
+          done
+          echo "::error::The Worker did not return a valid status. Check the Twitch secrets."
+          exit 1
+
+      - name: Summary
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          {
+            echo "### Twitch live-status Worker"
+            if [ -n "$URL" ]; then
+              echo "Status URL: \`$URL/\`"
+              echo ""
+              echo "Set the repository **variable** \`TWITCH_LIVE_STATUS_URL\` to this URL (Settings -> Secrets and variables -> Actions -> Variables), then run *Deploy static content to Pages*."
+            else
+              echo "Deployed, but no workers.dev URL was printed. Check the Cloudflare dashboard."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

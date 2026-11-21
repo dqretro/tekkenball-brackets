@@ -345,6 +345,7 @@ hr {
 /* Overview page specific */
 .overview-column {
   margin: 24px 0;
+  min-width: 0; /* grid item: let wide tables scroll inside (.standings-table) instead of widening the page */
 }
 
 .overview-links {

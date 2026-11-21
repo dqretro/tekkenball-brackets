@@ -388,3 +388,5 @@ secrets.json
 # Gallery runtime config: generated at deploy time by static.yml from the
 # YOUTUBE_API_KEY secret, or created by hand locally from config.example.json.
 src/DQRetro.TournamentTracker.Ui/public/pages/gallery/config.json
+# Generated at deploy time from the TWITCH_LIVE_STATUS_URL variable (see static.yml)
+src/DQRetro.TournamentTracker.Ui/public/shared/live/live-config.json
