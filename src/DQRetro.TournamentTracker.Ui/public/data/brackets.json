@@ -107998,6 +107998,778 @@
                 }
               }
             ]
+          },
+          {
+            "id": 549245,
+            "name": "Tekken 3 Ball Double Eliminations",
+            "slug": "tournament/tekken-3-ball-double-eliminations",
+            "state": 3,
+            "startAt": 1684774800,
+            "hasOfflineEvents": false,
+            "numAttendees": 5,
+            "images": [
+              {
+                "url": "https://images.start.gg/images/tournament/549245/image-444d9c6016927ffa67c86b37479f598c.jpg?ehk=CCmyCHNVE4MdyiXe3NWD%2FjIB9tvmBn5sAag22rwrNEQ%3D\u0026ehkOptimized=fL%2BGb976PrNh0tt%2F2cZwc22zOrbN9CjLKY5mKYhgM8I%3D",
+                "type": "profile"
+              },
+              {
+                "url": "https://images.start.gg/images/tournament/549245/image-fb0c08789f26c279e2fac6e5a9565622.jpg?ehk=Dp6d8N%2BJM4ju8vIREiGkumCeUnle9jSZKCLOfGMoexo%3D\u0026ehkOptimized=ajjGPbs%2BEC1sTi8ozk1P4IYbZo5ISr7KzT3Cr8sKXwQ%3D",
+                "type": "banner"
+              }
+            ],
+            "events": [
+              {
+                "id": 911047,
+                "name": "Tekken Ball Double Eliminations",
+                "slug": "tournament/tekken-3-ball-double-eliminations/event/tekken-ball-double-eliminations",
+                "state": "COMPLETED",
+                "numEntrants": 5,
+                "videogame": {
+                  "id": 5216,
+                  "name": "Tekken 3"
+                },
+                "images": [],
+                "standings": {
+                  "pageInfo": {
+                    "total": 5
+                  },
+                  "nodes": [
+                    {
+                      "placement": 1,
+                      "isFinal": true,
+                      "entrant": {
+                        "id": 13132781,
+                        "name": "HarryCM01",
+                        "participants": [
+                          {
+                            "id": 12362495,
+                            "gamerTag": "HarryCM01",
+                            "prefix": "",
+                            "user": {
+                              "id": 2129951,
+                              "images": [],
+                              "location": {
+                                "city": null,
+                                "state": null,
+                                "country": "United Kingdom"
+                              },
+                              "authorizations": [
+                                {
+                                  "type": "DISCORD",
+                                  "externalUsername": "harrycm01"
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "playerSlug": "harrycm01"
+                      }
+                    },
+                    {
+                      "placement": 2,
+                      "isFinal": true,
+                      "entrant": {
+                        "id": 13173605,
+                        "name": "DQ | ProtonicCobra",
+                        "participants": [
+                          {
+                            "id": 12399191,
+                            "gamerTag": "ProtonicCobra",
+                            "prefix": "DQ",
+                            "user": {
+                              "id": 1711391,
+                              "images": [
+                                {
+                                  "url": "https://images.start.gg/images/user/1711391/image-6421c58e539b0416b4d74a76a8fabab3.jpg?ehk=78dHapQSW1bR2f%2FiVONNwliUUQcpamYw0z%2FLyB%2BYtI4%3D\u0026ehkOptimized=D9YIkJJGyWMQ1w0nI3kVlUkA9stU5kx5PZF7BH97sW4%3D",
+                                  "type": "profile"
+                                },
+                                {
+                                  "url": "https://images.start.gg/images/user/1711391/image-c64b0a73618d85336f8d5419ed0a2e22.jpg?ehk=VNVSBPs%2FUTe3SyxHj0sclzMuTjOgXVPeoeZotRQ8ZqE%3D\u0026ehkOptimized=eC6KuTeVdunYSUSiBqo%2BCPGAhCD5CeGi8cULqnvCBzI%3D",
+                                  "type": "banner"
+                                }
+                              ],
+                              "location": {
+                                "city": null,
+                                "state": null,
+                                "country": "United Kingdom"
+                              },
+                              "authorizations": [
+                                {
+                                  "type": "DISCORD",
+                                  "externalUsername": "protoniccobra"
+                                },
+                                {
+                                  "type": "TWITCH",
+                                  "externalUsername": "ProtonicCobra"
+                                },
+                                {
+                                  "type": "TWITTER",
+                                  "externalUsername": "ProtonicCobra"
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "playerSlug": "protoniccobra"
+                      }
+                    },
+                    {
+                      "placement": 3,
+                      "isFinal": true,
+                      "entrant": {
+                        "id": 13158859,
+                        "name": "DQ | SlawPro",
+                        "participants": [
+                          {
+                            "id": 12385159,
+                            "gamerTag": "SlawPro",
+                            "prefix": "DQ",
+                            "user": {
+                              "id": 404585,
+                              "images": [
+                                {
+                                  "url": "https://images.start.gg/images/user/404585/image-e695c019c77b60489961774ea3c6cc99.png?ehk=LFLbfFJr4CSfYPKqtjDi%2F0n3mikGZgryPmCF7sQNcqY%3D\u0026ehkOptimized=OWdlPZqni5HrL%2F71AmDT0WnuW44wwxrA1rREEi7pt%2BY%3D",
+                                  "type": "banner"
+                                },
+                                {
+                                  "url": "https://images.start.gg/images/user/404585/image-fc6aca7eb6084d13869f50e25203a8e5.png?ehk=r62xkEIhEF%2Ft81FLNzaShUWOllAOecRazF5d%2FEpI4zo%3D\u0026ehkOptimized=kqba7gUEoB%2B%2F7xUq6wLXtlcCooqYbuhxU6fw3sg0nTE%3D",
+                                  "type": "profile"
+                                }
+                              ],
+                              "location": {
+                                "city": "Northamptonshire",
+                                "state": null,
+                                "country": "United Kingdom"
+                              },
+                              "authorizations": [
+                                {
+                                  "type": "DISCORD",
+                                  "externalUsername": "slawpro"
+                                },
+                                {
+                                  "type": "TWITCH",
+                                  "externalUsername": "SlawSimulation"
+                                },
+                                {
+                                  "type": "TWITTER",
+                                  "externalUsername": "SlawSimulation"
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "playerSlug": "slawpro"
+                      }
+                    },
+                    {
+                      "placement": 4,
+                      "isFinal": true,
+                      "entrant": {
+                        "id": 13129490,
+                        "name": "Nubi",
+                        "participants": [
+                          {
+                            "id": 12359352,
+                            "gamerTag": "Nubi",
+                            "prefix": "",
+                            "user": {
+                              "id": 735137,
+                              "images": [
+                                {
+                                  "url": "https://images.start.gg/images/user/735137/image-7feb9d4b4057818b3c8a45e10ca7773b.jpg",
+                                  "type": "profile"
+                                }
+                              ],
+                              "location": {
+                                "city": null,
+                                "state": null,
+                                "country": null
+                              },
+                              "authorizations": null
+                            }
+                          }
+                        ],
+                        "playerSlug": "nubi"
+                      }
+                    },
+                    {
+                      "placement": 5,
+                      "isFinal": true,
+                      "entrant": {
+                        "id": 13165071,
+                        "name": "TechBonus",
+                        "participants": [
+                          {
+                            "id": 12390937,
+                            "gamerTag": "TechBonus",
+                            "prefix": "",
+                            "user": {
+                              "id": 23217,
+                              "images": [
+                                {
+                                  "url": "https://images.start.gg/images/user/23217/image-f4b38ec87c9a73b58cb4f6be602f93c6.png?ehk=dTS2PVkuo93L%2BOGsLxOQyXnJyvcCyZfWKPLpFdmaLfY%3D\u0026ehkOptimized=YJl2mldO2KdtiVpfmaclcPyGR5noOD93zk%2FHAaV1FPA%3D",
+                                  "type": "banner"
+                                },
+                                {
+                                  "url": "https://images.start.gg/images/user/23217/image-d10899b69c041451d7854cf0cfd175d5.png",
+                                  "type": "profile"
+                                }
+                              ],
+                              "location": {
+                                "city": null,
+                                "state": null,
+                                "country": null
+                              },
+                              "authorizations": [
+                                {
+                                  "type": "DISCORD",
+                                  "externalUsername": "techbonus"
+                                },
+                                {
+                                  "type": "TWITCH",
+                                  "externalUsername": "TechBonus"
+                                },
+                                {
+                                  "type": "XBOX",
+                                  "externalUsername": "shinoshoryu"
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "playerSlug": "techbonus"
+                      }
+                    }
+                  ]
+                },
+                "entrants": {
+                  "pageInfo": {
+                    "total": 5
+                  },
+                  "nodes": [
+                    {
+                      "id": 13173605,
+                      "name": "DQ | ProtonicCobra",
+                      "participants": [
+                        {
+                          "id": 12399191,
+                          "gamerTag": "ProtonicCobra",
+                          "prefix": "DQ",
+                          "user": {
+                            "id": 1711391
+                          }
+                        }
+                      ],
+                      "playerSlug": "protoniccobra"
+                    },
+                    {
+                      "id": 13165071,
+                      "name": "TechBonus",
+                      "participants": [
+                        {
+                          "id": 12390937,
+                          "gamerTag": "TechBonus",
+                          "prefix": "",
+                          "user": {
+                            "id": 23217
+                          }
+                        }
+                      ],
+                      "playerSlug": "techbonus"
+                    },
+                    {
+                      "id": 13158859,
+                      "name": "DQ | SlawPro",
+                      "participants": [
+                        {
+                          "id": 12385159,
+                          "gamerTag": "SlawPro",
+                          "prefix": "DQ",
+                          "user": {
+                            "id": 404585
+                          }
+                        }
+                      ],
+                      "playerSlug": "slawpro"
+                    },
+                    {
+                      "id": 13132781,
+                      "name": "HarryCM01",
+                      "participants": [
+                        {
+                          "id": 12362495,
+                          "gamerTag": "HarryCM01",
+                          "prefix": "",
+                          "user": {
+                            "id": 2129951
+                          }
+                        }
+                      ],
+                      "playerSlug": "harrycm01"
+                    },
+                    {
+                      "id": 13129490,
+                      "name": "Nubi",
+                      "participants": [
+                        {
+                          "id": 12359352,
+                          "gamerTag": "Nubi",
+                          "prefix": "",
+                          "user": {
+                            "id": 735137
+                          }
+                        }
+                      ],
+                      "playerSlug": "nubi"
+                    }
+                  ]
+                },
+                "phases": [
+                  {
+                    "id": 1368843,
+                    "name": "Bracket",
+                    "state": "COMPLETED",
+                    "bracketType": "DOUBLE_ELIMINATION",
+                    "groupCount": 1,
+                    "numSeeds": 5,
+                    "phaseOrder": 1,
+                    "phaseGroups": {
+                      "pageInfo": {
+                        "total": 1,
+                        "totalPages": 1
+                      },
+                      "nodes": [
+                        {
+                          "id": 2082376,
+                          "displayIdentifier": "1",
+                          "bracketType": "DOUBLE_ELIMINATION",
+                          "state": 3
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "sets": {
+                  "nodes": [
+                    {
+                      "id": 60685302,
+                      "fullRoundText": "Grand Final",
+                      "round": 4,
+                      "identifier": "E",
+                      "state": 3,
+                      "winnerId": 13132781,
+                      "phaseGroup": {
+                        "id": 2082376,
+                        "displayIdentifier": "1",
+                        "phase": {
+                          "id": 1368843,
+                          "name": "Bracket"
+                        }
+                      },
+                      "slots": [
+                        {
+                          "slotIndex": 0,
+                          "entrant": {
+                            "id": 13132781,
+                            "name": "HarryCM01",
+                            "playerSlug": "harrycm01"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 4
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "slotIndex": 1,
+                          "entrant": {
+                            "id": 13173605,
+                            "name": "DQ | ProtonicCobra",
+                            "playerSlug": "protoniccobra"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 1
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "games": [
+                        {
+                          "id": 16963614,
+                          "selections": null
+                        }
+                      ],
+                      "phaseGroupId": "2082376"
+                    },
+                    {
+                      "id": 60685301,
+                      "fullRoundText": "Winners Final",
+                      "round": 3,
+                      "identifier": "D",
+                      "state": 3,
+                      "winnerId": 13132781,
+                      "phaseGroup": {
+                        "id": 2082376,
+                        "displayIdentifier": "1",
+                        "phase": {
+                          "id": 1368843,
+                          "name": "Bracket"
+                        }
+                      },
+                      "slots": [
+                        {
+                          "slotIndex": 0,
+                          "entrant": {
+                            "id": 13173605,
+                            "name": "DQ | ProtonicCobra",
+                            "playerSlug": "protoniccobra"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 2
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "slotIndex": 1,
+                          "entrant": {
+                            "id": 13132781,
+                            "name": "HarryCM01",
+                            "playerSlug": "harrycm01"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 4
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "games": null,
+                      "phaseGroupId": "2082376"
+                    },
+                    {
+                      "id": 60685317,
+                      "fullRoundText": "Losers Final",
+                      "round": -6,
+                      "identifier": "I",
+                      "state": 3,
+                      "winnerId": 13173605,
+                      "phaseGroup": {
+                        "id": 2082376,
+                        "displayIdentifier": "1",
+                        "phase": {
+                          "id": 1368843,
+                          "name": "Bracket"
+                        }
+                      },
+                      "slots": [
+                        {
+                          "slotIndex": 0,
+                          "entrant": {
+                            "id": 13173605,
+                            "name": "DQ | ProtonicCobra",
+                            "playerSlug": "protoniccobra"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 4
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "slotIndex": 1,
+                          "entrant": {
+                            "id": 13158859,
+                            "name": "DQ | SlawPro",
+                            "playerSlug": "slawpro"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 2
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "games": null,
+                      "phaseGroupId": "2082376"
+                    },
+                    {
+                      "id": 60685316,
+                      "fullRoundText": "Losers Semi-Final",
+                      "round": -5,
+                      "identifier": "H",
+                      "state": 3,
+                      "winnerId": 13158859,
+                      "phaseGroup": {
+                        "id": 2082376,
+                        "displayIdentifier": "1",
+                        "phase": {
+                          "id": 1368843,
+                          "name": "Bracket"
+                        }
+                      },
+                      "slots": [
+                        {
+                          "slotIndex": 0,
+                          "entrant": {
+                            "id": 13158859,
+                            "name": "DQ | SlawPro",
+                            "playerSlug": "slawpro"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 3
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "slotIndex": 1,
+                          "entrant": {
+                            "id": 13129490,
+                            "name": "Nubi",
+                            "playerSlug": "nubi"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 0
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "games": [
+                        {
+                          "id": 16963056,
+                          "selections": null
+                        }
+                      ],
+                      "phaseGroupId": "2082376"
+                    },
+                    {
+                      "id": 60685299,
+                      "fullRoundText": "Winners Semi-Final",
+                      "round": 2,
+                      "identifier": "B",
+                      "state": 3,
+                      "winnerId": 13173605,
+                      "phaseGroup": {
+                        "id": 2082376,
+                        "displayIdentifier": "1",
+                        "phase": {
+                          "id": 1368843,
+                          "name": "Bracket"
+                        }
+                      },
+                      "slots": [
+                        {
+                          "slotIndex": 0,
+                          "entrant": {
+                            "id": 13129490,
+                            "name": "Nubi",
+                            "playerSlug": "nubi"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 0
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "slotIndex": 1,
+                          "entrant": {
+                            "id": 13173605,
+                            "name": "DQ | ProtonicCobra",
+                            "playerSlug": "protoniccobra"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 3
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "games": null,
+                      "phaseGroupId": "2082376"
+                    },
+                    {
+                      "id": 60685300,
+                      "fullRoundText": "Winners Semi-Final",
+                      "round": 2,
+                      "identifier": "C",
+                      "state": 3,
+                      "winnerId": 13132781,
+                      "phaseGroup": {
+                        "id": 2082376,
+                        "displayIdentifier": "1",
+                        "phase": {
+                          "id": 1368843,
+                          "name": "Bracket"
+                        }
+                      },
+                      "slots": [
+                        {
+                          "slotIndex": 0,
+                          "entrant": {
+                            "id": 13132781,
+                            "name": "HarryCM01",
+                            "playerSlug": "harrycm01"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 3
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "slotIndex": 1,
+                          "entrant": {
+                            "id": 13158859,
+                            "name": "DQ | SlawPro",
+                            "playerSlug": "slawpro"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 1
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "games": [
+                        {
+                          "id": 16962917,
+                          "selections": null
+                        }
+                      ],
+                      "phaseGroupId": "2082376"
+                    },
+                    {
+                      "id": 60685314,
+                      "fullRoundText": "Losers Quarter-Final",
+                      "round": -4,
+                      "identifier": "G",
+                      "state": 3,
+                      "winnerId": 13158859,
+                      "phaseGroup": {
+                        "id": 2082376,
+                        "displayIdentifier": "1",
+                        "phase": {
+                          "id": 1368843,
+                          "name": "Bracket"
+                        }
+                      },
+                      "slots": [
+                        {
+                          "slotIndex": 0,
+                          "entrant": {
+                            "id": 13158859,
+                            "name": "DQ | SlawPro",
+                            "playerSlug": "slawpro"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 0
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "slotIndex": 1,
+                          "entrant": {
+                            "id": 13165071,
+                            "name": "TechBonus",
+                            "playerSlug": "techbonus"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": -1
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "games": null,
+                      "phaseGroupId": "2082376"
+                    },
+                    {
+                      "id": 60685296,
+                      "fullRoundText": "Winners Quarter-Final",
+                      "round": 1,
+                      "identifier": "A",
+                      "state": 3,
+                      "winnerId": 13173605,
+                      "phaseGroup": {
+                        "id": 2082376,
+                        "displayIdentifier": "1",
+                        "phase": {
+                          "id": 1368843,
+                          "name": "Bracket"
+                        }
+                      },
+                      "slots": [
+                        {
+                          "slotIndex": 0,
+                          "entrant": {
+                            "id": 13165071,
+                            "name": "TechBonus",
+                            "playerSlug": "techbonus"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": -1
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "slotIndex": 1,
+                          "entrant": {
+                            "id": 13173605,
+                            "name": "DQ | ProtonicCobra",
+                            "playerSlug": "protoniccobra"
+                          },
+                          "standing": {
+                            "stats": {
+                              "score": {
+                                "value": 0
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "games": null,
+                      "phaseGroupId": "2082376"
+                    }
+                  ]
+                }
+              }
+            ]
           }
         ]
       }

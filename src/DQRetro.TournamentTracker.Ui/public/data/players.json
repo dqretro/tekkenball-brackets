@@ -3388,6 +3388,20 @@
     }
   },
   {
+    "name": "TechBonus",
+    "slug": "techbonus",
+    "userId": "23217",
+    "team": "",
+    "country": "",
+    "avatar": "https://images.start.gg/images/user/23217/image-d10899b69c041451d7854cf0cfd175d5.png",
+    "socials": {
+      "twitter": null,
+      "twitch": "TechBonus",
+      "youtube": null,
+      "discord": "techbonus"
+    }
+  },
+  {
     "name": "TEK-DAT",
     "slug": "tek-dat",
     "userId": "3196623",
