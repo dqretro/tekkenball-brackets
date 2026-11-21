@@ -34,9 +34,14 @@ async function fetchVideos() {
     showLoading("gallery-grid", "Loading videos from YouTube...");
 
     // 1. Fetch credentials from config.json
+    //    (generated at deploy time from the YOUTUBE_API_KEY GitHub secret;
+    //     locally, copy config.example.json to config.json and add a key)
     const configRes = await fetch("config.json");
     if (!configRes.ok) throw new Error("Could not load config.json");
     const config = await configRes.json();
+    if (!config.YOUTUBE_API_KEY || !config.CHANNEL_ID) {
+      throw new Error("config.json has no YOUTUBE_API_KEY / CHANNEL_ID");
+    }
 
     // 2. Fetch the Uploads Playlist ID dynamically from the Channels API endpoint
     const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${config.CHANNEL_ID}&key=${config.YOUTUBE_API_KEY}`;
@@ -85,8 +90,33 @@ async function fetchVideos() {
     populateVideoYearFilter();
     loadVideos();
   } catch (err) {
-    console.error("Error fetching YouTube videos:", err);
-    showGalleryMessage("gallery-grid", "Failed to fetch videos from YouTube.");
+    console.warn("YouTube API unavailable, using gallery-videos.json:", err.message || err);
+    await loadFallbackVideos();
+  }
+}
+
+// --------------------------
+// Fallback: curated list in gallery-videos.json
+// Used when config.json is missing/empty or the YouTube API call fails.
+// --------------------------
+async function loadFallbackVideos() {
+  try {
+    const res = await fetch("gallery-videos.json");
+    if (!res.ok) throw new Error(`gallery-videos.json returned ${res.status}`);
+    const list = await res.json();
+    videos = (Array.isArray(list) ? list : [])
+      .filter(v => v && v.youtubeId)
+      .map(v => ({ youtubeId: v.youtubeId, title: (v.title || "Untitled").trim(), year: v.year || "Unknown" }));
+
+    if (videos.length === 0) {
+      showGalleryMessage("gallery-grid", "No videos found.");
+      return;
+    }
+    populateVideoYearFilter();
+    loadVideos();
+  } catch (fallbackErr) {
+    console.error("Error loading fallback videos:", fallbackErr);
+    showGalleryMessage("gallery-grid", "Failed to load videos.");
   }
 }
 
