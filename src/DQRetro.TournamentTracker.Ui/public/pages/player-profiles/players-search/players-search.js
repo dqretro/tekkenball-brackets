@@ -17,12 +17,16 @@ let players = [];
 // ---------------------------
 // Utility: create slug from player name
 // ---------------------------
+// Fallback only: mirrors Slugs.ForPlayer in the sync tool. players.json carries "slug".
 function createSlug(name) {
-  return (name || "")
-    .toLowerCase()
-    .replace(/\s*\|\s*/g, "-")
+  if (!name) return "";
+  const tag = name.includes("|") ? name.split("|").pop() : name;
+  return tag.trim().toLowerCase()
+    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9_\s-]/g, "")
     .replace(/\s+/g, "-")
-    .replace(/[^\w-]/g, "");
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 // ---------------------------
@@ -56,8 +60,8 @@ function renderResults(list) {
     div.className = "search-result-item";
 
     const link = document.createElement("a");
-    const slug = createSlug(player.name);
-    link.href = withBase(`pages/player-profiles/players/players.html?player=${slug}`);
+    const slug = player.slug || createSlug(player.name);
+    link.href = withBase(`pages/player-profiles/players/players.html?player=${encodeURIComponent(slug)}`);
 
     // Avatar image
     const img = document.createElement("img");

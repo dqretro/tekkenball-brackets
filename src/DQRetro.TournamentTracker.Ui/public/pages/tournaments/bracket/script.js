@@ -20,121 +20,91 @@ function extractSets(source) {
 
 let globalTournamentData = null;
 
-// Exact Start.gg Group ID Mapping
-const KNOWN_GROUPS = {
-  "3188784": "Pool 1",
-  "3375646": "Pool 2",
-  "3375645": "Top 12"
-};
-
-function extractAllOptionsFromEvent(eventObj) {
-  const allSets = extractSets(eventObj.sets || eventObj);
-  if (!allSets || allSets.length === 0) return [];
-
-  const groupsMap = new Map();
-
-  allSets.forEach((set) => {
-    const gId = String(
-      set.phaseGroupId || 
-      set.phaseGroup?.id || 
-      set.phaseId || 
-      set.phase?.id || 
-      ""
-    );
-
-    const phaseName = String(set.phase?.name || set.phaseGroup?.name || set.phaseGroup?.displayIdentifier || "").toLowerCase();
-
-    if (gId) {
-      if (!groupsMap.has(gId)) {
-        let label = KNOWN_GROUPS[gId];
-
-        if (!label) {
-          if (phaseName.includes("top") || phaseName.includes("final")) {
-            label = "Top 12";
-          } else if (phaseName.includes("q1") || phaseName.includes("pool 1")) {
-            label = "Pool 1";
-          } else if (phaseName.includes("r1") || phaseName.includes("pool 2")) {
-            label = "Pool 2";
-          } else {
-            label = `Pool ${gId}`;
-          }
-        }
-
-        groupsMap.set(gId, { id: gId, label, sets: [] });
-      }
-      groupsMap.get(gId).sets.push(set);
-    }
-  });
-
-  if (groupsMap.size > 1) {
-    return Array.from(groupsMap.values());
-  }
-
-  // Fallback chunking if JSON lacks explicit metadata
-  const pool1Sets = [];
-  const pool2Sets = [];
-  const top12Sets = [];
-
-  const sortedSets = [...allSets].sort((a, b) => (a.id || 0) - (b.id || 0));
-
-  sortedSets.forEach((set) => {
-    const fullText = (set.fullRoundText || "").toLowerCase();
-    const roundVal = set.round ?? 0;
-
-    const isTopCutRound = 
-      fullText.includes("grand final") || 
-      fullText.includes("semi") || 
-      fullText.includes("quarter") ||
-      fullText.includes("top") ||
-      roundVal >= 3 || roundVal <= -3;
-
-    if (isTopCutRound) {
-      top12Sets.push(set);
-    } else {
-      if (pool1Sets.length <= pool2Sets.length) {
-        pool1Sets.push(set);
-      } else {
-        pool2Sets.push(set);
-      }
-    }
-  });
-
-  const options = [];
-  if (pool1Sets.length > 0) options.push({ id: "pool_1", label: "Pool 1", sets: pool1Sets });
-  if (pool2Sets.length > 0) options.push({ id: "pool_2", label: "Pool 2", sets: pool2Sets });
-  if (top12Sets.length > 0) options.push({ id: "top_12", label: "Top 12", sets: top12Sets });
-
-  return options.length > 0 ? options : [{ id: "all", label: "Top 12", sets: allSets }];
+function escapeHtml(str) {
+  return String(str ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-// Fetch brackets.json with cache busting
+/**
+ * Builds one selectable bracket per start.gg phase group (pool / top cut), using the
+ * phases + set.phaseGroupId data written by the sync tool. Older data without phase
+ * info shows a single "Main Bracket" (no invented pools).
+ */
+function extractAllOptionsFromEvent(eventObj) {
+  const allSets = extractSets(eventObj?.sets);
+  if (!allSets.length) return [];
+
+  // phaseGroupId -> label, in phase order then pool order
+  const labels = new Map();
+  const phases = [...(eventObj.phases || [])].sort((a, b) => (a.phaseOrder ?? 0) - (b.phaseOrder ?? 0));
+  phases.forEach(phase => {
+    const groups = phase.phaseGroups?.nodes || [];
+    groups.forEach(g => {
+      const label = groups.length > 1 && g.displayIdentifier
+        ? `${phase.name || "Bracket"} — Pool ${g.displayIdentifier}`
+        : (phase.name || "Bracket");
+      labels.set(String(g.id), label);
+    });
+  });
+
+  const groupsMap = new Map();
+  allSets.forEach(set => {
+    const gId = String(set.phaseGroupId || set.phaseGroup?.id || "");
+    if (!gId) return;
+    if (!groupsMap.has(gId)) {
+      const label = labels.get(gId)
+        || [set.phaseGroup?.phase?.name, set.phaseGroup?.displayIdentifier && `Pool ${set.phaseGroup.displayIdentifier}`]
+             .filter(Boolean).join(" — ")
+        || "Bracket";
+      groupsMap.set(gId, { id: gId, label, sets: [] });
+    }
+    groupsMap.get(gId).sets.push(set);
+  });
+
+  if (groupsMap.size > 0) {
+    const order = [...labels.keys()];
+    return [...groupsMap.values()].sort((a, b) => {
+      const ia = order.indexOf(a.id), ib = order.indexOf(b.id);
+      return (ia < 0 ? 1e9 : ia) - (ib < 0 ? 1e9 : ib);
+    });
+  }
+
+  return [{ id: "main", label: "Main Bracket", sets: allSets }];
+}
+
+// Exact event lookup (same rule as matches.js): full slug, then unambiguous suffix.
+function findEvent(tournaments, rawSlug) {
+  const norm = s => (s || "").trim().toLowerCase().replace(/\/+$|^\/+/g, "");
+  const target = norm(rawSlug);
+  if (!target) return null;
+  const all = [];
+  tournaments.forEach(t => (t.events || []).forEach(ev => all.push(ev)));
+  const exact = all.find(ev => norm(ev.slug) === target);
+  if (exact) return exact;
+  const suffix = all.filter(ev => norm(ev.slug).endsWith("/" + target));
+  return suffix.length && suffix.every(ev => norm(ev.slug) === norm(suffix[0].slug)) ? suffix[0] : null;
+}
+
+// Load the event named in the iframe URL (?event=<event slug>&phaseGroupId=<id>)
 async function loadBracketData() {
   try {
-    const res = await fetch(withBase(`/data/brackets.json?t=${Date.now()}`));
+    const params = new URLSearchParams(window.location.search);
+    const eventSlug = params.get("event");
+    if (!eventSlug) return { error: "No event specified." };
+
+    const res = await fetch(withBase("/data/brackets.json"));
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
     const liveData = await res.json();
+    const tournaments = liveData?.data?.currentUser?.tournaments?.nodes || [];
 
-    let tournaments = liveData?.data?.currentUser?.tournaments?.nodes 
-                   || liveData?.data?.tournaments?.nodes
-                   || liveData?.data?.tournaments 
-                   || liveData?.tournaments 
-                   || (Array.isArray(liveData) ? liveData : []);
-
-    let foundEvent = null;
-
-    if (tournaments.length > 0) {
-      const firstT = tournaments[0];
-      const events = firstT.events || firstT.events?.nodes || [];
-      foundEvent = events[0] || firstT;
-    } else if (liveData?.data?.event) {
-      foundEvent = liveData.data.event;
-    } else {
-      foundEvent = liveData;
-    }
+    const foundEvent = findEvent(tournaments, eventSlug);
+    if (!foundEvent) return { error: `Event not found: ${eventSlug}` };
 
     const options = extractAllOptionsFromEvent(foundEvent);
-    globalTournamentData = { options };
+    const requested = params.get("phaseGroupId");
+    const initialId = options.some(o => o.id === String(requested)) ? String(requested) : options[0]?.id;
+    globalTournamentData = { options, initialId };
     return globalTournamentData;
 
   } catch (err) {
@@ -226,12 +196,12 @@ function renderBracketBlock(sectionTitleText, sortedRounds) {
       html += `
         <div class="match">
           <div class="team match-top">
-            <span class="name">${p1Name}</span>
-            <span class="score">${score1}</span>
+            <span class="name">${escapeHtml(p1Name)}</span>
+            <span class="score">${escapeHtml(score1)}</span>
           </div>
           <div class="team match-bottom">
-            <span class="name">${p2Name}</span>
-            <span class="score">${score2}</span>
+            <span class="name">${escapeHtml(p2Name)}</span>
+            <span class="score">${escapeHtml(score2)}</span>
           </div>
         </div>`;
     });
@@ -322,7 +292,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const data = await loadBracketData();
   if (data.options && data.options.length > 0) {
-    setupBracketSelector(data.options, data.options[0].id);
-    displaySelectedBracket(data.options[0].id);
+    setupBracketSelector(data.options, data.initialId);
+    displaySelectedBracket(data.initialId);
+  } else {
+    const container = document.getElementById("bracket-container");
+    if (container) container.innerHTML = `<div style="color:#8b9bb4; padding:20px;">${escapeHtml(data.error || "No bracket data available for this event.")}</div>`;
   }
 });

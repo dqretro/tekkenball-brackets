@@ -28,14 +28,28 @@ function stripClanTag(name) {
     .trim();
 }
 
+// Fallback only: mirrors Slugs.ForPlayer in the sync tool (Program.cs).
+// Prefer the precomputed slug in the data (players.json "slug" / entrant "playerSlug").
 function createSlug(name) {
   if (!name) return "";
-  return stripClanTag(name)
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, "")
+  const tag = name.includes("|") ? name.split("|").pop() : name;
+  return tag.trim().toLowerCase()
+    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9_\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function entrantSlug(entrant) {
+  return entrant?.playerSlug || createSlug(entrant?.name);
+}
+
+// Exact slug match when the data has slugs; name matching only for older data.
+function entrantIsPlayer(entrant, playerName, playerSlug) {
+  if (!entrant) return false;
+  if (playerSlug && entrant.playerSlug) return entrant.playerSlug === playerSlug;
+  return namesMatch(entrant.name, playerName);
 }
 
 function escapeHtml(str) {
@@ -60,7 +74,7 @@ function namesMatch(a, b) {
   );
 }
 
-async function loadHeadToHeadData(playerName) {
+async function loadHeadToHeadData(playerName, playerSlug = null) {
   const opponentStats = {};
   let totalWins = 0;
   let totalLosses = 0;
@@ -77,7 +91,7 @@ async function loadHeadToHeadData(playerName) {
         const standings = ev.standings?.nodes || [];
         const sets = ev.sets?.nodes || [];
 
-        const standingNode = standings.find(n => namesMatch(n.entrant?.name, playerName));
+        const standingNode = standings.find(n => entrantIsPlayer(n.entrant, playerName, playerSlug));
         if (!standingNode) continue;
 
         const entrantId = standingNode.entrant?.id;
@@ -98,12 +112,13 @@ async function loadHeadToHeadData(playerName) {
 
           if (opp?.entrant?.name) {
             const oppName = stripClanTag(opp.entrant.name);
-            if (!opponentStats[oppName]) {
-              opponentStats[oppName] = { name: oppName, wins: 0, losses: 0, total: 0 };
+            const oppKey = entrantSlug(opp.entrant) || oppName;
+            if (!opponentStats[oppKey]) {
+              opponentStats[oppKey] = { name: oppName, slug: entrantSlug(opp.entrant), wins: 0, losses: 0, total: 0 };
             }
-            if (isWin) opponentStats[oppName].wins++;
-            else opponentStats[oppName].losses++;
-            opponentStats[oppName].total++;
+            if (isWin) opponentStats[oppKey].wins++;
+            else opponentStats[oppKey].losses++;
+            opponentStats[oppKey].total++;
           }
         });
       }
@@ -125,7 +140,7 @@ function renderTable(data) {
   }
 
   tbody.innerHTML = data.map(opp => {
-    const oppSlug = createSlug(opp.name);
+    const oppSlug = opp.slug || createSlug(opp.name);
     const oppProfileUrl = withBase(`/pages/player-profiles/players/players.html?player=${encodeURIComponent(oppSlug)}`);
     
     return `
@@ -182,8 +197,11 @@ async function initHeadToHead() {
     return;
   }
 
-  const playerSlug = createSlug(decodeURIComponent(rawParam));
-  
+  // The param is normally a players.json slug already (e.g. "nubi-2"); normalise old-style links.
+  const decodedParam = decodeURIComponent(rawParam);
+  let playerSlug = decodedParam.toLowerCase();
+  let playerName = decodedParam;
+
   const backLink = document.getElementById("backToProfileLink");
   if (backLink) {
     backLink.href = withBase(`/pages/player-profiles/players/players.html?player=${encodeURIComponent(playerSlug)}`);
@@ -193,8 +211,13 @@ async function initHeadToHead() {
     const res = await fetch(withBase("/data/players.json"));
     if (res.ok) {
       const players = await res.json();
-      const player = players.find(p => createSlug(p.name) === playerSlug || (p.slug && createSlug(p.slug) === playerSlug));
+      const player =
+        players.find(p => (p.slug || createSlug(p.name)) === playerSlug) ||
+        players.find(p => createSlug(p.name) === createSlug(decodedParam));
       if (player) {
+        playerSlug = player.slug || createSlug(player.name);
+        playerName = player.name;
+        if (backLink) backLink.href = withBase(`/pages/player-profiles/players/players.html?player=${encodeURIComponent(playerSlug)}`);
         document.getElementById("playerName").textContent = stripClanTag(player.name);
         const avatarImg = document.querySelector(".player-avatar-modern");
         if (avatarImg && player.avatar) avatarImg.src = player.avatar;
@@ -204,7 +227,7 @@ async function initHeadToHead() {
     }
   } catch {}
 
-  const { opponentStats, totalWins, totalLosses } = await loadHeadToHeadData(decodeURIComponent(rawParam));
+  const { opponentStats, totalWins, totalLosses } = await loadHeadToHeadData(playerName, playerSlug);
 
   allOpponentsData = Object.values(opponentStats).map(opp => ({
     ...opp,

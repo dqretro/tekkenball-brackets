@@ -21,12 +21,16 @@ function withBase(path) {
 // ---------------------------
 // Slugification Utility (Matches players-search.js)
 // ---------------------------
+// Fallback only: mirrors Slugs.ForPlayer in the sync tool. Entrants carry "playerSlug".
 function createSlug(name) {
-  return (name || "")
-    .toLowerCase()
-    .replace(/\s*\|\s*/g, "-")
+  if (!name) return "";
+  const tag = name.includes("|") ? name.split("|").pop() : name;
+  return tag.trim().toLowerCase()
+    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9_\s-]/g, "")
     .replace(/\s+/g, "-")
-    .replace(/[^\w-]/g, "");
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 // ---------------------------
@@ -83,9 +87,10 @@ function resolvePlayerAvatar(entrant, name) {
   return fallback;
 }
 
-function getPlayerProfileUrl(name) {
+function getPlayerProfileUrl(name, entrant = null) {
   if (!name) return "#";
-  return withBase(`pages/player-profiles/players/players.html?player=${createSlug(name)}`);
+  const slug = entrant?.playerSlug || createSlug(name);
+  return withBase(`pages/player-profiles/players/players.html?player=${encodeURIComponent(slug)}`);
 }
 
 // ---------------------------
@@ -328,7 +333,7 @@ async function renderOverallStats(eventData) {
 
       return `
         <div class="stat-item">
-          <a href="${getPlayerProfileUrl(entrantName)}" style="color:inherit; text-decoration:none;">
+          <a href="${getPlayerProfileUrl(entrantName, entrant)}" style="color:inherit; text-decoration:none;">
             <img src="${avatarUrl}" 
                  onerror="this.onerror=null;this.src='${fallbackAvatar}';" 
                  alt="${entrantName}">
@@ -384,13 +389,13 @@ function renderBracketRounds(eventData) {
       const p2Avatar = resolvePlayerAvatar(p2, p2?.name);
 
       const p1Name = p1?.name ? `
-        <a href="${getPlayerProfileUrl(p1.name)}" style="color:inherit; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+        <a href="${getPlayerProfileUrl(p1.name, p1)}" style="color:inherit; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
           <img src="${p1Avatar}" onerror="this.onerror=null;this.src='${fallbackAvatar}';" style="width:20px; height:20px; border-radius:50%; object-fit:cover;">
           <span>${p1.name}</span>
         </a>` : "TBD";
 
       const p2Name = p2?.name ? `
-        <a href="${getPlayerProfileUrl(p2.name)}" style="color:inherit; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+        <a href="${getPlayerProfileUrl(p2.name, p2)}" style="color:inherit; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
           <span>${p2.name}</span>
           <img src="${p2Avatar}" onerror="this.onerror=null;this.src='${fallbackAvatar}';" style="width:20px; height:20px; border-radius:50%; object-fit:cover;">
         </a>` : "TBD";

@@ -160,14 +160,30 @@ function stripClanTag(name) {
     .trim();
 }
 
+// Fallback only: mirrors Slugs.ForPlayer in the sync tool (Program.cs).
+// Prefer the precomputed slug in the data (players.json "slug" / entrant "playerSlug").
 function createSlug(name) {
   if (!name) return "";
-  return stripClanTag(name)
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, "")
+  const tag = name.includes("|") ? name.split("|").pop() : name;
+  return tag.trim().toLowerCase()
+    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9_\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+// Slug of an entrant object: data-provided playerSlug, else computed from its name.
+function entrantSlug(entrant) {
+  return entrant?.playerSlug || createSlug(entrant?.name);
+}
+
+// True if this entrant is the profile's player. Uses exact slugs when the data has them
+// (avoids fuzzy collisions like "Hex" vs "zhexy_30"); falls back to name matching.
+function entrantIsPlayer(entrant, playerName, playerSlug) {
+  if (!entrant) return false;
+  if (playerSlug && entrant.playerSlug) return entrant.playerSlug === playerSlug;
+  return namesMatch(entrant.name, playerName);
 }
 
 function capitalizeWords(str) {
@@ -305,7 +321,7 @@ function getOrCreateCustomTooltip() {
 // =============================================================================
 // GLOBAL STANDINGS LEADERBOARD RANK CALCULATOR
 // =============================================================================
-async function calculateGlobalLeaderboardRank(targetPlayerName) {
+async function calculateGlobalLeaderboardRank(targetPlayerName, targetSlug = null) {
   try {
     const rawData = await fetchJsonSafe("/data/brackets.json");
     const rawTournaments = rawData?.data?.currentUser?.tournaments?.nodes || [];
@@ -320,17 +336,18 @@ async function calculateGlobalLeaderboardRank(targetPlayerName) {
           (set.slots || []).forEach(slot => {
             if (!slot.entrant?.name) return;
             const name = stripClanTag(slot.entrant.name);
-            if (!standingsMap[name]) {
-              standingsMap[name] = { name, wins: 0, losses: 0, total: 0 };
+            const key = slot.entrant.playerSlug || name;
+            if (!standingsMap[key]) {
+              standingsMap[key] = { name, slug: slot.entrant.playerSlug || null, wins: 0, losses: 0, total: 0 };
             }
 
             const isWinner = String(slot.entrant.id) === String(set.winnerId);
             if (isWinner) {
-              standingsMap[name].wins++;
+              standingsMap[key].wins++;
             } else {
-              standingsMap[name].losses++;
+              standingsMap[key].losses++;
             }
-            standingsMap[name].total++;
+            standingsMap[key].total++;
           });
         });
       });
@@ -343,7 +360,8 @@ async function calculateGlobalLeaderboardRank(targetPlayerName) {
       return pctB - pctA;
     });
 
-    const rankIndex = leaderboard.findIndex(p => namesMatch(p.name, targetPlayerName));
+    const rankIndex = leaderboard.findIndex(p =>
+      (targetSlug && p.slug) ? p.slug === targetSlug : namesMatch(p.name, targetPlayerName));
     return rankIndex !== -1 ? rankIndex + 1 : null;
   } catch (err) {
     console.warn("Error computing global leaderboard rank:", err);
@@ -422,7 +440,7 @@ function getCharactersFromSets(sets, entrantId, entrantName, videogameName, loca
 // =============================================================================
 // AGGREGATION ENGINE
 // =============================================================================
-async function collectPlayerData(playerName) {
+async function collectPlayerData(playerName, playerSlug = null) {
   const charUsage = {};
   const gameCharUsage = {};
   const charStats = {};
@@ -467,7 +485,7 @@ async function collectPlayerData(playerName) {
         videogame = "Tekken 8";
       }
 
-      const standingNode = standings.find(n => namesMatch(n.entrant?.name, playerName));
+      const standingNode = standings.find(n => entrantIsPlayer(n.entrant, playerName, playerSlug));
       if (!standingNode) continue;
 
       const entrant = standingNode.entrant || {};
@@ -543,15 +561,16 @@ async function collectPlayerData(playerName) {
 
         if (opp?.entrant?.name) {
           const oppName = stripClanTag(opp.entrant.name);
-          if (!opponentStats[oppName]) {
-            opponentStats[oppName] = { wins: 0, losses: 0, total: 0 };
+          const oppKey = entrantSlug(opp.entrant) || oppName;
+          if (!opponentStats[oppKey]) {
+            opponentStats[oppKey] = { name: oppName, slug: entrantSlug(opp.entrant), wins: 0, losses: 0, total: 0 };
           }
           if (isWin) {
-            opponentStats[oppName].wins++;
+            opponentStats[oppKey].wins++;
           } else {
-            opponentStats[oppName].losses++;
+            opponentStats[oppKey].losses++;
           }
-          opponentStats[oppName].total++;
+          opponentStats[oppKey].total++;
         }
       });
       wins += evWins;
@@ -870,16 +889,16 @@ function renderPerGameCharacterBreakdown(gameCharUsage, stats) {
   }
 }
 
-function renderPlayedAgainst(opponentStats, playerName) {
+function renderPlayedAgainst(opponentStats, playerName, playerSlug = null) {
   const container = document.getElementById("playedAgainstList");
   if (!container) return;
 
   const totalOpponents = Object.keys(opponentStats || {}).length;
 
   const sorted = Object.entries(opponentStats || {})
-    .map(([name, s]) => {
+    .map(([key, s]) => {
       const winRatePct = s.total > 0 ? (s.wins / s.total) * 100 : 0;
-      return { name: stripClanTag(name), ...s, winRatePct };
+      return { ...s, name: stripClanTag(s.name || key), slug: s.slug || createSlug(s.name || key), winRatePct };
     })
     .sort((a, b) => b.total - a.total || b.wins - a.wins)
     .slice(0, 5);
@@ -901,7 +920,7 @@ function renderPlayedAgainst(opponentStats, playerName) {
 
   const listHtml = sorted.map(opp => {
     const winRate = Math.round(opp.winRatePct);
-    const playerLink = withBase(`/pages/player-profiles/players/players.html?player=${encodeURIComponent(createSlug(opp.name))}`);
+    const playerLink = withBase(`/pages/player-profiles/players/players.html?player=${encodeURIComponent(opp.slug)}`);
     return `
       <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 4px; align-items:center; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:0.60rem;">
         <a href="${playerLink}" style="color:var(--text, #fff); font-weight:600; text-decoration:none; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${escapeHtml(opp.name)}">
@@ -915,7 +934,7 @@ function renderPlayedAgainst(opponentStats, playerName) {
     `;
   }).join("");
 
-  const fullHistoryUrl = withBase(`/pages/player-profiles/players/head-to-head.html?player=${encodeURIComponent(createSlug(playerName))}`);
+  const fullHistoryUrl = withBase(`/pages/player-profiles/players/head-to-head.html?player=${encodeURIComponent(playerSlug || createSlug(playerName))}`);
 
   const buttonHtml = `
     <div style="margin-top: 0.60rem;">
@@ -950,12 +969,12 @@ async function populatePlayerProfile(player) {
 
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-  const playerData = await collectPlayerData(cleanPlayerName);
+  const playerData = await collectPlayerData(cleanPlayerName, player.slug || null);
   const { stats, startGgProfile, tournamentsList, opponentStats } = playerData;
   allTournamentsList = tournamentsList;
 
   // Compute Dynamic Leaderboard Rank
-  const rankIndex = await calculateGlobalLeaderboardRank(cleanPlayerName);
+  const rankIndex = await calculateGlobalLeaderboardRank(cleanPlayerName, player.slug || null);
   const rankDisplay = rankIndex ? `#${rankIndex}` : '';
 
   // 2. Expanded Team & Centered
@@ -1034,7 +1053,7 @@ async function populatePlayerProfile(player) {
     liveStreamUrl = cleanYt;
   }
 
-  renderPlayedAgainst(opponentStats, cleanPlayerName);
+  renderPlayedAgainst(opponentStats, cleanPlayerName, player.slug || null);
   setupQRCode(cleanPlayerName, player.slug, liveStreamUrl);
   renderPerGameCharacterBreakdown(stats.gameCharUsage, stats);
 
@@ -1234,10 +1253,13 @@ async function initPlayerProfilePage() {
     return;
   }
 
-  const foundPlayer = playersList.find(p => {
-    const slug = p.slug || createSlug(p.name);
-    return slug === playerParam.toLowerCase() || namesMatch(p.name, playerParam);
-  });
+  // Exact slug first (unique per player in players.json); fuzzy name match only as a fallback
+  // for old links, so e.g. "?player=hex" can never land on "zhexy_30".
+  const wanted = playerParam.toLowerCase();
+  const foundPlayer =
+    playersList.find(p => (p.slug || createSlug(p.name)) === wanted) ||
+    playersList.find(p => createSlug(p.name) === createSlug(playerParam)) ||
+    playersList.find(p => namesMatch(p.name, playerParam));
 
   if (foundPlayer) {
     await populatePlayerProfile(foundPlayer);
@@ -1245,13 +1267,15 @@ async function initPlayerProfilePage() {
     const rawData = await fetchJsonSafe("/data/brackets.json");
     const rawTournaments = rawData?.data?.currentUser?.tournaments?.nodes || [];
     let foundEntrantName = null;
+    let foundSlug = null;
 
     for (const t of rawTournaments) {
       for (const ev of t.events || []) {
         for (const st of ev.standings?.nodes || []) {
           const name = st.entrant?.name;
-          if (name && (createSlug(name) === playerParam.toLowerCase() || namesMatch(name, playerParam))) {
+          if (name && (entrantSlug(st.entrant) === wanted || namesMatch(name, playerParam))) {
             foundEntrantName = stripClanTag(name);
+            foundSlug = entrantSlug(st.entrant);
             break;
           }
         }
@@ -1261,7 +1285,7 @@ async function initPlayerProfilePage() {
     }
 
     if (foundEntrantName) {
-      await populatePlayerProfile({ name: foundEntrantName, slug: createSlug(foundEntrantName) });
+      await populatePlayerProfile({ name: foundEntrantName, slug: foundSlug });
     } else {
       showNotFound(`Player "${playerParam}" not found.`);
     }

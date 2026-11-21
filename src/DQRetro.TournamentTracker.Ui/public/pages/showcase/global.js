@@ -200,7 +200,9 @@ async function loadGlobalData() {
             : rawName.toLowerCase().trim();
 
           const entrantId = slot.entrant.id;
-          const key       = `${cleanName}_${gameLabel}`;
+          // Prefer the sync tool's unique slug; fall back to the cleaned name for older data.
+          const slug      = slot.entrant.playerSlug || null;
+          const key       = `${slug || cleanName}_${gameLabel}`;
 
           const countryCode  = slot.entrant.participants?.[0]?.user?.location?.country
                             || slot.entrant.participants?.[0]?.countryCode
@@ -212,7 +214,7 @@ async function loadGlobalData() {
 
           if (!playerStats[key]) {
             playerStats[key] = {
-              name: rawName, cleanName, game: gameLabel,
+              name: rawName, cleanName, slug, game: gameLabel,
               year: tournamentYear, region,
               wins: 0, losses: 0,
               charCounts: {}
@@ -251,7 +253,7 @@ async function loadGlobalData() {
   // Aggregate across all games → "All Games" record
   const globalMap = {};
   gameRecords.forEach(p => {
-    const k = p.cleanName;
+    const k = p.slug || p.cleanName;
     if (!globalMap[k]) {
       globalMap[k] = { ...p, game: "All Games", primaryGame: p.game, charCounts: { ...p.charCounts } };
     } else {
@@ -343,7 +345,7 @@ function updateLeaderboard() {
        onerror="this.style.display='none'"
        title="${p.region.toUpperCase()}">`;
 
-    const profileUrl = withBase(`/pages/player-profiles/players/players.html?player=${encodeURIComponent(p.cleanName)}`);
+    const profileUrl = withBase(`/pages/player-profiles/players/players.html?player=${encodeURIComponent(p.slug || p.cleanName)}`);
 
     const row = document.createElement("tr");
     row.innerHTML = `
