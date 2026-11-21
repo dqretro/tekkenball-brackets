@@ -1,0 +1,456 @@
+/* -------- Default link styling -------- */
+a,
+a:visited {
+  color: #99C3FF;
+}
+
+a:hover,
+a:focus {
+  color: #99C3FF;
+}
+
+/* -------- Navigation & Back Button -------- */
+.navigation-bar {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.btn-back {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* -------- Profile layout -------- */
+.profile-container-modern {
+  display: flex;
+  gap: 40px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+/* Left Panel Header Elements */
+.profile-left-modern {
+  flex: 0 0 260px;
+  min-width: 200px;
+  text-align: center;
+  padding: 12px;
+}
+
+.player-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 8px 0 2px 0;
+  text-align: center;
+  width: 100%;
+  display: block;
+}
+
+.player-team {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.player-country {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #a1a1aa;
+  margin-bottom: 12px;
+}
+
+/* Avatar */
+.player-avatar-modern {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #6f42c1;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.45);
+  margin-bottom: 12px;
+  background: linear-gradient(180deg,#222,#111);
+}
+
+/* Right Panel */
+.profile-right-modern {
+  flex: 1 1 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 280px;
+}
+
+/* Card style */
+.card {
+  background-color: #191919;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+/* Stats & Points Card */
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.rank-badge {
+  font-size: 0.45em;
+  color: #ffd700;
+  vertical-align: super;
+  margin-left: 2px;
+  font-weight: 800;
+}
+
+.stat-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e6e6e6;
+  margin-top: 0.3rem;
+}
+
+.stats-grid-modern {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.stat-card {
+  background-color: #222;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 600;
+  color: #e6e6e6;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2);
+}
+
+/* Achievements badges */
+.badge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+.badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #6f42c1 0%, #9b59b6 100%);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.35);
+  white-space: nowrap;
+}
+
+/* -------- Character row and icons -------- */
+.character-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+
+.character-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.character-box p {
+  margin: 0;
+  font-weight: 700;
+  color: #e6e6e6;
+  font-size: 0.95rem;
+}
+
+.sub-icons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Character Card Containers */
+.characters-card #charactersList {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  width: 100%;
+}
+
+/* Flatten category containers so icons flow seamlessly side-by-side */
+.char-category-group,
+.char-category-grid {
+  display: contents !important;
+}
+
+.char-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.char-icon-wrapper:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.char-icon-wrapper img,
+.character-icon {
+  width: 38px !important;
+  height: 38px !important;
+  object-fit: cover !important;
+  object-position: center top;
+  border-radius: 6px;
+  display: block;
+  transition: transform 150ms ease;
+}
+
+.char-icon-wrapper img:hover,
+.character-icon:hover {
+  transform: scale(1.1);
+}
+
+/* -------- Tournament table styles -------- */
+.tournament-history {
+  margin-top: 26px;
+}
+
+.tournament-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: #141414;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+}
+
+.tournament-table thead {
+  background-color: #1d1d1d;
+}
+
+.tournament-table th,
+.tournament-table td {
+  padding: 12px 14px;
+  text-align: left;
+  color: #dcdcdc;
+  font-size: 0.95rem;
+}
+
+.tournament-table th {
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.tournament-table tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  transition: background 0.18s ease;
+}
+
+.tournament-table tbody tr:hover {
+  background-color: #1f1f1f;
+}
+
+/* -------- Upcoming list styles -------- */
+.upcoming-tournaments ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #ddd;
+}
+.upcoming-tournaments li {
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.02);
+}
+
+/* -------- Inline Character Rows -------- */
+.inline-character-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.inline-character-row p {
+  margin: 0;
+  font-weight: 700;
+  color: #e6e6e6;
+  font-size: 0.95rem;
+}
+
+/* -------- Head-to-Head Statistics Header -------- */
+.player-header,
+.player-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+.player-header {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #8e8e93;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 6px;
+}
+
+.col-name { text-align: left; }
+.col-sets { text-align: center; }
+.col-wins { text-align: center; color: #4cd964; }
+.col-losses { text-align: center; color: #ff3b30; }
+.col-pct { text-align: right; }
+
+/* -------- QR Code Card -------- */
+.qr-card {
+  margin-top: 1em;
+  text-align: left;
+}
+
+.qr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.qr-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  background: rgba(111, 66, 193, 0.25);
+  border: 1px solid rgba(111, 66, 193, 0.5);
+  color: #c4b5fd;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.qr-tabs {
+  display: flex;
+  gap: 4px;
+  background: #141414;
+  padding: 4px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.qr-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #8e8e93;
+  padding: 6px 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.qr-tab:hover {
+  color: #e6e6e6;
+}
+
+.qr-tab.active {
+  background: #222;
+  color: #ffffff;
+}
+
+.qr-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+#qrcode img,
+#qrcode canvas {
+  border-radius: 6px;
+  display: block;
+  margin: 0 auto;
+}
+
+.qr-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.qr-btn {
+  background: #222;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f4f4f5;
+  padding: 7px 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.qr-btn:hover {
+  background: #2a2a2a;
+}
+
+.qr-btn.primary {
+  background: #6f42c1;
+  border-color: #9b59b6;
+}
+
+.qr-btn.primary:hover {
+  background: #5a32a3;
+}
+
+/* -------- Responsive adjustments -------- */
+@media (max-width: 900px) {
+  .profile-container-modern {
+    gap: 20px;
+  }
+  .player-avatar-modern { width: 140px; height: 140px; }
+  .character-icon,
+  .char-icon-wrapper img { width: 34px !important; height: 34px !important; }
+}
+
+@media (max-width: 600px) {
+  .profile-container-modern {
+    flex-direction: column;
+    align-items: center;
+  }
+  .profile-left-modern { width: 100%; text-align: center; }
+  .profile-right-modern { width: 100%; }
+  .character-row { justify-content: center; gap: 14px; }
+}

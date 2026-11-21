@@ -1,0 +1,16 @@
+[
+  {
+    "matches": [
+      { "top": { "name": "Orlando Jetsetters", "character": "Heihachi", "seed": 1, "score": 2 },
+        "bottom": { "name": "D.C. Senators", "character": "Kazuya", "seed": 8, "score": 1 } },
+      { "top": { "name": "New Orleans Rockstars", "character": "Paul", "seed": 4, "score": 1 },
+        "bottom": { "name": "West Virginia Runners", "character": "Nina", "seed": 5, "score": 2 } }
+    ]
+  },
+  {
+    "matches": [
+      { "top": { "name": "Orlando Jetsetters", "character": "Heihachi", "seed": 1, "score": 1 },
+        "bottom": { "name": "West Virginia Runners", "character": "Nina", "seed": 5, "score": 2 } }
+    ]
+  }
+]

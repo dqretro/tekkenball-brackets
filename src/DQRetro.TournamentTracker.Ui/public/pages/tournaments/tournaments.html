@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tournaments | DQRetro</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+  <style>
+    /* Tournament card grid */
+    .tournament-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 8px;
+    }
+
+    .tournament-card {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+      box-shadow: var(--shadow-1);
+    }
+    .tournament-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(124,92,255,.4);
+      box-shadow: var(--shadow-2);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 14px 14px 0;
+      gap: 10px;
+    }
+
+    .tournament-icon {
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .card-body {
+      padding: 12px 14px;
+      flex: 1;
+    }
+    .card-body p { margin: 4px 0; font-size: 14px; color: var(--muted); }
+    .tournament-title { font-size: 16px; margin: 0 0 8px; color: var(--text); }
+
+    .card-footer {
+      padding: 12px 14px 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    /* Badge colours */
+    .badge-upcoming  { background: rgba(124,92,255,.2); color: #a78bfa; border-color: rgba(124,92,255,.4); }
+    .badge-live      { background: rgba(34,197,94,.15); color: #4ade80;  border-color: rgba(34,197,94,.4); }
+    .badge-completed { background: rgba(100,116,139,.15); color: #94a3b8; border-color: rgba(100,116,139,.4); }
+
+    /* Filter row */
+    .filter-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .filter-row input,
+    .filter-row select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 14px;
+    }
+    .filter-row input { flex: 1; min-width: 200px; }
+  </style>
+</head>
+<body class="dark">
+
+<div id="nav-placeholder"></div>
+
+<div class="container">
+  <h1>Tournaments</h1>
+  <p style="color:var(--muted); margin-bottom:20px;">
+    DQRetro &amp; SRKade hosted tournaments and events.
+  </p>
+
+  <!-- Filters -->
+  <div class="filter-row">
+    <input
+      type="text"
+      id="searchFilter"
+      placeholder="🔍 Search tournaments or games..."
+    >
+    <select id="sortFilter" class="filter-dropdown">
+      <option value="date-desc">Latest</option>
+      <option value="date-asc">Oldest</option>
+      <option value="alpha-asc">Alphabetical (A-Z)</option>
+      <option value="alpha-desc">Alphabetical (Z-A)</option>
+    </select>
+    <select id="categoryFilter">
+      <option value="all">All Types</option>
+      <option value="offline">Offline</option>
+      <option value="online">Online</option>
+    </select>
+    <select id="statusFilter">
+      <option value="all">All Statuses</option>
+      <option value="upcoming">Upcoming</option>
+      <option value="ongoing">Live</option>
+      <option value="completed">Completed</option>
+    </select>
+  </div>
+
+  <!-- Tournament Cards -->
+  <div id="tournamentList" class="tournament-grid">
+    <!-- Populated by tournaments.js -->
+  </div>
+</div>
+
+<!-- Footer -->
+<div id="footer-placeholder"></div>
+
+<script src="../../script.js"></script>
+<script src="tournaments.js"></script>
+<script>
+  loadNav();
+  loadFooter();
+</script>
+
+</body>
+</html>

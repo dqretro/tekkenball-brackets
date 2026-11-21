@@ -1,0 +1,117 @@
+# Refreshes brackets.json / players.json from start.gg and redeploys the site.
+#
+# Secrets (Settings -> Secrets and variables -> Actions):
+#   STARTGG_API_KEY  required. Same name the sync tool reads locally
+#                    (dotnet user-secrets / env var).
+#
+# Flow: run sync tool -> validate -> commit ONLY the two data files if they
+# changed -> deploy to GitHub Pages (main only) via static.yml.
+# The sync tool refuses to overwrite data on auth errors, empty fetches or a
+# >50% drop in tournaments (use the "force" input if a drop is expected).
+#
+# Note: scheduled runs and the "Run workflow" button only exist once this file
+# is on the default branch (main).
+name: Refresh start.gg data
+
+on:
+  schedule:
+    - cron: "17 5 * * *"   # daily, 05:17 UTC
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Allow a large drop in tournament count (--force)"
+        type: boolean
+        default: false
+      deploy:
+        description: "Deploy to GitHub Pages after a data change (main only)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: data-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Fetch, validate and commit data
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write   # push the data commit
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+      sha: ${{ steps.commit.outputs.sha }}
+    env:
+      PROJECT: src/DQRetro.TournamentTracker.Startgg/DQRetro.TournamentTracker.Startgg.csproj
+      DATA_DIR: src/DQRetro.TournamentTracker.Ui/public/data
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Check secret
+        env:
+          STARTGG_API_KEY: ${{ secrets.STARTGG_API_KEY }}
+        run: |
+          if [ -z "$STARTGG_API_KEY" ]; then
+            echo "::error::Repository secret STARTGG_API_KEY is not set."
+            exit 1
+          fi
+
+      - name: Run sync tool
+        env:
+          STARTGG_API_KEY: ${{ secrets.STARTGG_API_KEY }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          args=()
+          if [ "$FORCE" = "true" ]; then args+=(--force); fi
+          dotnet run --project "$PROJECT" --configuration Release -- "${args[@]}"
+
+      - name: Validate data
+        run: node .github/scripts/validate-data.js "$DATA_DIR"
+
+      - name: Commit data if changed
+        id: commit
+        run: |
+          git add -- "$DATA_DIR/brackets.json" "$DATA_DIR/players.json"
+          if git diff --cached --quiet; then
+            echo "No data changes."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Only the two data files may ever be committed by this job.
+          extra=$(git diff --cached --name-only | grep -v -E "^$DATA_DIR/(brackets|players)\.json$" || true)
+          if [ -n "$extra" ]; then
+            echo "::error::Unexpected staged files: $extra"
+            exit 1
+          fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "chore(data): refresh start.gg data"
+          git pull --rebase
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    name: Deploy site
+    needs: refresh
+    if: >-
+      needs.refresh.outputs.changed == 'true' &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'schedule' || inputs.deploy)
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/static.yml
+    with:
+      ref: ${{ needs.refresh.outputs.sha }}
+    secrets: inherit

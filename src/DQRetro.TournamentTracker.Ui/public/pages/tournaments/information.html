@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Information | DQRetro</title>
+  <link rel="icon" type="image/png" href="../../images/dqretro/icons/dqretro_startgg_circle_purpleyblue.png">
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+  <style>
+    .info-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-top: 24px;
+    }
+    @media (max-width: 850px) {
+      .info-grid { grid-template-columns: 1fr; }
+    }
+    .info-card {
+      background: var(--card-bg, #1e1e1e);
+      border: 1px solid var(--line, #333);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .info-card h2 {
+      margin-top: 0;
+      font-size: 20px;
+      border-bottom: 1px solid var(--line, #333);
+      padding-bottom: 10px;
+      color: var(--text, #fff);
+    }
+    .prize-list, .rule-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .prize-list li, .rule-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line, #2a2a2a);
+      font-size: 15px;
+    }
+    .prize-list li:last-child, .rule-list li:last-child {
+      border-bottom: none;
+    }
+    .prize-badge {
+      font-weight: bold;
+      color: #00ff88;
+      float: right;
+    }
+    .startgg-banner {
+      background: linear-gradient(135deg, #111 0%, #222 100%);
+      border: 1px solid var(--line, #444);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body class="dark">
+
+  <div id="nav-placeholder"></div>
+
+  <!-- Hero Banner -->
+  <section class="hero" style="padding: 40px 20px; text-align: center;">
+    <div class="container">
+      <h1 id="event-title">Tournament Information</h1>
+      <p id="event-subtitle" style="font-size:1.1rem; color: var(--muted, #888); max-width:600px; margin:10px auto;">
+        Welcome to the official event overview, complete ruleset, prize breakdown, and Start.gg schedule details.
+      </p>
+      <div id="back-to-events" style="margin-top: 15px;"></div>
+    </div>
+  </section>
+
+  <div class="container info-grid">
+    
+    <!-- Main Content Column -->
+    <main class="main-info">
+
+      <!-- Event Ruleset -->
+      <div class="info-card">
+        <h2>Tournament Rules & Format</h2>
+        <ul class="rule-list">
+          <li><strong>Game Version:</strong> Latest public title update / patch.</li>
+          <li><strong>Format:</strong> Double Elimination (Best of 3 Sets; Finals Best of 5).</li>
+          <li><strong>Game Settings:</strong> Standard 3-round timer / default ball settings.</li>
+          <li><strong>Stage Selection:</strong> Random for Match 1; loser picks stage for subsequent matches.</li>
+          <li><strong>Character Pick:</strong> Double blind selection available upon request to match admin.</li>
+          <li><strong>Disconnections:</strong> Mid-game disconnects result in a single round loss for the disconnected player unless mutually agreed otherwise.</li>
+        </ul>
+      </div>
+
+      <!-- Schedule & Timeline -->
+      <div class="info-card">
+        <h2>Event Schedule</h2>
+        <ul class="rule-list">
+          <li><strong>Check-in Opens:</strong> 30 Minutes prior to pool start time</li>
+          <li><strong>Pools Phase:</strong> Wave 1 starts at scheduled start time</li>
+          <li><strong>Top Cut / Finals:</strong> Immediately following pool resolution</li>
+        </ul>
+      </div>
+
+      <!-- Live Stream & Media -->
+      <div class="info-card">
+        <h2>Broadcast & Media</h2>
+        <p>This event is streamed live on official channels. Check back during event hours for live links and VOD updates.</p>
+        <a href="../gallery/gallery-media.html" class="button" style="display: inline-block; margin-top: 10px;">View Event Media Gallery</a>
+      </div>
+
+    </main>
+
+    <!-- Sidebar Column -->
+    <aside class="sidebar-info">
+
+      <!-- Start.gg Direct Hub -->
+      <div class="info-card startgg-banner">
+        <h3 style="margin-top:0;">Start.gg Integration</h3>
+        <p style="font-size:13px; color:#aaa; margin-bottom:15px;">For live seedings, pools, and interactive progression, visit the official Start.gg portal.</p>
+        <a id="startgg-direct-btn" href="https://start.gg" target="_blank" class="button primary" style="width:100%; box-sizing:border-box;">Open on Start.gg ↗</a>
+      </div>
+
+      <!-- Prize Pool Breakdown -->
+      <div class="info-card">
+        <h2>Prize Pool</h2>
+        <ul class="prize-list">
+          <li>1st Place <span class="prize-badge">60%</span></li>
+          <li>2nd Place <span class="prize-badge">30%</span></li>
+          <li>3rd Place <span class="prize-badge">10%</span></li>
+        </ul>
+      </div>
+
+      <!-- Tournament Metadata Summary -->
+      <div class="info-card">
+        <h2>Event Summary</h2>
+        <p style="font-size: 14px; margin: 6px 0;"><strong>Entrants:</strong> <span id="entrant-count">Loading...</span></p>
+        <p style="font-size: 14px; margin: 6px 0;"><strong>Location:</strong> Online / Global</p>
+        <p style="font-size: 14px; margin: 6px 0;"><strong>Organizer:</strong> DQRetro</p>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="../../script.js"></script>
+  <script>
+    loadNav();
+    loadFooter();
+
+    // Pull tournament parameters from URL
+    document.addEventListener("DOMContentLoaded", async () => {
+      const params = new URLSearchParams(window.location.search);
+      const rawSlug = params.get("slug");
+      
+      if (rawSlug) {
+        const startggBtn = document.getElementById("startgg-direct-btn");
+        if (startggBtn) {
+          startggBtn.href = `https://start.gg/${rawSlug}`;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

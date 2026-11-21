@@ -1,0 +1,67 @@
+{
+  "_comment": "Manual character overrides for events where start.gg has no character reporting. Keyed by event slug. Player name matching is case-insensitive partial match.",
+  "events": {
+    "tournament/vsfighting-xiv/event/def-jam-fight-for-ny-hosted-by-dqretro": {
+      "playerCharacters": {
+        "CER | Homeless":       ["slick-rick", "teck"],
+        "PND Ketchup":         ["bonecrusher", "skull"],
+        "Basil":               ["david-banner"],
+        "dWo | That Flexican": ["ludacris"],
+        "TWS | The Janitor":   ["crack"],
+        "RDE | Wonder Ham":    ["ghostface-killah"],
+        "DQ | SlawPro":        ["doc"],
+        "CC | WheelchairDude": ["sticky-fingaz"]
+      }
+    },
+    "tournament/tekken-ball-vsfighting-xi/event/tekken-ball-double-elimination": {
+      "playerCharacters": {
+        "PND | Strykie":               ["yoshimitsu"],
+        "MBA | SeanSymphony":          ["law"],
+        "BCF | RIF | Geowesome":       ["law"],
+        "DQ | SlawPro":                ["anna"],
+        "King Jae":                    ["law"],
+        "DQ / SRKade | ProtonicCobra": ["law", "bryan", "heihachi"],
+        "Sponchy":                     ["anna"],
+        "TKC | | -]. TEMPHUiBIS .[-": ["king"],
+        "Hamptonnon":                  ["paul", "law"],
+        "MBA | Icarus":                ["law"],
+        "Tibetano":                    ["gon", "paul"],
+        "RazzorBlack":                 ["king", "paul"],
+        "EssOPhysics":                 ["bryan"],
+        "JustATreatMan":               ["lei"],
+        "Shirdel":                     ["anna", "jin"],
+        "AliceNoon":                   ["julia"],
+        "UchihaJorg":                  ["xiaoyu"],
+        "JoeyTCB":                     ["paul", "law"],
+        "Niam Raeb":                   ["ogre", "kuma", "mokujin"],
+        "Kozmo_":                      ["anna"],
+        "Tezzaron":                    ["ogre"],
+        "Nebbo":                       ["anna"],
+        "FizzyBreezy":                 ["hwoarang"],
+        "ToastyFujin":                 ["law", "eddy"],
+        "DBA":                         ["king"],
+        "TKS":                         ["lei"],
+        "SatyrIcon":                   ["ogre", "heihachi"],
+        "Crystal_City_Jayne":          ["bryan"],
+        "Yingah":                      ["anna"],
+        "Mathius Wolfbrok":            ["paul"],
+        "SpliceRGX":                   ["law", "xiaoyu"],
+        "KingSpeedy":                  ["eddy"],
+        "Ryan Hart":                   ["heihachi", "paul"],
+        "Ellroy678":                   ["paul"],
+        "Quinny":                      ["bryan"],
+        "Evaangelos":                  ["anna"],
+        "XXASOMEAXX":                  ["law"]
+      }
+    },
+    "tournament/elfm-may-the-final-fight/event/elfm-tekken-ball": {
+      "playerCharacters": {
+        "PND | Strykie":               ["yoshimitsu"],
+        "MBA | SeanSymphony":          ["law"],
+        "BCF | RIF | Geowesome":       ["law"],
+        "DQ | SlawPro":                ["anna"],
+        "TKC | | -]. TEMPHUiBIS .[-": ["king"]
+      }
+    }
+  }
+}

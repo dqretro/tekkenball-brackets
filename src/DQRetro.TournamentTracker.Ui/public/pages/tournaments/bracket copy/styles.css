@@ -1,0 +1,374 @@
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700');
+
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: 'source sans pro', sans-serif;
+  height: 100%;
+  width: 100%;
+}
+
+.theme {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+.bracket {
+  padding: 40px;
+  margin: 5px;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  justify-content: space-around;
+  align-content: center;
+}
+
+.match {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 240px;
+  max-width: 240px;
+  height: 62px;
+  margin: 12px 24px 12px 0;
+}
+
+.match .match-top {
+  border-radius: 2px 2px 0 0;
+}
+
+.match .match-bottom {
+  border-radius: 0 0 2px 2px;
+}
+
+.match .team {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  border: 1px solid black;
+  position: relative;
+}
+
+.match .team span {
+  padding-left: 8px;
+}
+
+.match .team span:last-child {
+  padding-right: 8px;
+}
+
+.match .team .score {
+  margin-left: auto;
+}
+
+.match .team:first-child {
+  margin-bottom: -1px;
+}
+
+.match-lines {
+  display: block;
+  position: absolute;
+  top: 50%;
+  bottom: 0;
+  margin-top: 0;
+  right: -1px;
+}
+
+.match-lines .line {
+  background: red;
+  position: absolute;
+}
+
+.match-lines .line.one {
+  height: 1px;
+  width: 12px;
+}
+
+.match-lines .line.two {
+  height: 44px;
+  width: 1px;
+  left: 11px;
+}
+
+.match-lines.alt {
+  left: -12px;
+}
+
+.match:nth-child(even) .match-lines .line.two {
+  transform: translate(0, -100%);
+}
+
+.column:first-child .match-lines.alt {
+  display: none;
+}
+
+.column:last-child .match-lines {
+  display: none;
+}
+
+.column:last-child .match-lines.alt {
+  display: block;
+}
+
+.column:nth-child(2) .match-lines .line.two {
+  height: 126px;
+}
+
+.column:nth-child(3) .match-lines .line.two {
+  height: 189px;
+}
+
+.column:nth-child(4) .match-lines .line.two {
+  height: 252px;
+}
+
+.column:nth-child(5) .match-lines .line.two {
+  height: 315px;
+}
+
+/* ---------- LIGHT THEME ---------- */
+
+.theme-light {
+  background: #f9fafd;
+  border-color: #e2e6ea;
+}
+
+.theme-light .match-lines .line {
+  background: #dadfe3;
+}
+
+.theme-light .team {
+  background: #fff;
+  border-color: #dadfe3;
+  color: #708392;
+}
+
+.theme-light .winner-top .match-top,
+.theme-light .winner-bottom .match-bottom {
+  background: #fff;
+  color: #272f36;
+  border-color: #dadfe3;
+  z-index: 1;
+}
+
+.theme-light .match .seed {
+  color: #9fafbf;
+}
+
+.theme-light .match .score {
+  color: #9fafbf;
+}
+
+.theme-light .match .seed {
+  font-size: 12px;
+  min-width: 10px;
+}
+
+.theme-light .match .score {
+  font-size: 14px;
+}
+
+/* ---------- DARK THEME ---------- */
+
+.theme-dark {
+  background: #0e1217;
+  border-color: #07090c;
+}
+
+.theme-dark .match-lines .line {
+  background: #36404e;
+}
+
+.theme-dark .team {
+  background: #182026;
+  border-color: #232c36;
+  color: #6b798c;
+}
+
+.theme-dark .winner-top .match-top,
+.theme-dark .winner-bottom .match-bottom {
+  background: #232c36;
+  color: #e3e8ef;
+  border-color: #36404e;
+  z-index: 1;
+}
+
+.theme-dark .winner-top .match-top .score,
+.theme-dark .winner-bottom .match-bottom .score {
+  color: #03d9ce;
+}
+
+.theme-dark .match .seed {
+  font-size: 12px;
+  min-width: 10px;
+}
+
+.theme-dark .match .score {
+  font-size: 14px;
+}
+
+/* ---------- DARK TRENDY THEME ---------- */
+
+.theme-dark-trendy {
+  background: linear-gradient(to right, #171721, #122b29);
+  border-color: #07090c;
+}
+
+.theme-dark-trendy .match-lines .line {
+  background: #36404e;
+}
+
+.theme-dark-trendy .team {
+  background: rgba(50, 54, 65, 0.4);
+  color: #6b798c;
+  border: 2px solid transparent;
+}
+
+.theme-dark-trendy .team:first-child {
+  margin-bottom: 2px;
+}
+
+.theme-dark-trendy .team:last-child {
+  margin-top: 2px;
+}
+
+.theme-dark-trendy .winner-top .match-top,
+.theme-dark-trendy .winner-bottom .match-bottom {
+  background: #323641;
+  color: #e3e8ef;
+  z-index: 1;
+}
+
+.theme-dark-trendy .winner-top .match-top .score,
+.theme-dark-trendy .winner-bottom .match-bottom .score {
+  color: #03d9ce;
+}
+
+.theme-dark-trendy .match .team .name {
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.theme-dark-trendy .match .seed {
+  display: none;
+}
+
+.theme-dark-trendy .match {
+  margin-right: 48px;
+}
+
+.theme-dark-trendy .match .match-top {
+  border-radius: 0;
+}
+
+.theme-dark-trendy .match .match-bottom {
+  border-radius: 0;
+}
+
+.theme-dark-trendy .match-lines {
+  opacity: 0.75;
+  right: -12px;
+}
+
+.theme-dark-trendy .match-lines .line {
+  background: #03d9ce;
+}
+
+.theme-dark-trendy .match-lines.alt {
+  left: -24px;
+}
+
+.theme-dark-trendy .team {
+  overflow: hidden;
+}
+
+.theme-dark-trendy .score:before {
+  opacity: 0.25;
+  position: absolute;
+  z-index: 1;
+  content: '';
+  display: block;
+  background: black;
+  min-height: 50px;
+  min-width: 70px;
+  transform: translate(-12px, 0) rotate(25deg);
+}
+
+/* ---------- DISABLE OPTIONS ---------- */
+
+.disable-image .image,
+.disable-seed .seed,
+.disable-name .name,
+.disable-score .score {
+  display: none !important;
+}
+
+.disable-borders {
+  border-width: 0px !important;
+}
+
+.disable-borders .team {
+  border-width: 0px !important;
+}
+
+.disable-seperator .match-top {
+  border-bottom: 0px !important;
+}
+
+.disable-seperator .match-bottom {
+  border-top: 0px !important;
+}
+
+.disable-seperator .team:first-child {
+  margin-bottom: 0px;
+}
+
+/* ---------- THEME SWITCHER ---------- */
+
+.theme-switcher {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 24px;
+  border: 1px solid #cad3dc;
+  background: #6b798c;
+}
+
+.theme-switcher h2 {
+  color: #e1e8ef;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin: 0 0 12px 0;
+}
+
+.theme-switcher button {
+  line-height: 1em;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border: 1px solid #eee;
+  cursor: pointer;
+  background: #6b798c;
+  color: #ccc;
+}
+
+.theme-light .theme-switcher #theme-light,
+.theme-dark .theme-switcher #theme-dark,
+.theme-dark-trendy .theme-switcher #theme-dark-trendy,
+.theme-none .theme-switcher #theme-none {
+  background: #54606f;
+  border-color: #4c5764;
+}

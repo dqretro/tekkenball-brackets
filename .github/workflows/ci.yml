@@ -1,0 +1,111 @@
+# CI checks (replaces the old api.yml, whose Api project no longer exists).
+#
+#  - hygiene: fails if secrets, generated config or oversized design files are
+#             ever tracked in git, or if key-shaped strings appear in tracked files.
+#  - sync-tool: builds the start.gg sync tool and smoke-tests it offline
+#               (no secrets needed, nothing published).
+#  - data:      validates brackets.json / players.json.
+#
+# Live data refresh (uses the STARTGG_API_KEY secret) lives in refresh-data.yml.
+name: CI
+
+on:
+  push:
+    branches: ["main", "feat/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hygiene:
+    name: Repo hygiene (no secrets / large files)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Forbidden tracked files
+        run: |
+          bad=$(git ls-files | grep -E \
+            -e '(^|/)appsettings\.[^/]*\.json$' \
+            -e '(^|/)\.env(\..*)?$' \
+            -e '(^|/)secrets\.json$' \
+            -e '(^|/)pages/gallery/config\.json$' \
+            -e '\.psd$' \
+            -e '(^|/)(bin|obj)/' \
+            | grep -v -E '(^|/)(appsettings\.example\.json|\.env\.example)$' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::These files must not be committed (see .gitignore):"
+            echo "$bad"
+            exit 1
+          fi
+          echo "OK - no forbidden files tracked."
+
+      - name: Key-shaped strings in tracked files
+        run: |
+          # Google API keys (AIza...) and 32-hex start.gg-style tokens assigned to a key field.
+          hits=$(git grep -n -I -E \
+            -e 'AIza[0-9A-Za-z_-]{30,}' \
+            -e '(API_?KEY|ApiKey)"?[[:space:]]*[:=][[:space:]]*"?[0-9a-f]{32}' \
+            -- . ':!*.lock' ':!package-lock.json' || true)
+          if [ -n "$hits" ]; then
+            echo "::error::Possible API key committed (values hidden):"
+            echo "$hits" | cut -d: -f1,2
+            exit 1
+          fi
+          echo "OK - no key-shaped strings found."
+
+      - name: File size limit (GitHub rejects > 100 MB; warn > 50 MB)
+        run: |
+          git ls-files -z | xargs -0 -I{} sh -c 's=$(stat -c%s "{}"); if [ "$s" -gt 52428800 ]; then echo "{} $s"; fi' > big.txt || true
+          if [ -s big.txt ]; then
+            echo "::error::Files over 50 MB are tracked:"; cat big.txt; exit 1
+          fi
+          echo "OK - no oversized files."
+
+  sync-tool:
+    name: Build start.gg sync tool
+    runs-on: ubuntu-latest
+    env:
+      PROJECT: src/DQRetro.TournamentTracker.Startgg/DQRetro.TournamentTracker.Startgg.csproj
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore "$PROJECT"
+
+      - name: Build
+        run: dotnet build "$PROJECT" --configuration Release --no-restore
+
+      # End-to-end check without an API key: reprocess the committed data offline
+      # (dedupe + player slugs) and validate the result.
+      - name: Offline reprocess smoke test
+        run: |
+          out="$RUNNER_TEMP/data-smoke"
+          dotnet run --project "$PROJECT" --configuration Release --no-build -- \
+            --from-file src/DQRetro.TournamentTracker.Ui/public/data/brackets.json --out "$out"
+          node .github/scripts/validate-data.js "$out"
+
+  data:
+    name: Validate site data
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Validate brackets.json / players.json
+        run: node .github/scripts/validate-data.js

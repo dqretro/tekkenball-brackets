@@ -1,0 +1,112 @@
+/* =========================================================
+   Condensed Top Placements Layout
+   ========================================================= */
+
+.event-summary-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+/* Tight 4-column desktop grid for clean 4x2 balance */
+.standings-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .standings-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .standings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Compact Card Styling */
+.stat-card {
+  background: #18181c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 10px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.stat-card:hover {
+  background: #222228;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.stat-card-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0; /* Enables text truncation inside flexbox */
+}
+
+/* Compact Avatars & Badges */
+.stat-card .player-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.stat-card .position-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  flex-shrink: 0;
+}
+
+/* Ellipsis handling for long esports tags */
+.stat-card .player-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex-grow: 1;
+}
+
+.stat-card .player-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #eee;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Minimal Character Icon Placement */
+.stat-card .character-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Subtle Podium Accents */
+.stat-card.place-1st { border-color: rgba(255, 215, 0, 0.4); }
+.stat-card.place-1st .position-badge { background: #ffd700; color: #111; }
+
+.stat-card.place-2nd { border-color: rgba(192, 192, 192, 0.4); }
+.stat-card.place-2nd .position-badge { background: #c0c0c0; color: #111; }
+
+.stat-card.place-3rd { border-color: rgba(205, 127, 50, 0.4); }
+.stat-card.place-3rd .position-badge { background: #cd7f32; color: #fff; }

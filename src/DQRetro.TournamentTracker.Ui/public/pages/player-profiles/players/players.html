@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Profile</title>
+  <link rel="stylesheet" href="../../../styles.css">
+  <link rel="stylesheet" href="players.css">
+  <link rel="stylesheet" href="../../../shared/layout/header/nav/nav.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="dark">
+
+<!-- Navigation -->
+<div id="nav-placeholder"></div>
+
+<div class="container profile-page">
+  <!-- Back Button Navigation -->
+  <div class="navigation-bar">
+    <button onclick="window.history.back()" class="btn-back">
+      ← Back
+    </button>
+  </div>
+
+  <div class="profile-container-modern">
+
+    <!-- Left Sidebar -->
+    <div class="profile-left-modern">
+      <img src="/images/placeholders/icons-profile/icon-pfp-player.png" alt="Player Avatar" class="player-avatar-modern">
+      <h2 id="playerName" class="player-name">Player Name</h2>
+
+      <div id="playerTeam" class="player-team"></div>
+      <div id="playerCountry" class="player-country"></div>
+
+      <!-- Ranking Points Box -->
+      <div class="card ranking-card" style="margin-top:1em; text-align:center;">
+        <div id="playerPoints" class="stat-value">0</div>
+        <div class="stat-label">Ranking Points</div>
+      </div>
+      
+      <!-- Characters Box -->
+      <div class="card characters-card" style="margin-top:1em; text-align:left;">
+        <h3>Characters</h3>
+        <div id="charactersList" style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center; padding-top:0.25rem;"></div>
+      </div>
+
+      <!-- Start.gg Social Accounts -->
+      <div class="card socials-card" style="margin-top:1em; text-align:left;">
+        <h3>Socials</h3>
+        <div id="playerSocialsList" style="display:flex; flex-direction:column; gap:0.4rem; font-size:0.9rem;"></div>
+      </div>
+
+      <!-- Most Played Statistics Card -->
+      <div class="card most-played-card" style="margin-top:1em; text-align:left;">
+        <h3 style="margin:0 0 0.6rem 0; font-size:0.95rem;">Most Played Statistics</h3>
+        <div id="playedAgainstList"></div>
+      </div>
+
+      <!-- Share & Scan QR Card -->
+      <div class="card qr-card" style="margin-top:1em;">
+        <div class="qr-header">
+          <h3 style="margin:0; font-size:0.95rem;">Share & Scan</h3>
+          <span class="qr-badge">Live Profile</span>
+        </div>
+        <div class="qr-tabs">
+          <button class="qr-tab active" data-type="profile">Profile</button>
+          <button class="qr-tab" data-type="h2h">Challenge</button>
+          <button class="qr-tab" data-type="overlay">Stream</button>
+        </div>
+        <div class="qr-wrapper">
+          <div id="qrcode"></div>
+        </div>
+        <div class="qr-actions">
+          <button class="qr-btn" id="copy-qr-btn">📋 Copy Link</button>
+          <button class="qr-btn primary" id="download-qr-btn">💾 Save PNG</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Content Area -->
+    <div class="profile-right-modern">
+      <div class="card stats-card">
+        <h3>Stats</h3>
+        <div class="stats-grid-modern">
+          <div class="stat-card"><strong id="tournamentsPlayed">0</strong><span>Events</span></div>
+          <div class="stat-card"><strong id="wins">0</strong><span>Wins</span></div>
+          <div class="stat-card"><strong id="losses">0</strong><span>Losses</span></div>
+          <div class="stat-card"><strong id="winRate">0%</strong><span>Win Rate</span></div>
+          <div class="stat-card"><strong id="titles">0</strong><span>Titles Won</span></div>
+        </div>
+
+        <!-- Doughnut charts -->
+        <div class="charts-wrapper" style="display:flex;flex-wrap:wrap;justify-content:center;gap:2rem;margin-top:1em;">
+          <div class="chart-container" style="max-width:220px;"><canvas id="winLossChart"></canvas></div>
+          <div class="chart-container" style="max-width:220px;"><canvas id="charUsageChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="card achievements-card">
+        <h3>Achievements</h3>
+        <div class="badge-list"></div>
+      </div>
+
+      <!-- Placement Timeline -->
+      <div class="card placement-card">
+        <h3>Tournament Placements</h3>
+        <div class="filters" style="text-align:center; margin-bottom:10px;">
+          <select id="gameFilter"></select>
+          <select id="charFilter"></select>
+        </div>
+        <div style="position: relative; height: 350px; width: 100%;">
+          <canvas id="placementChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Previous Tournaments (Capped Height & View All Link) -->
+      <div class="card tournament-history-card">
+        <div class="card-header-actions">
+          <h3 style="margin: 0; font-size: 0.95rem;">Previous Tournaments</h3>
+          <a href="tournaments.html" class="btn-view-all">View Full History ↗</a>
+        </div>
+        
+        <div class="table-scroll-container">
+          <table class="tournament-table compact-table">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Placement</th>
+                <th>Date</th>
+                <th>Notable Wins</th>
+              </tr>
+            </thead>
+            <tbody id="tournamentHistory"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../../../script.js"></script>
+<script src="../../../shared/layout/header/nav/nav.js" defer></script>
+<script src="../../tournaments/game-config.js"></script>
+<script src="players.js" defer></script>
+
+</body>
+</html>
