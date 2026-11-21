@@ -1,0 +1,13 @@
+# Cloudflare Worker: Twitch live status for the DQRetro homepage overlay.
+# Deployed by .github/workflows/deploy-twitch-worker.yml.
+# Secrets (TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET) are set by that workflow from
+# GitHub Actions secrets; never put them in this file.
+name = "dqretro-twitch-live"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[vars]
+TWITCH_CHANNEL = "dqretro"
+# Origins that may read the status from a browser (comma-separated, exact match).
+ALLOWED_ORIGINS = "https://dqretro.github.io,http://localhost:3000,http://127.0.0.1:3000"

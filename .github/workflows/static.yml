@@ -74,6 +74,26 @@ jobs:
           ' "$cfg"
           echo "Generated $cfg/config.json"
 
+      # Homepage Twitch overlay: the public URL of the live-status Worker
+      # (deploy-twitch-worker.yml). It is a repository VARIABLE, not a secret.
+      # Without it, live-config.json is not written and the overlay stays off.
+      - name: Generate Twitch live-config.json
+        env:
+          TWITCH_LIVE_STATUS_URL: ${{ vars.TWITCH_LIVE_STATUS_URL }}
+        run: |
+          dir="$SITE_DIR/shared/live"
+          rm -f "$dir/live-config.json"
+          if [ -z "$TWITCH_LIVE_STATUS_URL" ]; then
+            echo "TWITCH_LIVE_STATUS_URL not set - homepage live overlay disabled."
+            exit 0
+          fi
+          node -e '
+            const url = process.env.TWITCH_LIVE_STATUS_URL.trim();
+            if (!/^https:\/\/[^\s"<>]+$/.test(url)) { console.error("TWITCH_LIVE_STATUS_URL must be an https:// URL"); process.exit(1); }
+            require("fs").writeFileSync(process.argv[1] + "/live-config.json", JSON.stringify({ statusUrl: url }, null, 2));
+          ' "$dir"
+          echo "Generated $dir/live-config.json"
+
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
