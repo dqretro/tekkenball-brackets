@@ -135,7 +135,15 @@ namespace StartGgFetcher
                     return 1;
                 }
 
-                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey.Trim());
+                apiKey = apiKey.Trim();
+                if (apiKey.IndexOfAny(new[] { '<', '>', '"', '\'', ' ' }) >= 0)
+                {
+                    Console.WriteLine("❌ Error: STARTGG_API_KEY contains <, >, quotes or spaces.");
+                    Console.WriteLine("   Store only the key itself, e.g. dotnet user-secrets set STARTGG_API_KEY abc123... (no angle brackets).");
+                    return 4;
+                }
+
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                 HttpClient.DefaultRequestHeaders.UserAgent.Clear();
                 HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("DQRetroBracketsFetcher/1.1");
 
@@ -898,7 +906,12 @@ namespace StartGgFetcher
                         return doc;
                     }
 
-                    Console.WriteLine($"    ⚠️  HTTP {(int)response.StatusCode} on attempt {attempt}/{maxRetries}");
+                    var errorBody = await response.Content.ReadAsStringAsync();
+                    if ((int)response.StatusCode == 400 && errorBody.Contains("authentication token", StringComparison.OrdinalIgnoreCase))
+                        throw new AuthException("start.gg rejected the API key (HTTP 400: invalid authentication token). Check STARTGG_API_KEY.");
+
+                    var snippet = errorBody.Length > 300 ? errorBody[..300] : errorBody;
+                    Console.WriteLine($"    ⚠️  HTTP {(int)response.StatusCode} on attempt {attempt}/{maxRetries}: {snippet}");
                 }
                 catch (AuthException) { throw; }
                 catch (Exception ex)
