@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Page | DQRetro</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+  <style>
+    /* Highlight active event */
+    #relatedEvents a.active-event {
+      font-weight: bold;
+      color: gold;
+    }
+    #relatedEvents a {
+      display: block;
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+    /* Inline header layout */
+    .event-header > * {
+      display: inline-block;
+      margin-right: 12px;
+    }
+  </style>
+</head>
+<body class="dark">
+
+  <div id="nav-placeholder"></div>
+
+  <div class="container">
+    <div id="stats-container">
+
+      <!-- Event Header -->
+      <header class="event-header">
+        <h2 id="tournament-name">Tournament Name</h2>
+        <p id="event-date">Date: </p>
+        <p id="event-entrants">Entrants: </p>
+      </header>
+
+      <!-- Events List (populated by events.js) -->
+      <section id="relatedEvents" class="event-list"></section>
+
+      <!-- Show More Button -->
+      <div class="show-more-section">
+        <a id="showMoreLink" href="#" target="_blank" rel="noopener noreferrer">
+          <button type="button">Show More on Start.gg</button>
+        </a>
+      </div>
+
+      <!-- Back to Tournaments -->
+      <div id="back-to-tournaments"></div>
+
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="../../script.js"></script>
+  <script src="events.js"></script>
+  <script>
+    loadNav();
+    loadFooter();
+  </script>
+</body>
+</html>

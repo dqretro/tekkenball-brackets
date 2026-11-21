@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Stats</title>
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+<style>
+/* Layout and basic styling */
+.overview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.overview-header .overview-title { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.overview-header h1 { margin: 0; }
+.overview-header h2 { margin: 0; font-weight: normal; color: var(--muted, #aaa); font-size: 18px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+.not-found { padding: 40px; text-align: center; font-size: 1.2rem; color: var(--muted, #aaa); }
+.pool-card { display: flex; flex-direction: column; gap: 8px; padding: 12px; background: var(--card-bg, #222); border-radius: 6px; color: var(--text, #fff); }
+.overview-column { margin-bottom: 32px; }
+
+/* Overall Stats Box */
+.overall-stats-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px;
+  background: var(--card-bg, #222);
+  border-radius: 8px;
+  color: var(--text, #fff);
+}
+.overall-stats-box .stat-item {
+  flex: 1 1 120px;
+  text-align: center;
+  padding: 10px;
+  background: var(--card-bg-secondary, #2a2a2a);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.overall-stats-box .stat-item img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 6px;
+}
+.overall-stats-box .position {
+  font-size: 0.85rem;
+  color: #ffca28;
+  font-weight: bold;
+}
+.overall-stats-box .name {
+  font-size: 0.95rem;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.overall-stats-box .subtext {
+  font-size: 0.8rem;
+  color: var(--muted, #aaa);
+  margin-top: 2px;
+}
+
+/* Round & Set Breakdown */
+.round-group {
+  margin-bottom: 20px;
+  background: var(--card-bg, #222);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+.round-group h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 6px;
+}
+.sets-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+.set {
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  background: rgba(255,255,255,0.03);
+  border-left: 4px solid #666;
+}
+.set.completed { border-left-color: #4caf50; background: rgba(76, 175, 80, 0.08); }
+.set.missing { border-left-color: #f44336; background: rgba(244, 67, 54, 0.08); }
+.set .players { display: flex; justify-content: space-between; align-items: center; }
+.set .winner { font-weight: bold; color: #81c784; }
+</style>
+</head>
+<body class="dark">
+
+<div id="nav-t-placeholder"></div>
+<script src="/shared/layout/header/nav/nav_t.js" defer></script>
+
+<div class="container">
+  <div class="overview-header">
+    <div class="overview-title">
+      <h1>Event Statistics</h1>
+      <h2 id="standings-title"> Loading...</h2>
+    </div>
+    <div id="back-to-events" class="back-button"></div>
+  </div>
+
+  <!-- Overall Stats & Standings -->
+  <section class="overview-column">
+    <h2>Event Overview & Top Placements</h2>
+    <div id="overall-stats" class="overall-stats-box">
+      <!-- Injected by JS -->
+    </div>
+  </section>
+
+  <!-- Character Usage Section -->
+  <section class="overview-column">
+    <h2>Character Usage</h2>
+    <div id="stats-container" class="stats-grid"></div>
+    <canvas id="characterUsageChart" style="max-height:400px; width:100%; margin-top:20px;"></canvas>
+  </section>
+
+  <!-- Round & Matches Breakdown -->
+  <section class="overview-column">
+    <h2>Bracket & Match History</h2>
+    <div id="rounds-container"></div>
+  </section>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<!-- Utilities & Game Configuration -->
+<script src="../../shared/utils/not-found.js"></script>
+<script src="game-config.js"></script>
+<script src="../../script.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- Event Stats Script -->
+<script src="stats.js"></script>
+
+<script>
+loadNav();
+loadFooter();
+</script>
+
+</body>
+</html>

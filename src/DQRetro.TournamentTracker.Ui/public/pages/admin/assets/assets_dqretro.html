@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DQRetro Assets</title>
+  <link rel="stylesheet" href="../../../styles.css">
+  <link rel="stylesheet" href="../../../shared/layout/header/nav/nav.css">
+
+  <style>
+    .asset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 25px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .asset-row img {
+      height: 100px;
+      width: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      background-color: #1e1e1e;
+      padding: 5px;
+      transition: transform 0.2s ease;
+    }
+
+    .asset-row img:hover {
+      transform: scale(1.05);
+    }
+
+    h2, h3 {
+      margin-top: 30px;
+    }
+
+    /* Color boxes */
+    .color-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100px;
+      height: 100px;
+      border-radius: 8px;
+      border: 2px solid #333;
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: #fff;
+    }
+  </style>
+</head>
+<body class="dark">
+
+<nav>
+  <!-- Main Logo -->
+  <a href="../../index.html" class="nav-logo">
+    <img src="../../../images/dqretro/logos/dqretro_logo_purpleyblue.png" alt="DQRetro Logo" height="50">
+  </a>
+
+  <!-- Tournament Logo -->
+  <a href="../../tournaments/tournaments.html" class="nav-logo">
+    <img src="../../../images/dqretro/icons/dqretro_startgg_tournament_icon.png" alt="Tournament Logo" height="50">
+  </a>
+
+  <!-- Navigation Links -->
+  <a href="../../showcase/global-leaderboard.html">Global Leaderboard</a>
+  <a href="../../showcase/global-statistics.html">Character Statistics</a>
+  <a href="../../player-profiles/players-search/players-search.html">Player Profiles</a>
+  <a href="../../gallery/gallery-media.html">Media Gallery</a>
+
+  <!-- Admin -->
+  <a href="../admin-tools/admin.html" class="active">Admin Tools</a>
+</nav>
+
+  <!-- Admin Sub Navigation -->
+  <div class="container">
+    <div class="admin-header">
+      <nav class="admin-inline-nav">
+        <a href="../tournament-tracker/admin-dashboard.html" >Admin Dashboard</a>
+        <a href="../json-generator/json-generator-tournaments.html" >JSON Generator</a>
+        <a href="assets_dqretro.html" class="active">Assets Gallery</a>
+      </nav>
+    </div>
+
+  <!-- Category Sub Navigation -->
+  <div class="container">
+    <div class="admin-header">
+      <nav class="admin-inline-nav">
+        <a href="assets_dqretro.html" class="active">DQRetro</a>
+        <a href="assets_games.html" >Games</a>
+      </nav>
+    </div>
+
+<div class="container">
+  <h1>DQRetro Assets:</h1>
+
+  <h2>Logos:</h2>
+  <div id="logos" class="asset-row"></div>
+
+  <h2>Banners:</h2>
+  <div id="banners" class="asset-row"></div>
+
+  <h2>Icons:</h2>
+  <div id="icons" class="asset-row"></div>
+
+  <h2>QR Codes:</h2>
+  <div id="qr-codes" class="asset-row"></div>
+
+  <hr>
+
+  <h2>Color Codes:</h2>
+  <div id="color-codes" class="asset-row"></div>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="../../../script.js"></script>
+<script>
+  // Load shared nav and footer
+  loadNav();
+  loadFooter();
+
+  fetch("assets.json")
+    .then(response => {
+      if (!response.ok) throw new Error("Failed to load JSON file");
+      return response.json();
+    })
+    .then(data => {
+      displayAssets("logos", data.logos);
+      displayAssets("banners", data.banners);
+      displayAssets("icons", data.icons);
+      displayAssets("qr-codes", data["qr-codes"]);
+
+      displayAssets("character-icons-tk8", data["character-icons-tk8"]);
+      displayAssets("character-icons-ttt2", data["character-icons-ttt2"]);
+      displayAssets("character-icons-tk3", data["character-icons-tk3"]);
+
+      displayAssets("game-boxart", data["game-boxart"]);
+
+      displayColors("color-codes", data.colors);
+    })
+    .catch(err => console.error("Error loading assets.json:", err));
+
+  function displayAssets(containerId, assets) {
+    const container = document.getElementById(containerId);
+    if (!assets || !container) return;
+    assets.forEach(src => {
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = containerId;
+      container.appendChild(img);
+    });
+  }
+
+  function displayColors(containerId, colors) {
+    const container = document.getElementById(containerId);
+    if (!colors || !container) return;
+    colors.forEach(color => {
+      const box = document.createElement("div");
+      box.classList.add("color-box");
+      box.style.backgroundColor = color.hex;
+      box.innerHTML = `<strong>${color.name}</strong><br>${color.hex}`;
+      container.appendChild(box);
+    });
+  }
+</script>
+
+</body>
+</html>

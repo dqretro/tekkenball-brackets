@@ -1,0 +1,60 @@
+tournaments": [
+    {
+      "name": "VSFighting XIII",
+      "slug": "vsfighting-xiii",
+      "game": "Tekken 8",
+      "status": "completed",
+      "startAt": "2025-08-16"
+    }
+  ],
+  "events": [
+    {
+      "slug": "vsfighting-xiii",
+      "events": [
+        {
+          "name": "Tekken Ball Hosted by DQRetro",
+          "slug": "vsfighting-xiii-tekken-ball-hosted-by-dqretro",
+          "startAt": "2025-08-16",
+          "game": "Tekken 8",
+          "entrants": {
+            "nodes": [
+              {"name":"PND | Strykie","mainCharacter":"Yoshimitsu","characters":["Yoshimitsu","Jun"],"wins":6,"losses":0},
+        ]
+          },
+          "pools": [
+            {
+              "name": "Pool 1",
+              "players": [
+                "Remmy","Gaer Gaeaf","RIZE | EXGaiden","SCHIZOPHRENIC69","MJ-Raijin","WizardKing","ELF | Pygmy_Slaanesh","iam | Saerilee",
+                "arfrix","Scarwork","PND | Strykie","Zollith","TKC | TEMPHUiBIS","Divine Blade of Scuff","NGI | Sabrewoif","Xavio Tao",
+                "Lucky Merc","DQ | SlawPro","Laughing Bat","Schizoid"
+              ],
+              "sets": [
+                {"winner":"Gaer Gaeaf","loser":"Remmy","score":"2-0"},
+            ]
+            },
+            {
+              "name": "Pool 2",
+              "players": [
+                "NGI | HarleKris","Bloke-Chan","Average Gang | Zane","Druger","MFGC | Mackone","Martian Stache","ESC | The129","MBA | Icarus",
+                "Tokon Black","AgentApe","SFO | Zephhyr","BigHenchy","DQ | ProtonicCobra","MILKGUY | Orion","meowmeow","Cringe Lord",
+                "MU | Alumento","HarryCM01","NJT | DerpxShikari","Sephiroth"
+              ],
+              "sets": [
+                {"winner":"NGI | HarleKris","loser":"Bloke-Chan","score":"2-0"},
+                    ]
+            }
+          ],
+          "topcut": {
+            "size": 12,
+            "players": [
+              "PND | Strykie","NGI | Sabrewoif","MILKGUY | Orion","HarryCM01","RIF | Geowesome","Zollith",
+              "Cringe Lord","Xavio Tao","DQ | SlawPro","TKC | TEMPHUiBIS","DQ | ProtonicCobra","SFO | Zephhyr"
+            ],
+            "sets": [
+              {"round":"Top 12 Match 1","winner":"PND | Strykie","loser":"NGI | Sabrewoif","score":"2-0"},
+                          ]
+          }
+        }
+      ]
+    },

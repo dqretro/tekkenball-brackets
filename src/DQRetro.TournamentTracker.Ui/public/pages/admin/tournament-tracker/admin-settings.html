@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Settings</title>
+  <link rel="stylesheet" href="../../../../styles.css" />
+  <link rel="stylesheet" href="../../../../shared/layout/header/nav/nav.css" />
+  <link rel="stylesheet" href="../admin-tools/admin.css" />
+</head>
+<body class="dark">
+
+  <!-- Main Navigation -->
+  <nav>
+    <a href="../../../index.html" class="nav-logo">
+      <img src="../../../../images/dqretro/logos/dqretro_logo_purpleyblue.png" alt="DQRetro Logo" height="50">
+    </a>
+    <a href="../../tournaments/tournaments.html" class="nav-logo">
+      <img src="../../../../images/dqretro/icons/dqretro_startgg_tournament_icon.png" alt="Tournament Logo" height="50">
+    </a>
+    <a href="../../showcase/global-leaderboard.html">Global Leaderboard</a>
+    <a href="../../showcase/global-statistics.html">Character Statistics</a>
+    <a href="../../player-profiles/players-search/players-search.html">Player Profiles</a>
+    <a href="../../gallery/gallery-media.html">Media Gallery</a>
+    <a href="../tournament-tracker/admin-dashboard.html" class="active">Admin Tools</a>
+  </nav>
+
+  <!-- Admin Navigation -->
+  <div class="container">
+    <div class="admin-header">
+      <nav class="admin-inline-nav">
+        <a href="admin-dashboard.html">Dashboard</a>
+        <a href="admin-manage.html">Manage Events</a>
+        <a href="admin-players.html">Players</a>
+        <a href="admin-settings.html" class="active">Settings</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Admin Settings</h1>
+
+    <!-- System Info -->
+    <section class="overview-column">
+      <h2>System Overview</h2>
+      <div id="dataSummary">
+        <p><strong>Total Events:</strong> <span id="eventCount">0</span></p>
+        <p><strong>Total Players:</strong> <span id="playerCount">0</span></p>
+        <p><strong>LocalStorage Size:</strong> <span id="storageSize">Calculating...</span></p>
+      </div>
+    </section>
+
+    <!-- Theme Settings -->
+    <section class="overview-column">
+      <h2>Theme Settings</h2>
+      <p>Switch between light and dark mode.</p>
+      <button id="toggleThemeBtn">Toggle Theme</button>
+    </section>
+
+    <!-- Data Management -->
+    <section class="overview-column">
+      <h2>Export / Import Data</h2>
+      <p>Save or load your event data as a JSON file.</p>
+      <button id="exportEventsJSON">Export Events JSON</button>
+      <input type="file" id="importEventsJSON" accept=".json">
+    </section>
+
+    <!-- Reset Local Storage -->
+    <section class="overview-column">
+      <h2>Reset Local Data</h2>
+      <p class="warning-text">
+        ⚠️ Use with caution. This will permanently delete all locally stored events and players.
+      </p>
+      <button id="resetLocalDataBtn" class="danger">Reset LocalStorage</button>
+    </section>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="../../../../script.js"></script>
+  <script src="/shared/layout/header/nav/nav.js" defer></script>
+  <script src="admin-tools.js" defer></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // ===== Reset Local Data =====
+      const resetBtn = document.getElementById("resetLocalDataBtn");
+      resetBtn?.addEventListener("click", () => {
+        if (confirm("Are you sure you want to clear all local data?")) {
+          localStorage.removeItem("events");
+          localStorage.removeItem("players");
+          alert("LocalStorage cleared!");
+          location.reload();
+        }
+      });
+
+      // ===== Theme Toggle =====
+      const themeBtn = document.getElementById("toggleThemeBtn");
+      const body = document.body;
+      const storedTheme = localStorage.getItem("theme") || "dark";
+      body.classList.toggle("dark", storedTheme === "dark");
+
+      themeBtn?.addEventListener("click", () => {
+        body.classList.toggle("dark");
+        const theme = body.classList.contains("dark") ? "dark" : "light";
+        localStorage.setItem("theme", theme);
+      });
+
+      // ===== System Overview =====
+      const eventCount = document.getElementById("eventCount");
+      const playerCount = document.getElementById("playerCount");
+      const storageSize = document.getElementById("storageSize");
+
+      const events = JSON.parse(localStorage.getItem("events")) || [];
+      const players = JSON.parse(localStorage.getItem("players")) || [];
+
+      eventCount.textContent = events.length;
+      playerCount.textContent = players.length;
+
+      // Estimate storage usage
+      const totalBytes = unescape(encodeURIComponent(JSON.stringify(localStorage))).length;
+      const kb = (totalBytes / 1024).toFixed(2);
+      storageSize.textContent = `${kb} KB used`;
+    });
+  </script>
+</body>
+</html>

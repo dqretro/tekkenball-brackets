@@ -1,37 +1,76 @@
+# Deploys the static site (src/DQRetro.TournamentTracker.Ui/public) to GitHub Pages.
+# Live URL: https://dqretro.github.io/tekkenball-brackets/
+#
+# Secrets used (Settings -> Secrets and variables -> Actions):
+#   YOUTUBE_API_KEY  optional. Browser key for the gallery page. Restrict it in
+#                    Google Cloud to HTTP referrers https://dqretro.github.io/*
+#                    (+ http://localhost:3000/* for local dev) and to the
+#                    "YouTube Data API v3" only. If unset, the gallery falls back
+#                    to pages/gallery/gallery-videos.json.
 name: Deploy static content to Pages
 
 on:
   push:
-    branches:
-     - main
-    paths:
-     - "src/DQRetro.TournamentTracker.Ui/**"
-     - ".github/workflows/static.yml"
+    branches: ["main"]
   workflow_dispatch:
+  # Called by refresh-data.yml after it commits new data. Commits made with
+  # GITHUB_TOKEN don't trigger "push" workflows, so the refresh deploys explicitly.
+  workflow_call:
+    inputs:
+      ref:
+        description: "Commit to deploy (defaults to the triggering commit)"
+        type: string
+        required: false
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
+env:
+  SITE_DIR: ./src/DQRetro.TournamentTracker.Ui/public
+
 jobs:
   deploy:
-    name: Deploy Site
-    runs-on: "ubuntu-latest"
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          persist-credentials: false   # job never pushes; generated files can't be committed
+
+      - name: Validate data
+        run: node .github/scripts/validate-data.js
+
+      # Writes config.json into the Pages artifact only (inside the runner).
+      # It is gitignored and the job has read-only repo access, so it is never committed.
+      # The key is passed via env (not interpolated into the script) to avoid injection/log leaks.
+      - name: Generate gallery config.json from secret
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          cfg="$SITE_DIR/pages/gallery"
+          if [ -z "$YOUTUBE_API_KEY" ]; then
+            echo "YOUTUBE_API_KEY not set - gallery will use gallery-videos.json fallback."
+            rm -f "$cfg/config.json"
+            exit 0
+          fi
+          node -e '
+            const fs = require("fs");
+            const dir = process.argv[1];
+            const cfg = JSON.parse(fs.readFileSync(dir + "/config.example.json", "utf8"));
+            cfg.YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+            fs.writeFileSync(dir + "/config.json", JSON.stringify(cfg, null, 2));
+          ' "$cfg"
+          echo "Generated $cfg/config.json"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -39,7 +78,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./src/DQRetro.TournamentTracker.Ui"
+          path: ${{ env.SITE_DIR }}
 
       - name: Deploy to GitHub Pages
         id: deployment

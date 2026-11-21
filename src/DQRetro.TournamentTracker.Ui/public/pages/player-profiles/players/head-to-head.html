@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Head-to-Head History</title>
+  <link rel="stylesheet" href="../../../styles.css">
+  <link rel="stylesheet" href="players.css">
+  <link rel="stylesheet" href="../../../shared/layout/header/nav/nav.css">
+  <style>
+    .h2h-header-card {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .h2h-search-bar {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: #222;
+      color: #fff;
+      font-size: 0.95rem;
+      margin-bottom: 1.25rem;
+    }
+    .h2h-search-bar:focus {
+      outline: none;
+      border-color: #7c4dff;
+    }
+    .h2h-table th {
+      cursor: pointer;
+      user-select: none;
+    }
+    .h2h-table th:hover {
+      color: #7c4dff;
+    }
+    .win-badge {
+      color: #4ade80;
+      font-weight: 600;
+    }
+    .loss-badge {
+      color: #f87171;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="dark">
+
+<!-- Navigation -->
+<div id="nav-placeholder"></div>
+
+<div class="container profile-page">
+  <div style="margin-bottom: 1rem;">
+    <a id="backToProfileLink" href="#" style="color:var(--accent, #7c4dff); text-decoration:none; font-weight:600; font-size:0.9rem;">
+      ← Back to Player Profile
+    </a>
+  </div>
+
+  <!-- Player Info Card -->
+  <div class="card h2h-header-card">
+    <img src="/images/placeholders/icons-profile/icon-pfp-player.png" alt="Player Avatar" class="player-avatar-modern" style="width:90px; height:90px; margin-bottom:0;">
+    <div>
+      <h1 id="playerName" style="margin:0; font-size:1.8rem;">Player Name</h1>
+      <p style="margin: 0.25rem 0 0 0; color:var(--muted, #aaa); font-size:0.95rem;">
+        Full Head-to-Head Match History
+      </p>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="card stats-card" style="margin-bottom: 1.5rem;">
+    <h3>Opponent Summary</h3>
+    <div class="stats-grid-modern">
+      <div class="stat-card"><strong id="totalOpponents">0</strong><span>Total Rivals</span></div>
+      <div class="stat-card"><strong id="totalSets">0</strong><span>Total Sets</span></div>
+      <div class="stat-card"><strong id="totalWins">0</strong><span>Total Wins</span></div>
+      <div class="stat-card"><strong id="totalLosses">0</strong><span>Total Losses</span></div>
+      <div class="stat-card"><strong id="overallWinRate">0%</strong><span>Win Rate</span></div>
+    </div>
+  </div>
+
+  <!-- Search & Opponents History Table -->
+  <section class="tournament-history">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:0.75rem;">
+      <h2 style="margin:0;">All Opponents</h2>
+      <input type="text" id="h2hSearch" class="h2h-search-bar" placeholder="Search opponent name..." style="max-width:300px; margin-bottom:0;">
+    </div>
+
+    <table class="tournament-table h2h-table">
+      <thead>
+        <tr>
+          <th id="sortName">Opponent ⬍</th>
+          <th id="sortSets">Total Sets ⬍</th>
+          <th id="sortWins">Wins ⬍</th>
+          <th id="sortLosses">Losses ⬍</th>
+          <th id="sortWinRate">Win Rate % ⬍</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="h2hTableBody"></tbody>
+    </table>
+  </section>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<!-- Libraries & Scripts -->
+<script src="../../../script.js"></script>
+<script src="../../../shared/layout/header/nav/nav.js" defer></script>
+<script src="../../tournaments/game-config.js"></script>
+<script src="head-to-head.js" defer></script>
+
+</body>
+</html>
