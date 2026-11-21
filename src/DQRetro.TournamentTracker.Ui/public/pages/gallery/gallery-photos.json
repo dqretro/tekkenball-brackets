@@ -1,0 +1,42 @@
+{
+  "banners": [
+    {
+      "url": "../../images/socials/banners/banner_tournament_25-10-26.png",
+      "title": "DQRetro #4 Coming Soon",
+      "link": "https://www.start.gg/tournament/dq-retro-tekken-8-ball-bi-monthly-tournament-2/details",
+      "alt": "Promotional banner for DQRetro #4"
+    },
+    {
+      "url": "../../images/socials/banners/banner_dqretro_casual.png",
+      "title": "DQRetro Casual Online Sessions",
+      "link": "https://discord.gg/5Dyj5qq88M?event=1425994910628053103 ",
+      "alt": "Promotional banner for Casual Online Sessions"
+    },
+    {
+      "url": "../../images/socials/banners/banner_champions.png",
+      "title": "DQRetro #3 Champion Podium",
+      "link": "/events/dqretro3",
+      "alt": "Banner showing champions of DQRetro #3"
+    },
+    {
+      "url": "../../images/socials/banners/banner_arcadepartsuk.png",
+      "title": "ArcadePartsUK",
+      "link": "https://www.arcadepartsuk.com/",
+      "alt": "Promotional banner for ArcadePartsUK"
+    }
+  ],
+  "gallery": [
+    {
+      "url": "../../images/socials/gallery/2025.04.27_Showcase.png",
+      "title": "DQRetro #3 Champion Podium",
+      "year": 2025,
+      "alt": "Winners of DQRetro #3 on the podium"
+    },
+    {
+      "url": "../../images/socials/gallery/2024.10.05_Showcase.png",
+      "title": "Drowning Pools 2024 Champion Podium",
+      "year": 2024,
+      "alt": "Champion podium from Drowning Pools 2024"
+    }
+  ]
+}

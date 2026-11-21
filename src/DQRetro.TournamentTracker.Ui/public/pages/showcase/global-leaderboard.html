@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Leaderboard | DQRetro</title>
+  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
+</head>
+<body class="dark">
+
+<div id="nav-placeholder"></div>
+
+<div class="container">
+  <h1>Global Leaderboard</h1>
+
+  <section class="overview-column">
+    <h2 id="filter-summary">Tournaments — Showing all data</h2>
+
+    <div class="filter-container" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+      <select id="gameFilter"></select>
+      <select id="yearFilter"></select>
+      <select id="characterFilter"></select>
+      <select id="regionFilter"></select>
+      <button id="reset-filters" class="button">Reset</button>
+    </div>
+
+    <div class="standings-table">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Player</th>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Set Win %</th>
+            <th>Region</th>
+          </tr>
+        </thead>
+        <tbody id="global-standings-body"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="../../script.js"></script>
+<!-- game-config.js must load before global.js -->
+<script src="../tournaments/game-config.js"></script>
+<script src="global.js"></script>
+<script>
+  loadNav();
+  loadFooter();
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+#playerSearchInput {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #555;
+  margin-bottom: 20px;
+  background: #222;
+  color: #eee;
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.search-result-item a {
+  display: block;
+  padding: 10px 12px;
+  background: #1a1a1a;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #eee;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.search-result-item a:hover {
+  background: #7354f2;
+  color: #fff;
+}
+
+.search-result-item {
+  margin-bottom: 12px;
+}
+
+.search-result-item a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.search-result-item a:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.search-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid #6f42c1;
+}

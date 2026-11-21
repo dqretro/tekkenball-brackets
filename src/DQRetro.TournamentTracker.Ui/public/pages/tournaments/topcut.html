@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Top Cut Bracket | DQRetro</title>
+
+<link rel="stylesheet" href="../../styles.css" />
+<link rel="stylesheet" href="../../shared/layout/header/nav/nav.css" />
+
+<style>
+  body.dark {
+    background: #111;
+    color: #eee;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 16px;
+  }
+  .topcut-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .topcut-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+  }
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--panel, #222);
+    color: var(--highlight, #00d2ff);
+    border: 1px solid var(--line, #333);
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.15s ease-in-out;
+  }
+  .back-button:hover {
+    background: var(--highlight, #00d2ff);
+    color: #111;
+  }
+  .bracket-wrapper {
+    margin-top: 16px;
+    background: var(--panel, #1a1a1a);
+    border: 1px solid var(--line, #333);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .not-found {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted, #888);
+  }
+</style>
+</head>
+
+<body class="dark">
+  <div id="nav-t-placeholder"></div>
+  <script src="/tekkenball-brackets/shared/layout/header/nav/nav_t.js" defer></script>
+
+  <div class="container">
+    <div class="topcut-header">
+      <h1 id="topcut-title">Top Cut Bracket</h1>
+      <a id="back-button" class="back-button" href="#">← Back to Brackets</a>
+    </div>
+
+    <div id="topcutContainer" class="bracket-wrapper">
+      <div class="not-found">Loading Top Cut bracket...</div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="../../shared/utils/not-found.js"></script>
+  <script src="../../script.js"></script>
+  <script src="topcut.js" defer></script>
+</body>
+</html>

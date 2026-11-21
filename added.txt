@@ -1,0 +1,11 @@
+nav.html:
+<a href="pages/players/players.html">Players</a>
+
+players.html page
+players.js script
+players.json for testing purposes
+
+admin.html
+admin.js
+
+updated styles.css

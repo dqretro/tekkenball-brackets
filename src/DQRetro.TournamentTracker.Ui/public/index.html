@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DQRetro | Home</title>
+  <!-- Favicon Logo -->
+  <link rel="icon" type="image/png" href="images/dqretro/icons/dqretro_startgg_circle_purpleyblue.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="shared/layout/header/nav/nav.css">
+</head>
+<body class="dark">
+
+  <div id="nav-placeholder"></div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <img src="images/dqretro/logos/dqretro_logo_purpleyblue.png" alt="DQRetro Logo" height="100">
+      <h1>Welcome to DQRetro</h1>
+      <p style="font-size:1.2rem; color: var(--muted); max-width:600px; margin:10px auto;">
+        The ultimate hub for Tekken Ball Tournaments, player stats and real-time brackets fetched directly from Start.GG
+      </p>
+      <div class="hero-buttons">
+        <a href="pages/tournaments/tournaments.html" class="button primary">View Tournaments</a>
+        <a href="pages/showcase/global-leaderboard.html" class="button">Global Leaderboard</a>
+        <a href="pages/showcase/global-statistics.html" class="button">Player Statistics</a>
+        <a href="pages/player-profiles/players-search/players-search.html" class="button">Player Profiles</a>
+        <a href="pages/gallery/gallery-media.html" class="button">Media Gallery</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About / Info Section -->
+  <section>
+    <div class="container">
+      <h2>About DQRetro</h2>
+      <p>
+        DQRetro is your ultimate hub for tracking retro and modern fighting game tournaments hosted by our team. Access live brackets, detailed player stats, character usage, and complete event archives in one place.
+      </p>
+    </div>
+  </section>
+
+  <!-- Top Players & Most Used Characters -->
+  <section>
+    <div class="container overview-grid">
+      
+      <!-- Left Column: Top Players -->
+      <div class="overview-column">
+        <h2>Top Players Overall:</h2>
+        <div class="standings-table">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Player</th>
+                <th>Wins</th>
+                <th>Losses</th>
+                <th>Win %</th>
+                <th>Region</th>
+              </tr>
+            </thead>
+            <tbody id="global-standings-body"></tbody>
+          </table>
+
+          <a href="pages/showcase/global-leaderboard.html" class="button primary" 
+             style="margin-top:10px; display:inline-block;">
+            Show More Players
+          </a>
+        </div>
+      </div>
+
+      <!-- Right Column: Most Used Characters -->
+      <div class="overview-column">
+        <h2>Most Used Characters:</h2>
+        <div class="standings-table">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Character</th>
+                <th>Count</th>
+                <th>Usage %</th>
+              </tr>
+            </thead>
+            <tbody id="char-usage-body"></tbody>
+          </table>
+
+          <a href="pages/showcase/global-statistics.html" class="button primary" 
+             style="margin-top:10px; display:inline-block;">
+            Show More Characters
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Upcoming / Recent Tournaments -->
+  <section>
+    <div class="container">
+      <h2>Recent & Ongoing Tournaments</h2>
+      
+      <!-- Filters & Search Controls -->
+      <div class="filter-container" style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+        
+        <!-- Search Bar -->
+        <input 
+          type="text" 
+          id="searchFilter" 
+          placeholder="🔍 Search tournaments or games..." 
+          style="padding: 8px 12px; border-radius: 6px; border: 1px solid #444; background: #1e1e1e; color: #fff; flex: 1; min-width: 200px;"
+        >
+        <select id="sortFilter" class="filter-dropdown">
+          <option value="date-desc">Latest</option>
+          <option value="date-asc">Oldest</option>
+          <option value="alpha-asc">Alphabetical (A-Z)</option>
+          <option value="alpha-desc">Alphabetical (Z-A)</option>
+        </select>
+        <!-- Category / Location Filter -->
+        <select id="categoryFilter" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #444; background: #1e1e1e; color: #fff;">
+          <option value="all">All Events</option>
+          <option value="online">Online</option>
+          <option value="offline">Offline</option>
+        </select>
+
+        <!-- Status Filter -->
+        <select id="statusFilter" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #444; background: #1e1e1e; color: #fff;">
+          <option value="all">All</option>
+          <option value="upcoming">Upcoming</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="completed">Completed</option>
+        </select>
+
+      </div>
+
+      <!-- Tournament Cards Grid -->
+      <div id="tournamentList" class="tournament-grid">
+        <!-- Tournament cards rendered dynamically via tournaments.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
+
+  <script src="script.js"></script>
+  <script src="pages/tournaments/game-config.js"></script>
+  <script src="pages/tournaments/tournaments.js"></script>
+  <script src="pages/showcase/global.js"></script>
+  <script>
+    loadNav();
+    loadFooter();
+
+    if (typeof loadTournamentsLanding === "function" && document.getElementById("tournamentList")) {
+      loadTournamentsLanding();
+    }
+
+    // Initialize homepage stats and standings
+    document.addEventListener("DOMContentLoaded", () => {
+      if (typeof loadHomepageStats === "function") {
+        loadHomepageStats();
+      }
+    });
+  </script>
+</body>
+</html>
