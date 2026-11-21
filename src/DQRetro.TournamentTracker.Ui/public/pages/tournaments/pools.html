@@ -3,17 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pools</title>
+<title>Pools | DQRetro</title>
 <link rel="stylesheet" href="../../styles.css">
 <link rel="stylesheet" href="../../shared/layout/header/nav/nav.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/brackets-viewer.js/dist/brackets-viewer.min.css">
 <style>
-#relatedEvents a.active-event{ font-weight:bold; color:gold; }
-#relatedEvents a{ display:block; margin-bottom:6px; }
 .pool{ border:1px solid #444; border-radius:6px; padding:10px; margin-bottom:15px; }
-.pool h3{ margin-bottom:8px; }
-.entrant{ display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px dashed #333; }
+.pool-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+.pool-head h3{ margin:0; }
+.entrant{ display:flex; justify-content:space-between; gap:10px; padding:4px 0; border-bottom:1px dashed #333; }
 .entrant:last-child{ border-bottom:none; }
+.entrant a{ color:inherit; }
 </style>
 </head>
 <body class="dark">
@@ -24,7 +23,7 @@
 <div class="container">
   <div class="overview-header">
     <div class="overview-title">
-      <h1>Event Brackets</h1>
+      <h1>Event Pools</h1>
       <h2 id="standings-title"></h2>
     </div>
     <div id="back-to-events" class="back-button"></div>
@@ -34,8 +33,7 @@
     <h2>Summary</h2>
     <p>
       <strong id="entrant-count">0 Entrants</strong>,
-      <span id="pool-count">0 Pools</span> →
-      <span id="topcut-size-text">Top 0</span>, Double Elimination
+      <span id="pool-count">0 Pools</span><span id="topcut-size-text"></span><span id="format-text"></span>
     </p>
   </section>
 
@@ -43,54 +41,123 @@
     <h2 id="event-name">Event</h2>
     <p id="event-date"></p>
     <p id="event-game"></p>
-    <p id="event-entrants"></p>
   </header>
 
-  <section id="relatedEvents"></section>
-  <section id="poolsContainer"></section>
-
+  <section id="poolsContainer"><p>Loading pools…</p></section>
 </div>
 
 <div id="footer-placeholder"></div>
 
 <script src="../../script.js"></script>
-<script src="events.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/brackets-viewer.js/dist/brackets-viewer.min.js"></script>
-<script src="brackets.js" defer></script>
+<script src="standings.js"></script>
 
 <script>
-loadNav(); loadFooter();
-const urlSlug = new URLSearchParams(window.location.search).get("slug");
-if(urlSlug) initPoolsPage(urlSlug);
+// Pools for one event, from data/brackets.json: every phase group with its
+// entrants and their win/loss record inside that group. ?pool=<id or name> shows one.
+const params = new URLSearchParams(window.location.search);
+const urlSlug = params.get("slug");
+const poolFilter = (params.get("pool") || "").toLowerCase();
+const poolsContainer = document.getElementById("poolsContainer");
 
-async function initPoolsPage(slug){
-  if(!slug) return;
-  updateEventHeader(slug);
+if (urlSlug) initPoolsPage(urlSlug);
+else poolsContainer.innerHTML = "<p>No event specified.</p>";
 
-  const tournament = await fetchTournament(slug);
-  const event = tournament?.events?.find(ev=>ev.slug===slug);
-  if(!event) return;
+async function initPoolsPage(slug) {
+  updateEventHeader(slug); // title + back button (standings.js)
 
-  document.getElementById("event-name").textContent = event.name;
-  document.getElementById("event-date").textContent = `Date: ${event.startAt?new Date(event.startAt).toLocaleDateString():"TBA"}`;
-  document.getElementById("event-game").textContent = `Game: ${event.game||"Unknown"}`;
-  document.getElementById("event-entrants").textContent = `Entrants: ${event.entrants?.nodes?.length||0}`;
+  let tournaments = [];
+  try {
+    const res = await fetch(withBase("data/brackets.json"));
+    if (res.ok) tournaments = (await res.json())?.data?.currentUser?.tournaments?.nodes || [];
+  } catch (err) {
+    console.warn("brackets.json fetch failed:", err);
+  }
 
-  const poolsContainer = document.getElementById("poolsContainer"); poolsContainer.innerHTML="";
-  let pools = event.pools||[];
-  if(!pools.length){ const entrants = event.entrants?.nodes||[]; let poolIndex=1; for(let i=0;i<entrants.length;i+=4) pools.push({name:`Pool ${poolIndex++}`,entrants:entrants.slice(i,i+4)}); }
-  pools.forEach(pool=>{
-    const div=document.createElement("div"); div.className="pool"; div.innerHTML=`<h3>${pool.name}</h3>`;
-    (pool.entrants||[]).forEach(ent=>{
-      const stats=ent.standing?.stats;
-      const row=document.createElement("div"); row.className="entrant";
-      row.innerHTML=`<span>${ent.name||"Unknown Entrant"}</span><span>${stats?`${stats.wins.value}-${stats.losses.value}`:""}</span>`;
-      div.appendChild(row);
+  const target = normalizeSlug(slug);
+  let tournament = null, event = null;
+  for (const t of tournaments) {
+    event = (t.events || []).find(ev => {
+      const s = normalizeSlug(ev.slug || "");
+      return s === target || s.endsWith(target) || target.endsWith(s);
     });
-    poolsContainer.appendChild(div);
-  });
+    if (event) { tournament = t; break; }
+  }
+  if (!event) {
+    poolsContainer.innerHTML = `<p>Event not found for "${escapeHtml(slug)}".</p>`;
+    return;
+  }
 
-  document.getElementById("back-to-events").innerHTML=`<a href="${withBase(`/pages/tournaments/events.html?slug=${encodeURIComponent(slug)}`)}" class="button secondary">← Back to Event</a>`;
+  document.title = `${event.name ?? "Pools"} | DQRetro`;
+  document.getElementById("event-name").textContent = event.name || "Event";
+  document.getElementById("event-date").textContent =
+    `Date: ${tournament?.startAt ? new Date(tournament.startAt * 1000).toLocaleDateString() : "TBA"}`;
+  document.getElementById("event-game").textContent = `Game: ${event.videogame?.name || "Unknown"}`;
+
+  const entrantTotal = event.numEntrants || event.standings?.pageInfo?.total || event.entrants?.nodes?.length || 0;
+  document.getElementById("entrant-count").textContent = `${entrantTotal} Entrants`;
+
+  // Phase groups in phase order; one "Main Bracket" when the event has no phase data.
+  const phases = [...(event.phases || [])].sort((a, b) => (a.phaseOrder ?? 0) - (b.phaseOrder ?? 0));
+  const groups = [];
+  for (const phase of phases) {
+    const nodes = phase.phaseGroups?.nodes || [];
+    for (const g of nodes) {
+      const label = nodes.length > 1 ? `${phase.name} — Pool ${g.displayIdentifier}` : phase.name;
+      groups.push({ id: String(g.id), label, ident: String(g.displayIdentifier || ""), phase });
+    }
+  }
+  const sets = event.sets?.nodes || [];
+  if (!groups.length && sets.length) groups.push({ id: "main", label: "Main Bracket", ident: "", phase: null });
+
+  const isTopCut = g => /top\s*\d+|final/i.test(g.phase?.name || "");
+  const poolGroups = groups.filter(g => !isTopCut(g));
+  document.getElementById("pool-count").textContent = `${poolGroups.length} ${poolGroups.length === 1 ? "Pool" : "Pools"}`;
+  const topCut = phases.map(p => p.name).filter(n => /top\s*\d+/i.test(n || "")).pop();
+  document.getElementById("topcut-size-text").textContent = topCut ? ` → ${topCut}` : "";
+  const bracketType = phases[0]?.bracketType;
+  document.getElementById("format-text").textContent = bracketType
+    ? `, ${bracketType.toLowerCase().replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}` : "";
+
+  const shown = poolFilter
+    ? groups.filter(g => g.id === poolFilter || g.ident.toLowerCase() === poolFilter || g.label.toLowerCase().includes(poolFilter))
+    : groups;
+  if (!shown.length) {
+    poolsContainer.innerHTML = "<p>No pools available for this event.</p>";
+    return;
+  }
+
+  poolsContainer.innerHTML = "";
+  for (const group of shown) {
+    const groupSets = group.id === "main" ? sets : sets.filter(s => String(s.phaseGroupId) === group.id);
+    const records = new Map();
+    for (const set of groupSets) {
+      for (const slot of set.slots || []) {
+        const ent = slot.entrant;
+        if (!ent?.id) continue;
+        const r = records.get(ent.id) || { name: ent.name, slug: ent.playerSlug, wins: 0, losses: 0 };
+        if (set.winnerId) String(set.winnerId) === String(ent.id) ? r.wins++ : r.losses++;
+        records.set(ent.id, r);
+      }
+    }
+    const rows = [...records.values()].sort((a, b) => b.wins - a.wins || a.losses - b.losses || a.name.localeCompare(b.name));
+
+    const viewerUrl = withBase(`pages/tournaments/bracket/index.html?event=${encodeURIComponent(event.slug)}` +
+      (group.id !== "main" ? `&phaseGroupId=${encodeURIComponent(group.id)}` : ""));
+    const div = document.createElement("div");
+    div.className = "pool";
+    div.innerHTML = `
+      <div class="pool-head">
+        <h3>${escapeHtml(group.label)}</h3>
+        <a class="button secondary" href="${viewerUrl}">View bracket ↗</a>
+      </div>
+      ${rows.length ? rows.map(r => {
+        const name = r.slug
+          ? `<a href="${withBase(`pages/player-profiles/players/players.html?player=${encodeURIComponent(r.slug)}`)}">${escapeHtml(r.name)}</a>`
+          : escapeHtml(r.name);
+        return `<div class="entrant"><span>${name}</span><span>${r.wins}-${r.losses}</span></div>`;
+      }).join("") : "<p>No matches recorded for this pool.</p>"}`;
+    poolsContainer.appendChild(div);
+  }
 }
 </script>
 </body>

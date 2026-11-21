@@ -856,7 +856,7 @@ function renderPerGameCharacterBreakdown(gameCharUsage, stats) {
       wrapper.style.cursor = "pointer";
 
       if (typeof buildCharacterIconHtml === "function") {
-        wrapper.innerHTML = buildCharacterIconHtml(charSlug, config, 36, 36);
+        wrapper.innerHTML = buildCharacterIconHtml(charSlug, config, 0, 36, 36);
       } else {
         wrapper.textContent = formattedCharName;
       }
