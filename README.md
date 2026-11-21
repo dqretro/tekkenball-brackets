@@ -59,6 +59,7 @@ The site is fully static and runs on **GitHub Pages**. Everything is automated w
 | `ci.yml` | Pushes and pull requests | Checks no secrets or build files are committed, builds the sync tool and validates the data. |
 | `refresh-data.yml` | Daily at 05:17 UTC, or **Actions → Refresh start.gg data → Run workflow** | Fetches fresh start.gg data and commits only the two data files if they changed, then deploys. |
 | `static.yml` | Pushes to `main`, or manually | Validates the data and publishes the site to GitHub Pages. |
+| `deploy-twitch-worker.yml` | Changes to `workers/twitch-live/` on `main`, or manually | Deploys the Twitch live-status Worker to Cloudflare (see *Live stream overlay*). |
 
 ### Repository settings (maintainers)
 - **Settings → Pages → Source:** GitHub Actions.
@@ -68,6 +69,12 @@ The site is fully static and runs on **GitHub Pages**. Everything is automated w
 |---|---|
 | `STARTGG_API_KEY` | start.gg API token used by the data refresh. Paste only the key itself. |
 | `YOUTUBE_API_KEY` | YouTube Data API key for the Video Gallery, written into the site at deploy time. Restrict it in Google Cloud to the referrer `https://dqretro.github.io/*` and to the YouTube Data API v3. Without it, the gallery uses `gallery-videos.json`. |
+| `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET` | Twitch developer app used by the live-status Worker. Stored as Worker secrets; never sent to the site. |
+| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Let `deploy-twitch-worker.yml` deploy the Worker. The token needs *Workers Scripts: Edit* on the account. |
+
+| Variable (Variables tab) | Purpose |
+|---|---|
+| `TWITCH_LIVE_STATUS_URL` | Public URL of the live-status Worker (shown in the Worker deploy run's summary). Without it the homepage overlay stays off. |
 
 ### How tournaments are found
 The sync tool (`src/DQRetro.TournamentTracker.Startgg/Program.cs`) fetches a tournament if any of these finds it:
@@ -84,3 +91,17 @@ Which events are kept:
 - **Hand-listed third-party locals** in `TargetTournamentSlugs` (Drowning Pools, Iron Pride, ELFM): events whose name matches `AllowedEventKeywords` (Tekken Ball, Def Jam, …) in a supported game, because those events are named without a host.
 
 To track a tournament that isn't found automatically, add its start.gg slug to `TargetTournamentSlugs`.
+
+---
+
+## Live Stream Overlay
+When [twitch.tv/dqretro](https://twitch.tv/dqretro) is live, the homepage shows the stream in a centre overlay. Clicking outside it, pressing Esc or the **–** button moves the same player to a small window in the bottom-right corner without interrupting the stream; **×** hides it for the rest of the visit. On phones it shows a **Watch on Twitch** card instead, because Twitch's player needs at least 400 × 300 pixels. When the channel is offline nothing is shown.
+
+How it stays secret-free:
+- `workers/twitch-live/` is a small Cloudflare Worker that asks Twitch's API whether the channel is live. The Twitch client secret lives only in the Worker; the site only ever receives public information (live or not, title, game, viewers). Results are cached for 60 seconds.
+- The homepage (`shared/live/twitch-live.js`) checks the Worker every 90 seconds while the tab is open, and only on `dqretro.github.io`, `localhost` and `127.0.0.1`, the domains registered with the Twitch player.
+
+Setup:
+1. Add the four secrets above, then run **Actions → Deploy Twitch live-status Worker → Run workflow**. A [workers.dev subdomain](https://developers.cloudflare.com/workers/configuration/routing/workers-dev/) must be set up in the Cloudflare dashboard once.
+2. Copy the status URL from that run's summary into the `TWITCH_LIVE_STATUS_URL` variable.
+3. Run **Deploy static content to Pages** (or push to `main`) so the site picks up the URL.

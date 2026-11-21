@@ -1,0 +1,196 @@
+/* =====================================================================
+   Twitch live overlay (homepage). Uses the site colours from styles.css.
+   One fixed container (.tl-player) holds the player for its whole life;
+   the states only change its size and position, so the stream never reloads.
+   Twitch minimum player size: 400 x 300.
+   ===================================================================== */
+
+.tl-player {
+  --tl-bar: 48px;
+  --tl-gap: 16px;
+  --tl-border: 1px;
+  position: fixed;
+  z-index: 1000;              /* above the sticky nav (z-index 50) */
+  display: flex;
+  flex-direction: column;
+  /* --tl-w = player width, --tl-h = player height + bar; the border is added on top
+     (the site uses border-box) so the player itself keeps the exact size. */
+  width: calc(var(--tl-w) + 2 * var(--tl-border));
+  height: calc(var(--tl-h) + 2 * var(--tl-border));
+  right: var(--tl-right);
+  bottom: var(--tl-bottom);
+  background: var(--panel, #17171c);
+  border: var(--tl-border) solid var(--line, #2a2a33);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(124, 92, 255, 0.18);
+  overflow: hidden;
+  color: var(--text, #e6e6e9);
+  transition: width 0.4s ease, height 0.4s ease, right 0.4s ease, bottom 0.4s ease,
+              opacity 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Centre: 16:9 player, as large as fits (max 960px), never below 534x300.
+   --tl-w/--tl-h use viewport units (they are reused inside height), while
+   right/bottom use % of the viewport along their own axis. */
+.tl-player[data-state="center"] {
+  --tl-w: max(534px, min(960px, calc(100vw - 2 * var(--tl-gap) - 16px), calc((100vh - 2 * var(--tl-gap) - var(--tl-bar)) * 16 / 9)));
+  --tl-h: calc(var(--tl-w) * 9 / 16 + var(--tl-bar));
+  --tl-right: calc((100% - var(--tl-w) - 2 * var(--tl-border)) / 2);
+  --tl-bottom: max(var(--tl-gap), calc((100% - var(--tl-h) - 2 * var(--tl-border)) / 2));
+}
+
+/* Picture-in-picture: bottom-right, Twitch minimum 400x300 player. */
+.tl-player[data-state="pip"] {
+  --tl-w: 400px;
+  --tl-h: calc(300px + var(--tl-bar));
+  --tl-right: var(--tl-gap);
+  --tl-bottom: var(--tl-gap);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(124, 92, 255, 0.25);
+}
+@media (min-width: 1600px) {
+  .tl-player[data-state="pip"] { --tl-w: 534px; } /* large screens: 16:9 at 300px high */
+}
+
+/* Card mode (small screens, no embed): a compact centred card. */
+.tl-player[data-mode="card"][data-state="center"] {
+  --tl-w: min(420px, calc(100vw - 2 * var(--tl-gap) - 2 * var(--tl-border)));
+  height: auto;
+  --tl-bottom: calc(50% - 90px);
+}
+
+.tl-player.is-entering { opacity: 0; transform: translateY(12px) scale(0.98); }
+.tl-player.is-hidden { opacity: 0; transform: translateY(12px) scale(0.96); pointer-events: none; visibility: hidden;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s; }
+
+/* ---- Header bar ---- */
+.tl-bar {
+  flex: 0 0 var(--tl-bar);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px 0 12px;
+  background: linear-gradient(180deg, rgba(124, 92, 255, 0.10), rgba(124, 92, 255, 0.02));
+  border-bottom: 1px solid var(--line, #2a2a33);
+  min-width: 0;
+}
+
+.tl-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--danger, #ef4444);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.tl-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+  animation: tl-pulse 1.6s ease-in-out infinite;
+}
+@keyframes tl-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+.tl-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.tl-heading {
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tl-meta {
+  font-size: 0.75rem;
+  color: var(--muted, #b6b6bf);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tl-meta:empty { display: none; }
+
+.tl-btn {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--muted, #b6b6bf);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.tl-btn:hover { background: rgba(124, 92, 255, 0.18); color: var(--text, #e6e6e9); }
+.tl-btn:focus-visible { outline: 2px solid var(--accent, #7c5cff); outline-offset: 2px; }
+.tl-close:hover { background: rgba(239, 68, 68, 0.18); color: #fff; }
+
+/* Centre shows "minimise"; picture-in-picture shows "expand". */
+.tl-player[data-state="center"] .tl-expand { display: none; }
+.tl-player[data-state="pip"] .tl-min { display: none; }
+
+/* ---- Player / card ---- */
+.tl-body { flex: 1 1 auto; min-height: 0; background: #000; }
+.tl-frame { display: block; width: 100%; height: 100%; border: 0; }
+.tl-player[data-mode="card"] .tl-body { background: transparent; }
+.tl-card { padding: 18px 16px 20px; text-align: center; }
+.tl-card-text { margin: 0 0 14px; color: var(--muted, #b6b6bf); }
+.tl-watch { display: inline-block; }
+
+/* ---- Backdrop (centre state) ---- */
+.tl-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 990;
+  background: rgba(5, 5, 8, 0.72);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+.tl-backdrop.is-visible { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
+
+/* ---- "LIVE" pill (minimised on small screens) ---- */
+.tl-pill {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 8px;
+  border: 1px solid var(--line, #2a2a33);
+  border-radius: 999px;
+  background: var(--panel, #17171c);
+  color: var(--text, #e6e6e9);
+  font-weight: 700;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+}
+.tl-pill.is-visible { opacity: 1; visibility: visible; transform: none; transition: opacity 0.25s ease, transform 0.25s ease; }
+.tl-pill.is-entering { opacity: 0; transform: translateY(12px); }
+.tl-pill:hover { border-color: rgba(124, 92, 255, 0.5); }
+.tl-pill:focus-visible { outline: 2px solid var(--accent, #7c5cff); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tl-badge::before { animation: none; }
+}
