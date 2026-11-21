@@ -2,12 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Global Rankings</title>
-  <link rel="stylesheet" href="../../styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Rankings | DQRetro</title>
+  <link rel="stylesheet" href="../../../styles.css">
+  <link rel="stylesheet" href="../../../shared/layout/header/nav/nav.css">
 </head>
 <body class="dark">
-  <div class="container">
-    <h1>Global Player Rankings</h1>
+
+<div id="nav-placeholder"></div>
+
+<div class="container">
+  <h1>Global Player Rankings</h1>
+  <p id="rankingsSummary" style="color:var(--muted, #aaa); margin-top:-0.5rem;">Loading rankings…</p>
+
+  <div class="table-scroll-container">
     <table id="rankingsTable" class="tournament-table">
       <thead>
         <tr>
@@ -15,6 +23,8 @@
           <th>Player</th>
           <th>Team</th>
           <th>Country</th>
+          <th>Events</th>
+          <th>Titles</th>
           <th>Points</th>
         </tr>
       </thead>
@@ -22,6 +32,14 @@
     </table>
   </div>
 
-  <script src="rankings.js"></script>
+  <p style="color:var(--muted, #aaa); font-size:0.85rem;">
+    Points per event: 1st 10, 2nd 8, 3rd 6, 4th 5, 5th–6th 4, 7th–8th 2, any other placing 1.
+  </p>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="../../../script.js"></script>
+<script src="rankings.js"></script>
 </body>
 </html>
