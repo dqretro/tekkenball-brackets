@@ -240,7 +240,7 @@ function renderCharacterUsage(usageData) {
     card.className = "pool-card";
 
     const iconHtml = typeof buildCharacterIconHtml === "function"
-      ? buildCharacterIconHtml(item.slug, item.config, 28, 28)
+      ? buildCharacterIconHtml(item.slug, item.config, 0, 28, 28)
       : `<img src="${withBase(`images/games/${item.config.folder}/characters/characters_select/select_${item.slug}.png`)}" width="28" height="28" alt="${item.slug}">`;
 
     const formattedName = item.slug.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase());
@@ -328,7 +328,7 @@ async function renderOverallStats(eventData) {
       const manualChars = typeof getManualCharacters === "function" ? getManualCharacters(entrantName) : [];
       const charSlug = manualChars[0] || null;
       const charIconHtml = charSlug && typeof buildCharacterIconHtml === "function"
-        ? buildCharacterIconHtml(charSlug, gameConfig, 18, 18)
+        ? buildCharacterIconHtml(charSlug, gameConfig, 0, 18, 18)
         : '';
 
       return `

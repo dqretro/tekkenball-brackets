@@ -17,440 +17,65 @@ if (typeof window !== "undefined" && !window.withBase) {
 }
 
 // -------------------------------------------------------
-// GAME DEFINITIONS
-// Maps start.gg videogame name strings and shortcodes → asset config
+// GAME ASSETS (one entry per image folder)
+// File names must match images/games/<folder>/ exactly: GitHub Pages is
+// case-sensitive. CI checks this (.github/scripts/check-assets.js).
+//   imgExt        format most character select icons use (the other format is tried next)
+//   fallback      random/unknown icon in characters_select/, or null if the game has none
+//   slotFallbacks true if select_random1/select_random2.<imgExt> exist (P1/P2 variants)
+//   boxart, logo  file names in boxart/ and logo/, or null if missing
 // -------------------------------------------------------
-const GAME_CONFIG = {
-  // ---- Tekken 8 ----
-  "tekken 8": {
-    folder:       "tk8",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    renderPrefix: "render_",
-    hudPrefix:    "hud_",
-    boxart:       "boxart_tekken8.png",
-    logo:         "logo_tekken8.png",
-    fallback:     "select_random.png"
-  },
-  "tekken 8 ball": {
-    folder:       "tk8",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    renderPrefix: "render_",
-    hudPrefix:    "hud_",
-    boxart:       "boxart_tekken8ball.png",
-    logo:         "logo_tekken8ball.png",
-    fallback:     "select_random.png"
-  },
-  "tk8": {
-    folder:       "tk8",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    renderPrefix: "render_",
-    hudPrefix:    "hud_",
-    boxart:       "boxart_tekken8.png",
-    logo:         "logo_tekken8.png",
-    fallback:     "select_random.png"
-  },
-
-  // ---- Tekken 7 ----
-  "tekken 7": {
-    folder:       "tk7",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken7.png",
-    logo:         "logo_tekken7.png",
-    fallback:     "select_random.png"
-  },
-  "tk7": {
-    folder:       "tk7",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken7.png",
-    logo:         "logo_tekken7.png",
-    fallback:     "select_random.png"
-  },
-
-  // ---- Tekken 6 ----
-  "tekken 6": {
-    folder:       "tk6",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken6.png",
-    logo:         "logo_tekken6.png",
-    fallback:     "select_random.png"
-  },
-  "tk6": {
-    folder:       "tk6",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken6.png",
-    logo:         "logo_tekken6.png",
-    fallback:     "select_random.png"
-  },
-
-  // ---- Tekken 5: Dark Resurrection ----
-  "tekken 5: dark resurrection": {
-    folder:       "tk5dr",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken5dr.webp",
-    logo:         "logo_tekken5dr.webp",
-    fallback:     "select_random.webp"
-  },
-  "tekken 5 dark resurrection": {
-    folder:       "tk5dr",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken5dr.webp",
-    logo:         "logo_tekken5dr.webp",
-    fallback:     "select_random.webp"
-  },
-  "tekken 5 dr": {
-    folder:       "tk5dr",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken5dr.webp",
-    logo:         "logo_tekken5dr.webp",
-    fallback:     "select_random.webp"
-  },
-  "tk5dr": {
-    folder:       "tk5dr",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken5dr.webp",
-    logo:         "logo_tekken5dr.webp",
-    fallback:     "select_random.webp"
-  },
-
-  // ---- Tekken 5 ----
-  "tekken 5": {
-    folder:       "tk5",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken5.webp",
-    logo:         "logo_tekken5.webp",
-    fallback:     "select_random.webp"
-  },
-  "tk5": {
-    folder:       "tk5",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken5.webp",
-    logo:         "logo_tekken5.webp",
-    fallback:     "select_random.webp"
-  },
-
-  // ---- Tekken 4 ----
-  "tekken 4": {
-    folder:       "tk4",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken4.webp",
-    logo:         "logo_tekken4.webp",
-    fallback:     "select_random.webp"
-  },
-  "tk4": {
-    folder:       "tk4",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken4.webp",
-    logo:         "logo_tekken4.webp",
-    fallback:     "select_random.webp"
-  },
-
-  // ---- Tekken 3 / Tekken 3 Ball ----
-  "tekken 3": {
-    folder:       "tk3",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken3.webp",
-    logo:         "logo_tekken3.webp",
-    fallback:     "select_random.webp"
-  },
-  "tk3": {
-    folder:       "tk3",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken3.webp",
-    logo:         "logo_tekken3.webp",
-    fallback:     "select_random.webp"
-  },
-  "tekken 3 ball": {
-    folder:       "tk3",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken3ball.webp",
-    logo:         "logo_tekken3ball.webp",
-    fallback:     "select_random.webp"
-  },
-  "tk3ball": {
-    folder:       "tk3ball",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken3ball.webp",
-    logo:         "logo_tekken3ball.webp",
-    fallback:     "select_random.webp"
-  },
-  "tekken ball": {
-    folder:       "tk3ball",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken3ball.webp",
-    logo:         "logo_tekken3ball.webp",
-    fallback:     "select_random.webp"
-  },
-
-  // ---- Tekken 2 ----
-  "tekken 2": {
-    folder:       "tk2",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken2.webp",
-    logo:         "logo_tekken2.webp",
-    fallback:     "select_random.webp"
-  },
-  "tk2": {
-    folder:       "tk2",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken2.webp",
-    logo:         "logo_tekken2.webp",
-    fallback:     "select_random.webp"
-  },
-
-  // ---- Tekken 1 ----
-  "tekken": {
-    folder:       "tk1",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken1.webp",
-    logo:         "logo_tekken1.webp",
-    fallback:     "select_random.webp"
-  },
-  "tekken 1": {
-    folder:       "tk1",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken1.webp",
-    logo:         "logo_tekken1.webp",
-    fallback:     "select_random.webp"
-  },
-  "tk1": {
-    folder:       "tk1",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_tekken1.webp",
-    logo:         "logo_tekken1.webp",
-    fallback:     "select_random.webp"
-  },
-
-  // ---- Tekken Tag Tournament ----
-  "tekken tag tournament": {
-    folder:       "ttt1",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_ttt1.webp",
-    logo:         "logo_ttt1.webp",
-    fallback:     "select_random.webp"
-  },
-  "tekken tag": {
-    folder:       "ttt1",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_ttt1.webp",
-    logo:         "logo_ttt1.webp",
-    fallback:     "select_random.webp"
-  },
-  "ttt1": {
-    folder:       "ttt1",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_ttt1.webp",
-    logo:         "logo_ttt1.webp",
-    fallback:     "select_random.webp"
-  },
-
-  // ---- Tekken Tag Tournament 2 ----
-  "tekken tag tournament 2": {
-    folder:       "ttt2",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_ttt2.webp",
-    logo:         "logo_ttt2.webp",
-    fallback:     "select_random.webp"
-  },
-  "tekken tag 2": {
-    folder:       "ttt2",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_ttt2.webp",
-    logo:         "logo_ttt2.webp",
-    fallback:     "select_random.webp"
-  },
-  "ttt2": {
-    folder:       "ttt2",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_ttt2.webp",
-    logo:         "logo_ttt2.webp",
-    fallback:     "select_random.webp"
-  },
-
-  // ---- Dead or Alive 6 ----
-  "dead or alive 6": {
-    folder:       "doa6",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    boxart:       "boxart_doa6.png",
-    logo:         "logo_doa6.png",
-    fallback:     "select_random.png"
-  },
-  "doa6": {
-    folder:       "doa6",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    boxart:       "boxart_doa6.png",
-    logo:         "logo_doa6.png",
-    fallback:     "select_random.png"
-  },
-
-  // ---- Dead or Alive 5 ----
-  "dead or alive 5": {
-    folder:       "doa5",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    boxart:       "boxart_doa5.png",
-    logo:         "logo_doa5.png",
-    fallback:     "select_random.png"
-  },
-  "doa5": {
-    folder:       "doa5",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    boxart:       "boxart_doa5.png",
-    logo:         "logo_doa5.png",
-    fallback:     "select_random.png"
-  },
-
-  // ---- Virtua Fighter 6 ----
-  "virtua fighter 6": {
-    folder:       "vf6",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    boxart:       "boxart_vf6.png",
-    logo:         "logo_vf6.png",
-    fallback:     "select_random.png"
-  },
-  "vf6": {
-    folder:       "vf6",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    boxart:       "boxart_vf6.png",
-    logo:         "logo_vf6.png",
-    fallback:     "select_random.png"
-  },
-
-  // ---- Virtua Fighter 5 ----
-  "virtua fighter 5": {
-    folder:       "vf5",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    boxart:       "boxart_vf5.png",
-    logo:         "logo_vf5.png",
-    fallback:     "select_random.png"
-  },
-  "vf5": {
-    folder:       "vf5",
-    imgExt:       "png",
-    selectPrefix: "select_",
-    boxart:       "boxart_vf5.png",
-    logo:         "logo_vf5.png",
-    fallback:     "select_random.png"
-  },
-
-  // ---- Virtua Fighter 2 ----
-  "virtua fighter 2": {
-    folder:       "vf2",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_vf2.webp",
-    logo:         "logo_vf2.webp",
-    fallback:     "select_random.webp"
-  },
-  "vf2": {
-    folder:       "vf2",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_vf2.webp",
-    logo:         "logo_vf2.webp",
-    fallback:     "select_random.webp"
-  },
-
-  // ---- Bloody Roar 2 ----
-  "bloody roar 2": {
-    folder:       "bloodyroar2",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_bloodyroar2.webp",
-    logo:         "logo_bloodyroar2.webp",
-    fallback:     "select_random.webp"
-  },
-  "bloodyroar2": {
-    folder:       "bloodyroar2",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_bloodyroar2.webp",
-    logo:         "logo_bloodyroar2.webp",
-    fallback:     "select_random.webp"
-  },
-
-  // ---- Def Jam: Fight for NY ----
-  "def jam: fight for ny": {
-    folder:       "djffny",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_djffny.webp",
-    logo:         "logo_djffny.webp",
-    fallback:     "select_random.webp"
-  },
-  "def jam fight for ny": {
-    folder:       "djffny",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_djffny.webp",
-    logo:         "logo_djffny.webp",
-    fallback:     "select_random.webp"
-  },
-  "def jam": {
-    folder:       "djffny",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_djffny.webp",
-    logo:         "logo_djffny.webp",
-    fallback:     "select_random.webp"
-  },
-  "djffny": {
-    folder:       "djffny",
-    imgExt:       "webp",
-    selectPrefix: "select_",
-    boxart:       "boxart_djffny.webp",
-    logo:         "logo_djffny.webp",
-    fallback:     "select_random.webp"
-  }
+const GAME_ASSETS = {
+  tk8:          { folder: "tk8", imgExt: "png", renderPrefix: "render_", hudPrefix: "hud_", boxart: "boxart_tekken8.png", logo: "logo_tekken8.png", fallback: "select_random.png" },
+  tk8ball:      { folder: "tk8", imgExt: "png", renderPrefix: "render_", hudPrefix: "hud_", boxart: "boxart_tekken8ball.png", logo: "logo_tekken8ball.png", fallback: "select_random.png" },
+  tk7:          { folder: "tk7", imgExt: "png", boxart: "boxart_tekken7.png", logo: null, fallback: "select_random.png" },
+  tk6:          { folder: "tk6", imgExt: "png", boxart: "boxart_tekken6.png", logo: null, fallback: "select_random.png" },
+  tk5dr:        { folder: "tk5dr", imgExt: "webp", boxart: "boxart_tekken5dr.webp", logo: "logo_tk5dr.webp", fallback: "select_random.png" },
+  tk5:          { folder: "tk5", imgExt: "webp", boxart: "boxart_tekken5.webp", logo: "logo_tk5.webp", fallback: "select_random.png" },
+  tk4:          { folder: "tk4", imgExt: "webp", boxart: "boxart_tekken4.png", logo: "logo_tk4.webp", fallback: "select_random.png" },
+  tk3:          { folder: "tk3", imgExt: "png", boxart: "boxart_tekken3.png", logo: null, fallback: "select_random.webp", slotFallbacks: true },
+  tk3ball:      { folder: "tk3", imgExt: "png", boxart: "boxart_tekken3ball.png", logo: null, fallback: "select_random.webp", slotFallbacks: true },
+  tk2:          { folder: "tk2", imgExt: "webp", boxart: "boxart_tekken2.png", logo: null, fallback: null },
+  tk1:          { folder: "tk1", imgExt: "webp", boxart: "boxart_tekken1.png", logo: null, fallback: "select_random.png" },
+  ttt1:         { folder: "ttt1", imgExt: "png", boxart: "boxart_tekkentag1.png", logo: null, fallback: "select_random.png" },
+  ttt2:         { folder: "ttt2", imgExt: "png", boxart: "boxart_tekkentag2.png", logo: null, fallback: "select_random.png" },
+  doa6:         { folder: "doa6", imgExt: "png", boxart: null, logo: null, fallback: "select_random.png" },
+  doa5:         { folder: "doa5", imgExt: "png", boxart: null, logo: null, fallback: null },
+  vf6:          { folder: "vf6", imgExt: "png", boxart: null, logo: null, fallback: null },
+  vf5:          { folder: "vf5", imgExt: "png", boxart: null, logo: null, fallback: null },
+  vf2:          { folder: "vf2", imgExt: "webp", boxart: null, logo: null, fallback: null },
+  bloodyroar2:  { folder: "bloodyroar2", imgExt: "png", boxart: null, logo: null, fallback: "select_random.png" },
+  djffny:       { folder: "djffny", imgExt: "png", boxart: null, logo: null, fallback: "select_random.png" },
 };
+
+// -------------------------------------------------------
+// GAME DEFINITIONS
+// Maps start.gg videogame name strings and shortcodes → asset config.
+// Order matters: getGameConfig() falls back to the first partial match.
+// -------------------------------------------------------
+const GAME_CONFIG = Object.fromEntries([
+  ["tekken 8", "tk8"], ["tekken 8 ball", "tk8ball"], ["tk8", "tk8"],
+  ["tekken 7", "tk7"], ["tk7", "tk7"],
+  ["tekken 6", "tk6"], ["tk6", "tk6"],
+  ["tekken 5: dark resurrection", "tk5dr"], ["tekken 5 dark resurrection", "tk5dr"], ["tekken 5 dr", "tk5dr"], ["tk5dr", "tk5dr"],
+  ["tekken 5", "tk5"], ["tk5", "tk5"],
+  ["tekken 4", "tk4"], ["tk4", "tk4"],
+  ["tekken 3", "tk3"], ["tk3", "tk3"], ["tekken 3 ball", "tk3ball"], ["tk3ball", "tk3ball"], ["tekken ball", "tk3ball"],
+  ["tekken 2", "tk2"], ["tk2", "tk2"],
+  ["tekken", "tk1"], ["tekken 1", "tk1"], ["tk1", "tk1"],
+  ["tekken tag tournament", "ttt1"], ["tekken tag", "ttt1"], ["ttt1", "ttt1"],
+  ["tekken tag tournament 2", "ttt2"], ["tekken tag 2", "ttt2"], ["ttt2", "ttt2"],
+  ["dead or alive 6", "doa6"], ["doa6", "doa6"],
+  ["dead or alive 5", "doa5"], ["doa5", "doa5"],
+  ["virtua fighter 6", "vf6"], ["vf6", "vf6"],
+  ["virtua fighter 5", "vf5"], ["vf5", "vf5"],
+  ["virtua fighter 2", "vf2"], ["vf2", "vf2"],
+  ["bloody roar 2", "bloodyroar2"], ["bloodyroar2", "bloodyroar2"],
+  ["def jam: fight for ny", "djffny"], ["def jam fight for ny", "djffny"], ["def jam", "djffny"], ["djffny", "djffny"],
+].map(([name, asset]) => [name, { selectPrefix: "select_", ...GAME_ASSETS[asset] }]));
 
 // Default fallback for unknown games
-const GAME_CONFIG_DEFAULT = {
-  folder:       "tk8",
-  imgExt:       "png",
-  selectPrefix: "select_",
-  renderPrefix: "render_",
-  hudPrefix:    "hud_",
-  boxart:       "boxart_tekken8.png",
-  logo:         "logo_tekken8.png",
-  fallback:     "select_random.png"
-};
+const GAME_CONFIG_DEFAULT = { selectPrefix: "select_", ...GAME_ASSETS.tk8 };
 
 /**
  * Get game config by videogame name string from start.gg
@@ -473,48 +98,64 @@ function getGameConfig(videogameName) {
 }
 
 /**
+ * Image fallback chain. Each <img> lists the next sources to try in
+ * data-fallbacks ("url|url"); when none are left it is hidden.
+ */
+if (typeof window !== "undefined" && !window.dqImgFallback) {
+  window.dqImgFallback = function (img) {
+    const rest = (img.dataset.fallbacks || "").split("|").filter(Boolean);
+    if (!rest.length) {
+      img.onerror = null;
+      img.style.display = "none";
+      return;
+    }
+    img.dataset.fallbacks = rest.slice(1).join("|");
+    img.src = rest[0];
+  };
+}
+
+/**
  * Build a character select icon HTML for a given game + character slug.
+ * Tries the icon in the game's main format, then the other format, then the
+ * game's random/unknown icon; hides the image if none exist.
  */
 function buildCharacterIconHtml(charSlug, config, slotIndex = 0, width = 24, height = 24) {
-  const cfg      = config || GAME_CONFIG_DEFAULT;
-  const folder   = cfg.folder || "tk8";
-  const prefix   = cfg.selectPrefix || "select_";
-  const ext      = cfg.imgExt || "png";
-  const altExt   = ext === "png" ? "webp" : "png";
-  
-  // Specific fallback image based on player slot index (0 = P1, 1 = P2)
-  const slotFallback = slotIndex === 1 ? `select_random2.${ext}` : `select_random1.${ext}`;
-  const genericFallback = cfg.fallback || `select_random.${ext}`;
-  
-  const fallbackPath = window.withBase(`/images/games/${folder}/characters/characters_select/${slotFallback}`);
-  const genericFallbackPath = window.withBase(`/images/games/${folder}/characters/characters_select/${genericFallback}`);
+  const cfg    = config || GAME_CONFIG_DEFAULT;
+  const dir    = `/images/games/${cfg.folder || "tk8"}/characters/characters_select/`;
+  const prefix = cfg.selectPrefix || "select_";
+  const ext    = cfg.imgExt || "png";
+  const altExt = ext === "png" ? "webp" : "png";
+  const url    = file => window.withBase(dir + file);
 
-  if (!charSlug) {
-    return `<img src="${fallbackPath}"
-         alt="Random/Unreported" title="Random/Unreported character"
-         width="${width}" height="${height}"
-         style="display:inline-block; margin-right:2px; vertical-align:middle;"
-         onerror="this.onerror=null;this.src='${genericFallbackPath}';this.onerror=function(){this.style.display='none';}">`;
-  }
+  // Random/unknown icons: P1/P2 variants where the game has them, then the generic one.
+  const randomIcons = [];
+  if (cfg.slotFallbacks) randomIcons.push(url(`select_random${slotIndex === 1 ? 2 : 1}.${ext}`));
+  if (cfg.fallback) randomIcons.push(url(cfg.fallback));
 
-  const primary = window.withBase(`/images/games/${folder}/characters/characters_select/${prefix}${charSlug}.${ext}`);
-  const altSrc  = window.withBase(`/images/games/${folder}/characters/characters_select/${prefix}${charSlug}.${altExt}`);
+  const safeSlug = charSlug ? String(charSlug).toLowerCase().replace(/[^a-z0-9_-]/g, "") : "";
+  const sources = safeSlug
+    ? [url(`${prefix}${safeSlug}.${ext}`), url(`${prefix}${safeSlug}.${altExt}`), ...randomIcons]
+    : randomIcons;
+  if (!sources.length) return "";
 
-  return `<img src="${primary}"
-       alt="${charSlug}" title="${charSlug}"
+  const label = safeSlug || "Random/Unreported";
+  const title = safeSlug || "Random/Unreported character";
+  return `<img src="${sources[0]}"
+       alt="${label}" title="${title}"
        width="${width}" height="${height}"
        style="display:inline-block; margin-right:2px; vertical-align:middle;"
-       onerror="this.onerror=null;this.src='${altSrc}';this.onerror=function(){this.onerror=null;this.src='${fallbackPath}';this.onerror=function(){this.style.display='none';};}">`;
+       data-fallbacks="${sources.slice(1).join("|")}"
+       onerror="dqImgFallback(this)">`;
 }
 
 function getGameBoxart(videogameName) {
   const config = getGameConfig(videogameName);
-  return window.withBase(`/images/games/${config.folder}/boxart/${config.boxart}`);
+  return config.boxart ? window.withBase(`/images/games/${config.folder}/boxart/${config.boxart}`) : "";
 }
 
 function getGameLogo(videogameName) {
   const config = getGameConfig(videogameName);
-  return window.withBase(`/images/games/${config.folder}/logo/${config.logo}`);
+  return config.logo ? window.withBase(`/images/games/${config.folder}/logo/${config.logo}`) : "";
 }
 
 // -------------------------------------------------------
