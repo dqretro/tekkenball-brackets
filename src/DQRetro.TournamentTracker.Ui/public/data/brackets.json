@@ -12771,7 +12771,12 @@
                             "prefix": "dWo",
                             "user": {
                               "id": 142016,
-                              "images": [],
+                              "images": [
+                                {
+                                  "url": "https://images.start.gg/images/user/142016/image-a445cacb28efd08c9b4ab131dac7ab03.jpg",
+                                  "type": "profile"
+                                }
+                              ],
                               "location": {
                                 "city": "Chester",
                                 "state": null,
